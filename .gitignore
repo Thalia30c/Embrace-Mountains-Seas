@@ -1,0 +1,22 @@
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### IntelliJ IDEA ###
+.idea/
+*.iws
+*.iml
+*.ipr
+
+### VS Code ###
+.vscode/
+
+### 日志与临时文件 ###
+*.log
+logs/
+tmp/
+
+### 系统文件 ###
+.DS_Store
+Thumbs.db
