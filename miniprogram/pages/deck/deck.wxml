@@ -1,0 +1,54 @@
+<view class="container">
+  <view class="row">
+    <view class="list-title">我的牌组</view>
+    <button class="btn-mini" bindtap="onCreate">新建牌组</button>
+  </view>
+
+  <view wx:if="{{decks.length === 0}}" class="empty">
+    <view class="text-muted">还没有牌组，先新建一个</view>
+  </view>
+
+  <view wx:for="{{decks}}" wx:key="deck.id" class="card deck-card">
+    <view class="row">
+      <view>
+        <view class="deck-name">
+          {{item.deck.name}}
+          <text wx:if="{{item.deck.isDefault === 1}}" class="badge">默认</text>
+        </view>
+        <view class="text-muted">{{item.totalCount}} / 30 张</view>
+      </view>
+      <view class="deck-ops">
+        <text class="op" data-id="{{item.deck.id}}" bindtap="onSetDefault">设为默认</text>
+        <text class="op" data-id="{{item.deck.id}}" bindtap="openPicker">加卡</text>
+        <text class="op danger" data-id="{{item.deck.id}}" bindtap="onDelete">删除</text>
+      </view>
+    </view>
+
+    <!-- 牌组内的卡 -->
+    <view class="deck-cards">
+      <view wx:for="{{item.cards}}" wx:for-item="c" wx:key="card.id"
+            class="mini-card" data-deckid="{{item.deck.id}}" data-cardid="{{c.card.id}}" bindtap="onRemoveCard">
+        <view class="mini-name">{{c.card.name}}</view>
+        <view class="text-muted">×{{c.count}}</view>
+      </view>
+      <view wx:if="{{item.cards.length === 0}}" class="text-muted">这个牌组还是空的，点"加卡"选几张</view>
+    </view>
+  </view>
+</view>
+
+<!-- 选卡弹层 -->
+<view wx:if="{{showCardPicker}}" class="mask" bindtap="closePicker">
+  <view class="dialog" catchtap="noop">
+    <view class="dialog-title">选择卡牌加入牌组</view>
+    <scroll-view scroll-y class="picker-list">
+      <view wx:for="{{allCards}}" wx:key="id" class="picker-item" data-cardid="{{item.id}}" bindtap="onAddCard">
+        <view class="row">
+          <text class="mini-name">{{item.name}}</text>
+          <text class="text-muted">攻{{item.attack}} 防{{item.defense}}</text>
+        </view>
+        <view class="text-muted">{{item.description}}</view>
+      </view>
+    </scroll-view>
+    <button class="btn-secondary" bindtap="closePicker">关闭</button>
+  </view>
+</view>

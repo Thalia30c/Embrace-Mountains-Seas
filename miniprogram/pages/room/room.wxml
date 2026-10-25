@@ -1,0 +1,46 @@
+<view class="container">
+  <!-- 加载中 / 加载失败提示：房间信息未拿到时显示，避免整页空白 -->
+  <view wx:if="{{!room}}" class="state-box">
+    <view class="text-muted">房间信息加载中...</view>
+    <view wx:if="{{loadFailed}}" class="text-muted err">加载失败，请检查后端服务是否已启动</view>
+    <button class="btn-secondary" bindtap="loadRoom">重新加载</button>
+  </view>
+
+  <block wx:else>
+  <view class="card room-head">
+    <view class="room-name">{{room.name}}</view>
+    <view class="text-muted">房间号 {{room.roomNo}}（点击复制）</view>
+    <view class="text-muted" bindtap="onCopy">👆 点击复制房间号分享给好友</view>
+  </view>
+
+  <view class="card">
+    <view class="row">
+      <text class="label">房主</text>
+      <text>{{room.ownerName}}</text>
+    </view>
+    <view class="row mt">
+      <text class="label">模式</text>
+      <text>{{room.mode === 'rank' ? '排位模式' : '休闲模式'}}</text>
+    </view>
+    <view class="row mt">
+      <text class="label">人数</text>
+      <text>{{room.currentPlayer}} / {{room.maxPlayer}}</text>
+    </view>
+    <view class="row mt">
+      <text class="label">状态</text>
+      <text>{{room.status === 'waiting' ? '等待中' : '对战中'}}</text>
+    </view>
+  </view>
+
+  <view class="waiting" wx:if="{{room.status === 'waiting'}}">
+    <view class="text-muted">等待其他玩家加入...</view>
+  </view>
+
+  <button class="btn-primary" wx:if="{{isOwner && room.status === 'waiting'}}" bindtap="onStart">
+    {{canStart ? '开始对战' : '等待玩家加入'}}
+  </button>
+  <view class="text-muted" wx:if="{{isOwner && !canStart && room.status === 'waiting'}}">至少 2 名玩家才能开局</view>
+
+  <button class="btn-secondary" bindtap="onLeave">离开房间</button>
+  </block>
+</view>

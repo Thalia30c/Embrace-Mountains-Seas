@@ -1,0 +1,33 @@
+.room-head {
+  text-align: center;
+}
+
+.room-name {
+  font-size: 36rpx;
+  font-weight: bold;
+  margin-bottom: 16rpx;
+}
+
+.label {
+  color: #8a90a2;
+}
+
+.mt {
+  margin-top: 20rpx;
+}
+
+.waiting {
+  text-align: center;
+  padding: 60rpx 0;
+}
+
+/* 加载状态占位 */
+.state-box {
+  padding: 80rpx 24rpx;
+  text-align: center;
+}
+
+.state-box .err {
+  color: #d64545;
+  margin-top: 16rpx;
+}
