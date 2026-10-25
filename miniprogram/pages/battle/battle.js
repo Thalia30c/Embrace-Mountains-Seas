@@ -5,7 +5,9 @@
 // 把 pollState 换成 WebSocket 推送即可，页面结构不用动。
 
 const api = require('../../utils/api');
-const app = getApp();
+
+// 惰性获取 App 实例，避免模块加载时 getApp() 尚未就绪
+const getAppInstance = () => getApp();
 
 Page({
   data: {
@@ -52,7 +54,7 @@ Page({
     const battleId = this.data.battleId;
     if (!battleId) return;
     api.battleState(battleId).then((state) => {
-      const myId = app.globalData.userInfo ? app.globalData.userInfo.userId : null;
+      const myId = getAppInstance().globalData.userInfo ? getAppInstance().globalData.userInfo.userId : null;
       this.setData({
         state: state,
         myHand: state.myHand || [],

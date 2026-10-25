@@ -2,7 +2,9 @@
 // 登录页：用户名密码登录 + 微信一键登录
 
 const api = require('../../utils/api');
-const app = getApp();
+
+// 惰性获取 App 实例，避免模块加载时 getApp() 尚未就绪
+const getAppInstance = () => getApp();
 
 Page({
   data: {
@@ -36,7 +38,7 @@ Page({
       } else {
         data = await api.login(username, password);
       }
-      app.setLogin(data.token, {
+      getAppInstance().setLogin(data.token, {
         userId: data.userId,
         nickname: data.nickname,
         avatar: data.avatar,
@@ -60,7 +62,7 @@ Page({
         });
       });
       const data = await api.wxLogin(loginRes.code);
-      app.setLogin(data.token, {
+      getAppInstance().setLogin(data.token, {
         userId: data.userId,
         nickname: data.nickname,
         avatar: data.avatar,

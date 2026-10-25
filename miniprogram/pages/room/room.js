@@ -2,7 +2,9 @@
 // 房间页：等待其他玩家、房主开局
 
 const api = require('../../utils/api');
-const app = getApp();
+
+// 惰性获取 App 实例，避免模块加载时 getApp() 尚未就绪
+const getAppInstance = () => getApp();
 
 Page({
   data: {
@@ -24,7 +26,7 @@ Page({
   loadRoom() {
     const roomId = this.data.roomId;
     api.roomDetail(roomId).then((room) => {
-      const myId = app.globalData.userInfo ? app.globalData.userInfo.userId : null;
+      const myId = getAppInstance().globalData.userInfo ? getAppInstance().globalData.userInfo.userId : null;
       const isOwner = myId !== null && room.ownerId === myId;
       this.setData({
         room: room,

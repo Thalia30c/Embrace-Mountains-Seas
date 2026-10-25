@@ -2,7 +2,9 @@
 // 对战大厅：房间列表、创建房间、输入房间号加入
 
 const api = require('../../utils/api');
-const app = getApp();
+
+// 惰性获取 App 实例，避免模块加载时 getApp() 尚未就绪
+const getAppInstance = () => getApp();
 
 Page({
   data: {
@@ -53,7 +55,7 @@ Page({
 
   /** 弹出创建房间面板 */
   openCreate() {
-    if (!app.globalData.token) {
+    if (!getAppInstance().globalData.token) {
       wx.showToast({ title: '请先登录', icon: 'none' });
       return;
     }

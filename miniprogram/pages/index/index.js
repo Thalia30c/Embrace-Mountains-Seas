@@ -2,7 +2,9 @@
 // 首页：入口导航 + 玩家信息展示
 
 const api = require('../../utils/api');
-const app = getApp();
+
+// 惰性获取 App 实例，避免模块加载时 getApp() 尚未就绪
+const getAppInstance = () => getApp();
 
 Page({
   data: {
@@ -20,13 +22,13 @@ Page({
 
   /** 检查登录状态并拉取最新用户信息 */
   checkLogin() {
-    if (!app.globalData.token) {
+    if (!getAppInstance().globalData.token) {
       this.setData({ userInfo: null, isLogin: false });
       return;
     }
-    this.setData({ isLogin: true, userInfo: app.globalData.userInfo });
+    this.setData({ isLogin: true, userInfo: getAppInstance().globalData.userInfo });
     api.userInfo().then((user) => {
-      app.globalData.userInfo = user;
+      getAppInstance().globalData.userInfo = user;
       wx.setStorageSync('userInfo', user);
       this.setData({ userInfo: user });
     }).catch(() => {

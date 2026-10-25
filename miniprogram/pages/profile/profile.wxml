@@ -39,7 +39,7 @@
   <!-- 排行榜 -->
   <view class="list-title">排行榜</view>
   <view wx:for="{{ranking}}" wx:key="id" class="card rank-item">
-    <view class="rank-no {{index < 3 ? 'top' : ''}}">{{index + 1}}</view>
+    <view class="rank-no {{index <= 2 ? 'top' : ''}}">{{index + 1}}</view>
     <view class="rank-name">{{item.nickname}}</view>
     <view class="text-muted">{{item.rank}} · {{item.winCount}}胜</view>
   </view>

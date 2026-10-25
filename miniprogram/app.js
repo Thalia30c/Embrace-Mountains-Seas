@@ -4,7 +4,7 @@
 App({
   globalData: {
     // 后端服务地址。真机预览时改成局域网 IP，不能用 localhost
-    baseUrl: 'http://localhost:8080/api',
+    baseUrl: 'http://192.168.43.242:8080/api',
     // 登录令牌
     token: '',
     // 当前登录用户信息

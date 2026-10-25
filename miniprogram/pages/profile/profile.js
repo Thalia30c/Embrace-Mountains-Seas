@@ -2,7 +2,9 @@
 // 个人中心：我的信息、战绩、排行榜
 
 const api = require('../../utils/api');
-const app = getApp();
+
+// 惰性获取 App 实例，避免模块加载时 getApp() 尚未就绪
+const getAppInstance = () => getApp();
 
 Page({
   data: {
@@ -18,13 +20,13 @@ Page({
 
   /** 加载用户信息 */
   loadUser() {
-    if (!app.globalData.token) {
+    if (!getAppInstance().globalData.token) {
       this.setData({ userInfo: null, isLogin: false });
       return;
     }
     this.setData({ isLogin: true });
     api.userInfo().then((user) => {
-      app.globalData.userInfo = user;
+      getAppInstance().globalData.userInfo = user;
       wx.setStorageSync('userInfo', user);
       this.setData({ userInfo: user });
     }).catch(() => {});
@@ -49,7 +51,7 @@ Page({
       content: '确定要退出当前账号吗？',
       success: (res) => {
         if (!res.confirm) return;
-        app.clearLogin();
+        getAppInstance().clearLogin();
         wx.showToast({ title: '已退出', icon: 'success' });
         this.setData({ userInfo: null, isLogin: false });
       }
