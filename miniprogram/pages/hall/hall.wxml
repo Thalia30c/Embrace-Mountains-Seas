@@ -1,0 +1,42 @@
+<view class="container">
+  <!-- 顶部操作 -->
+  <view class="toolbar">
+    <button class="btn-mini" bindtap="openCreate">创建房间</button>
+    <view class="join-box">
+      <input class="input input-inline" placeholder="输入房间号" value="{{roomNo}}" bindinput="onInput" data-field="roomNo" />
+      <input class="input input-inline" placeholder="密码(可选)" value="{{password}}" bindinput="onInput" data-field="password" />
+      <button class="btn-mini" bindtap="joinRoom">加入</button>
+    </view>
+  </view>
+
+  <!-- 房间列表 -->
+  <view class="list-title">等待中的房间</view>
+  <view wx:if="{{rooms.length === 0}}" class="empty">
+    <view class="text-muted">暂时没有房间，创建一个吧</view>
+  </view>
+  <view wx:for="{{rooms}}" wx:key="id" class="room-item card" data-roomno="{{item.roomNo}}" bindtap="quickJoin">
+    <view class="row">
+      <view>
+        <view class="room-name">{{item.name}}</view>
+        <view class="text-muted">房主 {{item.ownerName}} · 房间号 {{item.roomNo}}</view>
+      </view>
+      <view class="room-right">
+        <view class="room-count">{{item.currentPlayer}}/{{item.maxPlayer}}</view>
+        <view class="text-muted">{{item.mode === 'rank' ? '排位' : '休闲'}}</view>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- 创建房间弹层 -->
+<view wx:if="{{showCreate}}" class="mask" bindtap="closeCreate">
+  <view class="dialog" catchtap="noop">
+    <view class="dialog-title">创建房间</view>
+    <input class="input" placeholder="房间名称(选填)" value="{{createForm.name}}" bindinput="onCreateInput" data-field="name" />
+    <picker mode="selector" range="{{modeOptions}}" range-key="label" bindchange="onModeChange">
+      <view class="picker">模式：{{modeOptions[modeIndex].label}}</view>
+    </picker>
+    <input class="input" type="number" placeholder="人数上限(2-4)" value="{{createForm.maxPlayer}}" bindinput="onCreateInput" data-field="maxPlayer" />
+    <button class="btn-primary" bindtap="submitCreate">确定</button>
+  </view>
+</view>

@@ -1,0 +1,46 @@
+<view class="container">
+  <!-- 我的信息 -->
+  <view class="card" wx:if="{{isLogin && userInfo}}">
+    <view class="row">
+      <view>
+        <view class="nickname">{{userInfo.nickname}}</view>
+        <view class="text-muted">{{userInfo.username}}</view>
+      </view>
+      <image class="avatar" src="{{userInfo.avatar}}" mode="aspectFill"></image>
+    </view>
+
+    <view class="stat-row">
+      <view class="stat">
+        <view class="stat-num">{{userInfo.coins}}</view>
+        <view class="text-muted">金币</view>
+      </view>
+      <view class="stat">
+        <view class="stat-num">{{userInfo.winCount}}</view>
+        <view class="text-muted">胜场</view>
+      </view>
+      <view class="stat">
+        <view class="stat-num">{{userInfo.loseCount}}</view>
+        <view class="text-muted">负场</view>
+      </view>
+      <view class="stat">
+        <view class="stat-num">{{userInfo.rank}}</view>
+        <view class="text-muted">段位</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="card" wx:if="{{!isLogin}}">
+    <view class="text-muted">未登录</view>
+    <button class="btn-primary" bindtap="goLogin">去登录</button>
+  </view>
+
+  <button class="btn-secondary" wx:if="{{isLogin}}" bindtap="onLogout">退出登录</button>
+
+  <!-- 排行榜 -->
+  <view class="list-title">排行榜</view>
+  <view wx:for="{{ranking}}" wx:key="id" class="card rank-item">
+    <view class="rank-no {{index < 3 ? 'top' : ''}}">{{index + 1}}</view>
+    <view class="rank-name">{{item.nickname}}</view>
+    <view class="text-muted">{{item.rank}} · {{item.winCount}}胜</view>
+  </view>
+</view>

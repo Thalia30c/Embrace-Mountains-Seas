@@ -1,0 +1,37 @@
+<view class="container" wx:if="{{room}}">
+  <view class="card room-head">
+    <view class="room-name">{{room.name}}</view>
+    <view class="text-muted">房间号 {{room.roomNo}}（点击复制）</view>
+    <view class="text-muted" bindtap="onCopy">👆 点击复制房间号分享给好友</view>
+  </view>
+
+  <view class="card">
+    <view class="row">
+      <text class="label">房主</text>
+      <text>{{room.ownerName}}</text>
+    </view>
+    <view class="row mt">
+      <text class="label">模式</text>
+      <text>{{room.mode === 'rank' ? '排位模式' : '休闲模式'}}</text>
+    </view>
+    <view class="row mt">
+      <text class="label">人数</text>
+      <text>{{room.currentPlayer}} / {{room.maxPlayer}}</text>
+    </view>
+    <view class="row mt">
+      <text class="label">状态</text>
+      <text>{{room.status === 'waiting' ? '等待中' : '对战中'}}</text>
+    </view>
+  </view>
+
+  <view class="waiting" wx:if="{{room.status === 'waiting'}}">
+    <view class="text-muted">等待其他玩家加入...</view>
+  </view>
+
+  <button class="btn-primary" wx:if="{{isOwner && room.status === 'waiting'}}" bindtap="onStart">
+    {{canStart ? '开始对战' : '等待玩家加入'}}
+  </button>
+  <view class="text-muted" wx:if="{{isOwner && !canStart && room.status === 'waiting'}}">至少 2 名玩家才能开局</view>
+
+  <button class="btn-secondary" bindtap="onLeave">离开房间</button>
+</view>

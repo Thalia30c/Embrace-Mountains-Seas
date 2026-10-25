@@ -1,0 +1,205 @@
+.battle-wrap {
+  padding: 24rpx;
+}
+
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20rpx;
+}
+
+.round {
+  font-size: 32rpx;
+  font-weight: bold;
+}
+
+.players {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 24rpx;
+}
+
+.player {
+  flex: 1;
+  min-width: 300rpx;
+  background: #ffffff;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  margin-right: 20rpx;
+  margin-bottom: 20rpx;
+  border: 4rpx solid transparent;
+}
+
+.player.active {
+  border-color: #e8a33d;
+}
+
+.p-name {
+  font-size: 30rpx;
+  font-weight: bold;
+  margin-bottom: 12rpx;
+}
+
+.badge {
+  font-size: 20rpx;
+  color: #ffffff;
+  background: #e8a33d;
+  border-radius: 8rpx;
+  padding: 2rpx 10rpx;
+  margin-left: 10rpx;
+}
+
+.p-hp {
+  font-size: 34rpx;
+  color: #d64545;
+  font-weight: bold;
+  margin-bottom: 8rpx;
+}
+
+.hand-area {
+  background: #ffffff;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  margin-bottom: 24rpx;
+}
+
+.hand-title {
+  font-size: 28rpx;
+  font-weight: bold;
+  margin-bottom: 20rpx;
+}
+
+.hand-scroll {
+  width: 100%;
+}
+
+.hand-row {
+  display: flex;
+  flex-wrap: nowrap;
+}
+
+.card-item {
+  width: 190rpx;
+  flex-shrink: 0;
+  background: #f2f3f7;
+  border: 4rpx solid transparent;
+  border-radius: 16rpx;
+  padding: 20rpx;
+  margin-right: 20rpx;
+  text-align: center;
+}
+
+.card-item.selected {
+  border-color: #1f2a44;
+  background: #e8ecf5;
+}
+
+.c-name {
+  font-size: 28rpx;
+  font-weight: bold;
+  margin-bottom: 10rpx;
+}
+
+.c-type {
+  display: inline-block;
+  font-size: 20rpx;
+  border-radius: 8rpx;
+  padding: 2rpx 12rpx;
+  color: #ffffff;
+  margin-bottom: 12rpx;
+}
+
+.c-type.attack {
+  background: #d64545;
+}
+
+.c-type.defense {
+  background: #3d7ad645;
+}
+
+.c-type.skill {
+  background: #7a5cd6;
+}
+
+.c-stat {
+  font-size: 24rpx;
+  color: #8a90a2;
+  margin-bottom: 8rpx;
+}
+
+.c-cost {
+  font-size: 24rpx;
+  color: #e8a33d;
+  font-weight: bold;
+}
+
+.empty-hand {
+  text-align: center;
+  padding: 40rpx 0;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.btn-act {
+  flex: 1;
+  min-width: 150rpx;
+  background: #ffffff;
+  color: #1f2a44;
+  border: 2rpx solid #1f2a44;
+  border-radius: 40rpx;
+  font-size: 28rpx;
+  height: 76rpx;
+  line-height: 72rpx;
+  margin: 0 10rpx 16rpx 0;
+}
+
+.btn-act::after {
+  border: none;
+}
+
+.btn-act.primary {
+  background: #1f2a44;
+  color: #ffffff;
+}
+
+.btn-act.danger {
+  border-color: #d64545;
+  color: #d64545;
+}
+
+.turn-tip {
+  text-align: center;
+  color: #8a90a2;
+  padding: 20rpx 0;
+}
+
+.result-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.result-box {
+  width: 560rpx;
+  background: #ffffff;
+  border-radius: 20rpx;
+  padding: 56rpx 40rpx;
+  text-align: center;
+}
+
+.result-title {
+  font-size: 40rpx;
+  font-weight: bold;
+  margin-bottom: 32rpx;
+}
