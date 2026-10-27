@@ -1,22 +1,19 @@
+# Maven 编译产物
+backend/target/
 target/
-!.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
+build/
 
-### IntelliJ IDEA ###
+# IDE
 .idea/
-*.iws
 *.iml
-*.ipr
-
-### VS Code ###
 .vscode/
 
-### 日志与临时文件 ###
-*.log
-logs/
-tmp/
+# 依赖
+node_modules/
 
-### 系统文件 ###
+# 日志
+*.log
+
+# 系统文件
 .DS_Store
 Thumbs.db

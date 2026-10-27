@@ -1,4 +1,6 @@
 {
   "usingComponents": {},
-  "navigationBarTitleText": "卡牌竞技"
+  "navigationStyle": "custom",
+  "backgroundColor": "#121216",
+  "enablePullDownRefresh": false
 }

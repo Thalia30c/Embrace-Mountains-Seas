@@ -25,7 +25,8 @@ Page({
       return;
     }
     this.setData({ isLogin: true });
-    api.userInfo().then((user) => {
+    // 后端没有 /user/info，改用 /user/{uid}
+    api.userDetail(getAppInstance().globalData.userInfo.userId).then((user) => {
       getAppInstance().globalData.userInfo = user;
       wx.setStorageSync('userInfo', user);
       this.setData({ userInfo: user });

@@ -1,10 +1,12 @@
 // app.js
 // 小程序入口，全局状态放这里
 
+const { BASE_URL } = require('./utils/config');
+
 App({
   globalData: {
-    // 后端服务地址。真机预览时改成局域网 IP，不能用 localhost
-    baseUrl: 'http://192.168.43.242:8080/api',
+    // 后端服务地址，与 utils/config.js 保持一致（request.js 实际用的是 config）
+    baseUrl: BASE_URL,
     // 登录令牌
     token: '',
     // 当前登录用户信息
