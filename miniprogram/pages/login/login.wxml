@@ -11,7 +11,7 @@
   <!-- 页面内容 -->
   <view class="login-content">
     <view class="logo-area">
-      <view class="title">山海经 · 卡牌竞技</view>
+      <view class="title">引入山海</view>
       <view class="subtitle">御灵对决 · 以牌论道</view>
     </view>
 
