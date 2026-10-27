@@ -1,12 +1,14 @@
 /* pages/login/login.wxss */
+
+/* ============ 页面容器 ============ */
 .login-wrap {
   position: relative;
   min-height: 100vh;
   overflow: hidden;
-  background-color: #f5f4ec;
+  background-color: #efe1d8;
 }
 
-/* ---------------- 背景图与虚化 ---------------- */
+/* ============ 背景层 ============ */
 .bg-container {
   position: absolute;
   top: 0;
@@ -20,147 +22,312 @@
   width: 100%;
   height: 100%;
   transform: scale(1.05);
-  animation: bgScale 20s ease-in-out infinite alternate;
+  animation: bgScale 24s ease-in-out infinite alternate;
 }
 
-/* 关键调整：降低白色遮罩的透明度，减弱模糊程度 */
+/* 常态：较浅的红棕色罩层 */
 .bg-overlay {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  /* 透明度从 0.75/0.80 降到了 0.3/0.4，让原图透出来 */
   background: linear-gradient(
-    180deg, 
-    rgba(247, 244, 236, 0.35) 0%, 
-    rgba(234, 229, 216, 0.40) 50%,
-    rgba(216, 207, 188, 0.60) 100%
+    180deg,
+    rgba(233, 209, 197, 0.50) 0%,
+    rgba(199, 128, 102, 0.58) 55%,
+    rgba(166, 92, 70, 0.64) 100%
   );
-  /* 虚化度从 12rpx 降到 4rpx，保留图片细节，只留一丝水墨晕染感 */
-  backdrop-filter: blur(4rpx); 
+  backdrop-filter: blur(6rpx);
 }
 
+/* 错误态：在红棕基础上加深一层 */
+.bg-error-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    180deg,
+    rgba(198, 132, 106, 0.40) 0%,
+    rgba(168, 82, 60, 0.46) 55%,
+    rgba(138, 58, 42, 0.52) 100%
+  );
+  backdrop-filter: blur(8rpx);
+  opacity: 0;
+  transition: opacity 0.45s ease;
+}
+
+.login-wrap.is-error .bg-error-layer { opacity: 1; }
+
 @keyframes bgScale {
-  0% { transform: scale(1); }
+  0%   { transform: scale(1); }
   100% { transform: scale(1.1); }
 }
 
-/* ---------------- 内容层 ---------------- */
+/* ============ 内容层 ============ */
 .login-content {
   position: relative;
   z-index: 1;
-  padding: 180rpx 56rpx 48rpx; 
+  padding: 150rpx 52rpx 60rpx;
 }
 
 .logo-area {
   text-align: center;
-  margin-bottom: 80rpx;
+  margin-bottom: 64rpx;
 }
 
+/* 标题：优先行楷（古风），逐级回退到楷体、隶书、宋体 */
 .title {
-  font-size: 52rpx;
-  font-weight: bold;
-  color: #2c3e50;
-  margin-bottom: 20rpx;
-  font-family: "KaiTi", "STKaiti", "PingFang SC", serif;
-  letter-spacing: 8rpx;
-  /* 增加文字阴影，在背景图上更清晰 */
-  text-shadow: 2rpx 2rpx 8rpx rgba(255, 255, 255, 0.8); 
+  font-size: 76rpx;
+  font-weight: 500;
+  color: #7c2f24;
+  letter-spacing: 14rpx;
+  text-indent: 14rpx; /* 抵消末字后多出的字距，保持视觉居中 */
+  font-family: "STXingkai", "华文行楷", "Xingkai SC", "STKaiti", "KaiTi", "STLiti", "STSong", "SimSun", serif;
+  text-shadow:
+    0 4rpx 14rpx rgba(255, 255, 255, 0.75),
+    0 2rpx 2rpx rgba(124, 47, 36, 0.22);
 }
 
+/* 云纹分隔：衬托古风标题 */
+.logo-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 360rpx;
+  margin: 20rpx auto 14rpx;
+}
+
+.divider-line {
+  width: 100rpx;
+  height: 2rpx;
+}
+
+.divider-line.left {
+  background: linear-gradient(90deg, rgba(124, 47, 36, 0) 0%, rgba(124, 47, 36, 0.55) 100%);
+}
+
+.divider-line.right {
+  background: linear-gradient(90deg, rgba(124, 47, 36, 0.55) 0%, rgba(124, 47, 36, 0) 100%);
+}
+
+.divider-dot {
+  margin: 0 16rpx;
+  font-size: 22rpx;
+  color: #a65c46;
+  line-height: 1;
+}
+
+/* 副标题：隶书为主，回退楷体 / 宋体 */
 .subtitle {
+  margin-top: 6rpx;
   font-size: 28rpx;
-  color: #5a6273; /* 颜色稍微加深一点 */
-  letter-spacing: 6rpx;
-  font-family: "KaiTi", "STKaiti", "PingFang SC", serif;
+  color: #6b4a3e;
+  letter-spacing: 10rpx;
+  text-indent: 10rpx;
+  font-family: "STLiti", "LiSu", "隶书", "STKaiti", "KaiTi", "STSong", "SimSun", serif;
   text-shadow: 2rpx 2rpx 6rpx rgba(255, 255, 255, 0.8);
 }
 
-/* ---------------- 表单区域 ---------------- */
-.form {
-  margin-top: 40rpx;
+/* ============ 卡片 ============ */
+.card {
+  background: rgba(255, 253, 247, 0.88);
+  border: 1rpx solid rgba(36, 51, 58, 0.10);
+  border-radius: 28rpx;
+  padding: 44rpx 34rpx 36rpx;
+  box-shadow: 0 14rpx 40rpx rgba(31, 43, 49, 0.12);
+  backdrop-filter: blur(12rpx);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* 输入框：增加不透明度，防止背景太花影响输入 */
-.input-wrap {
+.login-wrap.is-error .card {
+  border-color: rgba(166, 92, 70, 0.38);
+  box-shadow: 0 14rpx 40rpx rgba(140, 47, 38, 0.20);
+}
+
+.card-shake {
+  animation: shake 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+@keyframes shake {
+  10%, 90% { transform: translateX(-4rpx); }
+  20%, 80% { transform: translateX(8rpx); }
+  30%, 50%, 70% { transform: translateX(-12rpx); }
+  40%, 60% { transform: translateX(12rpx); }
+}
+
+.card-title {
+  text-align: center;
+  font-size: 32rpx;
+  color: #8c2f26;
+  letter-spacing: 4rpx;
+  font-family: "KaiTi", "STKaiti", "PingFang SC", serif;
+  margin-bottom: 32rpx;
+}
+
+/* ============ 表单 ============ */
+.form {
+  margin-top: 8rpx;
+}
+
+.field {
   display: flex;
   align-items: center;
-  background: rgba(255, 255, 255, 0.9); /* 从 0.8 提升到 0.9 */
-  border: 2rpx solid rgba(44, 62, 80, 0.1);
-  border-radius: 16rpx;
-  padding: 0 24rpx;
   height: 96rpx;
-  margin-bottom: 28rpx;
-  backdrop-filter: blur(10rpx);
-  box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.05);
+  padding: 0 22rpx;
+  margin-bottom: 24rpx;
+  background: rgba(255, 255, 255, 0.75);
+  border: 2rpx solid rgba(36, 51, 58, 0.12);
+  border-radius: 18rpx;
+  box-shadow: inset 0 2rpx 6rpx rgba(0, 0, 0, 0.03);
 }
 
-.input-label {
-  width: 48rpx;
-  height: 48rpx;
-  line-height: 48rpx;
+.login-wrap.is-error .field {
+  border-color: rgba(166, 92, 70, 0.30);
+  background: rgba(255, 248, 245, 0.85);
+}
+
+.field-label {
+  width: 80rpx;
+  font-size: 26rpx;
+  color: #7a5c46;
+  letter-spacing: 2rpx;
+  font-family: "KaiTi", "STKaiti", "PingFang SC", serif;
+}
+
+.field-input {
+  flex: 1;
+  height: 96rpx;
+  font-size: 30rpx;
+  color: #22303a;
+  letter-spacing: 1rpx;
+  background: transparent;
+  font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+.field-placeholder {
+  font-size: 27rpx;
+  color: #b3a99a;
+  letter-spacing: 0;
+}
+
+/* 密码规则提示：仅在未输入时显示 */
+.field-hint {
+  margin: -12rpx 0 20rpx 8rpx;
+  font-size: 22rpx;
+  color: #9a6a56;
+  letter-spacing: 1rpx;
+  font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+.field-eye {
+  width: 60rpx;
   text-align: center;
   font-size: 24rpx;
-  font-weight: bold;
-  color: #8b2500;
-  background: rgba(139, 37, 0, 0.08);
-  border-radius: 8rpx;
-  margin-right: 20rpx;
+  color: #8c2f26;
   font-family: "KaiTi", "STKaiti", serif;
 }
 
-.input {
-  flex: 1;
-  height: 96rpx;
-  line-height: 96rpx;
-  font-size: 28rpx;
-  color: #2c3e50;
-  background: transparent;
+/* ============ 错误提示条 ============ */
+.err-tip {
+  display: flex;
+  align-items: center;
+  padding: 16rpx 20rpx;
+  margin-bottom: 24rpx;
+  background: rgba(166, 92, 70, 0.10);
+  border-left: 6rpx solid #a65c46;
+  border-radius: 10rpx;
 }
 
-/* 按钮 */
-.btn-ink {
-  background: linear-gradient(135deg, #2c3e50, #1a252f);
-  color: #f7f4ec;
-  border-radius: 16rpx;
-  font-size: 32rpx;
-  line-height: 96rpx;
-  height: 96rpx;
+.err-icon {
+  width: 32rpx;
+  height: 32rpx;
+  line-height: 32rpx;
   text-align: center;
-  margin-top: 40rpx;
-  letter-spacing: 12rpx;
+  margin-right: 14rpx;
+  border-radius: 50%;
+  background: #a65c46;
+  color: #fff;
+  font-size: 22rpx;
+  font-weight: bold;
+}
+
+.err-text {
+  font-size: 27rpx;
+  color: #8c2f26;
+  letter-spacing: 2rpx;
+  font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+/* ============ 按钮 ============ */
+/* 用 flex 居中文字；padding-left 抵消 letter-spacing 在末字后多出的空隙，做到视觉居中 */
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border-radius: 18rpx;
   font-family: "KaiTi", "STKaiti", "PingFang SC", serif;
-  box-shadow: 0 8rpx 24rpx rgba(44, 62, 80, 0.25);
   border: none;
-}
-
-.btn-ink::after { border: none; }
-
-.btn-ink-outline {
-  background: rgba(255, 255, 255, 0.8); /* 从 0.6 提升到 0.8 */
-  color: #2c3e50;
-  border: 2rpx solid rgba(44, 62, 80, 0.3);
-  border-radius: 16rpx;
-  font-size: 30rpx;
-  line-height: 92rpx;
-  height: 96rpx;
   text-align: center;
-  margin-top: 28rpx;
-  letter-spacing: 6rpx;
-  font-family: "KaiTi", "STKaiti", "PingFang SC", serif;
 }
 
-.btn-ink-outline::after { border: none; }
+.btn::after { border: none; }
 
+.btn-primary {
+  height: 96rpx;
+  line-height: 96rpx;
+  margin-top: 12rpx;
+  padding-left: 16rpx;
+  font-size: 34rpx;
+  color: #f7f2e7;
+  letter-spacing: 16rpx;
+  background: linear-gradient(135deg, #3a545f 0%, #22323a 100%);
+  box-shadow: 0 10rpx 24rpx rgba(34, 50, 58, 0.28);
+}
+
+.btn-primary-hover {
+  background: linear-gradient(135deg, #2f4550 0%, #1a252c 100%);
+  opacity: 0.94;
+}
+
+.btn-ghost {
+  height: 92rpx;
+  line-height: 88rpx;
+  margin-top: 24rpx;
+  padding-left: 6rpx;
+  font-size: 30rpx;
+  color: #3a545f;
+  letter-spacing: 6rpx;
+  background: rgba(255, 255, 255, 0.72);
+  border: 2rpx solid rgba(58, 84, 95, 0.28);
+}
+
+.btn-ghost-hover {
+  background: rgba(58, 84, 95, 0.08);
+}
+
+/* ============ 底部 ============ */
 .toggle {
   text-align: center;
-  color: #8b2500;
-  font-size: 26rpx;
-  margin-top: 40rpx;
-  padding: 20rpx;
+  margin-top: 36rpx;
+  padding: 16rpx 0;
+  font-size: 27rpx;
+  color: #8c2f26;
+  letter-spacing: 2rpx;
   font-family: "KaiTi", "STKaiti", "PingFang SC", serif;
   text-decoration: underline;
   text-underline-offset: 6rpx;
-  text-shadow: 2rpx 2rpx 4rpx rgba(255, 255, 255, 0.8);
+}
+
+.footer-tip {
+  margin-top: 32rpx;
+  text-align: center;
+  font-size: 22rpx;
+  color: #8a6455;
+  letter-spacing: 1rpx;
+  font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+  text-shadow: 1rpx 1rpx 4rpx rgba(255, 255, 255, 0.8);
 }
