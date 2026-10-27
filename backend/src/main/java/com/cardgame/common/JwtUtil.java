@@ -17,7 +17,6 @@ import java.util.Date;
  */
 @Component
 public class JwtUtil {
-
     @Value("${card.jwt.secret}")
     private String secret;
 

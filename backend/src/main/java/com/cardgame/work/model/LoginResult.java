@@ -53,7 +53,6 @@ public class LoginResult {
         result.message = message;
         return result;
     }
-
     /** 登录成功：success = true 并带回用户信息 */
     public static LoginResult ok(User user, String rankName) {
         LoginResult result = new LoginResult();

@@ -41,7 +41,7 @@ public class LoginController {
         if (result.isSuccess()) {
             // 登录成功，签发 JWT 令牌一并返回给小程序
             result.setToken(jwtUtil.generateToken(result.getUserId(), result.getUserAccount()));
-            return Result.ok("登录成功", result);
+            return Result.ok("登录成功",result);
         }
         return Result.fail(Result.LOGIN_FAIL, result.getMessage(), result);
     }
