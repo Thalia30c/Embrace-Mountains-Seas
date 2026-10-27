@@ -24,6 +24,8 @@ Page({
   checkLogin() {
     if (!getAppInstance().globalData.token) {
       this.setData({ userInfo: null, isLogin: false });
+      // 未登录（含启动首屏直接进 index 的情况）跳转到登录页
+      wx.reLaunch({ url: '/pages/login/login' });
       return;
     }
     this.setData({ isLogin: true, userInfo: getAppInstance().globalData.userInfo });

@@ -46,7 +46,7 @@ function request(url, method = 'GET', data = {}, silent = false) {
           app.clearLogin();
           wx.showToast({ title: '请重新登录', icon: 'none' });
           setTimeout(() => {
-            wx.navigateTo({ url: '/pages/login/login' });
+            wx.reLaunch({ url: '/pages/login/login' });
           }, 800);
           reject(new Error(body.msg));
           return;

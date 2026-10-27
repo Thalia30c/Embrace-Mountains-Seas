@@ -23,16 +23,6 @@ public class UserDaoImpl extends BaseDaoImpl<User> implements UserDao {
     }
 
     @Override
-    public User findByUsername(String username) {
-        return selectOne("username", username);
-    }
-
-    @Override
-    public boolean existsByAccount(String userAccount) {
-        return count("user_account", userAccount) > 0;
-    }
-
-    @Override
     public List<User> findByGameLevel(Integer gameLevel) {
         return selectList("game_level", gameLevel, "score DESC", 0);
     }
@@ -40,15 +30,5 @@ public class UserDaoImpl extends BaseDaoImpl<User> implements UserDao {
     @Override
     public List<User> findTopByScore(int limit) {
         return selectTop("score DESC", limit);
-    }
-
-    @Override
-    public int updateScore(Integer uid, int score) {
-        return execute("UPDATE `user` SET `score` = ? WHERE `uid` = ?", score, uid);
-    }
-
-    @Override
-    public int addScore(Integer uid, int delta) {
-        return execute("UPDATE `user` SET `score` = `score` + ? WHERE `uid` = ?", delta, uid);
     }
 }

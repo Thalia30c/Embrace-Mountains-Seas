@@ -2,6 +2,7 @@ package com.cardgame.entity;
 
 import com.cardgame.dao.Column;
 import com.cardgame.dao.Table;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * 卡牌信息汇总表 card 对应的实体，主键 id 为手工编号 1-24，非自增。
@@ -50,9 +51,16 @@ public class Card {
 
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
+    @JsonProperty("cName")
     public String getCName() { return cName; }
+
+    @JsonProperty("cName")
     public void setCName(String cName) { this.cName = cName; }
+
+    @JsonProperty("cLevel")
     public String getCLevel() { return cLevel; }
+
+    @JsonProperty("cLevel")
     public void setCLevel(String cLevel) { this.cLevel = cLevel; }
     public Integer getHp() { return hp; }
     public void setHp(Integer hp) { this.hp = hp; }

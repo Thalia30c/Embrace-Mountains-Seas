@@ -15,7 +15,7 @@ spring:
     # ============================================================
     url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:mountains_and_seas}?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
     username: ${DB_USERNAME:root}
-    password: ${DB_PASSWORD:root}
+    password: ${DB_PASSWORD:200530}
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       maximum-pool-size: 10
@@ -35,7 +35,7 @@ card:
   #    false : 只走真实数据库，不使用静态数据
   #  数据库配好后建议设为 false
   # ============================================================
-  use-static-user: ${CARD_USE_STATIC_USER:true}
+  use-static-user: ${CARD_USE_STATIC_USER:false}
 
   jwt:
     # 生产环境务必改成随机长字符串，可通过环境变量 JWT_SECRET 注入
