@@ -1,34 +1,166 @@
+/* pages/login/login.wxss */
 .login-wrap {
-  padding: 100rpx 48rpx 48rpx;
+  position: relative;
   min-height: 100vh;
+  overflow: hidden;
+  background-color: #f5f4ec;
 }
 
-.logo {
-  font-size: 120rpx;
+/* ---------------- 背景图与虚化 ---------------- */
+.bg-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+.bg-image {
+  width: 100%;
+  height: 100%;
+  transform: scale(1.05);
+  animation: bgScale 20s ease-in-out infinite alternate;
+}
+
+/* 关键调整：降低白色遮罩的透明度，减弱模糊程度 */
+.bg-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  /* 透明度从 0.75/0.80 降到了 0.3/0.4，让原图透出来 */
+  background: linear-gradient(
+    180deg, 
+    rgba(247, 244, 236, 0.35) 0%, 
+    rgba(234, 229, 216, 0.40) 50%,
+    rgba(216, 207, 188, 0.60) 100%
+  );
+  /* 虚化度从 12rpx 降到 4rpx，保留图片细节，只留一丝水墨晕染感 */
+  backdrop-filter: blur(4rpx); 
+}
+
+@keyframes bgScale {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.1); }
+}
+
+/* ---------------- 内容层 ---------------- */
+.login-content {
+  position: relative;
+  z-index: 1;
+  padding: 180rpx 56rpx 48rpx; 
+}
+
+.logo-area {
   text-align: center;
-  margin-bottom: 24rpx;
+  margin-bottom: 80rpx;
 }
 
 .title {
-  font-size: 44rpx;
+  font-size: 52rpx;
   font-weight: bold;
-  text-align: center;
-  margin-bottom: 12rpx;
+  color: #2c3e50;
+  margin-bottom: 20rpx;
+  font-family: "KaiTi", "STKaiti", "PingFang SC", serif;
+  letter-spacing: 8rpx;
+  /* 增加文字阴影，在背景图上更清晰 */
+  text-shadow: 2rpx 2rpx 8rpx rgba(255, 255, 255, 0.8); 
 }
 
 .subtitle {
-  text-align: center;
-  margin-bottom: 64rpx;
+  font-size: 28rpx;
+  color: #5a6273; /* 颜色稍微加深一点 */
+  letter-spacing: 6rpx;
+  font-family: "KaiTi", "STKaiti", "PingFang SC", serif;
+  text-shadow: 2rpx 2rpx 6rpx rgba(255, 255, 255, 0.8);
 }
 
+/* ---------------- 表单区域 ---------------- */
 .form {
   margin-top: 40rpx;
 }
 
+/* 输入框：增加不透明度，防止背景太花影响输入 */
+.input-wrap {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.9); /* 从 0.8 提升到 0.9 */
+  border: 2rpx solid rgba(44, 62, 80, 0.1);
+  border-radius: 16rpx;
+  padding: 0 24rpx;
+  height: 96rpx;
+  margin-bottom: 28rpx;
+  backdrop-filter: blur(10rpx);
+  box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.05);
+}
+
+.input-label {
+  width: 48rpx;
+  height: 48rpx;
+  line-height: 48rpx;
+  text-align: center;
+  font-size: 24rpx;
+  font-weight: bold;
+  color: #8b2500;
+  background: rgba(139, 37, 0, 0.08);
+  border-radius: 8rpx;
+  margin-right: 20rpx;
+  font-family: "KaiTi", "STKaiti", serif;
+}
+
+.input {
+  flex: 1;
+  height: 96rpx;
+  line-height: 96rpx;
+  font-size: 28rpx;
+  color: #2c3e50;
+  background: transparent;
+}
+
+/* 按钮 */
+.btn-ink {
+  background: linear-gradient(135deg, #2c3e50, #1a252f);
+  color: #f7f4ec;
+  border-radius: 16rpx;
+  font-size: 32rpx;
+  line-height: 96rpx;
+  height: 96rpx;
+  text-align: center;
+  margin-top: 40rpx;
+  letter-spacing: 12rpx;
+  font-family: "KaiTi", "STKaiti", "PingFang SC", serif;
+  box-shadow: 0 8rpx 24rpx rgba(44, 62, 80, 0.25);
+  border: none;
+}
+
+.btn-ink::after { border: none; }
+
+.btn-ink-outline {
+  background: rgba(255, 255, 255, 0.8); /* 从 0.6 提升到 0.8 */
+  color: #2c3e50;
+  border: 2rpx solid rgba(44, 62, 80, 0.3);
+  border-radius: 16rpx;
+  font-size: 30rpx;
+  line-height: 92rpx;
+  height: 96rpx;
+  text-align: center;
+  margin-top: 28rpx;
+  letter-spacing: 6rpx;
+  font-family: "KaiTi", "STKaiti", "PingFang SC", serif;
+}
+
+.btn-ink-outline::after { border: none; }
+
 .toggle {
   text-align: center;
-  color: #1f2a44;
+  color: #8b2500;
   font-size: 26rpx;
-  margin-top: 32rpx;
+  margin-top: 40rpx;
+  padding: 20rpx;
+  font-family: "KaiTi", "STKaiti", "PingFang SC", serif;
   text-decoration: underline;
+  text-underline-offset: 6rpx;
+  text-shadow: 2rpx 2rpx 4rpx rgba(255, 255, 255, 0.8);
 }

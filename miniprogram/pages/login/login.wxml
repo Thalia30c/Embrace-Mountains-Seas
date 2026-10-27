@@ -1,17 +1,40 @@
+<!-- pages/login/login.wxml -->
 <view class="login-wrap">
-  <view class="logo">🃏</view>
-  <view class="title">卡牌竞技</view>
-  <view class="text-muted subtitle">登录后开始你的对战之旅</view>
+  <!-- 背景图与动态光晕 -->
+  <view class="bg-container">
+    <!-- 注意这里的路径：../../bg.png 表示往上两级找图片 -->
+    <image class="bg-image" src="../../bg.png" mode="aspectFill"></image>
+    <!-- 虚化遮罩层 -->
+    <view class="bg-overlay"></view>
+  </view>
 
-  <view class="form">
-    <input class="input" placeholder="用户名" value="{{username}}" bindinput="onInput" data-field="username" />
-    <input class="input" password placeholder="密码" value="{{password}}" bindinput="onInput" data-field="password" />
-    <input wx:if="{{isRegister}}" class="input" placeholder="昵称（选填）" value="{{nickname}}" bindinput="onInput" data-field="nickname" />
+  <!-- 页面内容 -->
+  <view class="login-content">
+    <view class="logo-area">
+      <view class="title">山海经 · 卡牌竞技</view>
+      <view class="subtitle">御灵对决 · 以牌论道</view>
+    </view>
 
-    <button class="btn-primary" bindtap="onLogin">{{isRegister ? '注 册' : '登 录'}}</button>
-    <button class="btn-secondary" bindtap="onWxLogin">微信一键登录</button>
-    <view class="toggle" bindtap="toggleMode">
-      {{isRegister ? '已有账号？去登录' : '没有账号？去注册'}}
+    <view class="form">
+      <view class="input-wrap">
+        <text class="input-label">名</text>
+        <input class="input" placeholder="请输入用户名" value="{{username}}" bindinput="onInput" data-field="username" />
+      </view>
+      <view class="input-wrap">
+        <text class="input-label">符</text>
+        <input class="input" password placeholder="请输入密码" value="{{password}}" bindinput="onInput" data-field="password" />
+      </view>
+      <view wx:if="{{isRegister}}" class="input-wrap">
+        <text class="input-label">号</text>
+        <input class="input" placeholder="昵称（选填）" value="{{nickname}}" bindinput="onInput" data-field="nickname" />
+      </view>
+
+      <button class="btn-primary btn-ink" bindtap="onLogin">{{isRegister ? '注 册' : '登 录'}}</button>
+      <button class="btn-secondary btn-ink-outline" bindtap="onWxLogin">微信一键登录</button>
+      
+      <view class="toggle" bindtap="toggleMode">
+        {{isRegister ? '已有账号？去登录' : '没有账号？去注册'}}
+      </view>
     </view>
   </view>
 </view>
