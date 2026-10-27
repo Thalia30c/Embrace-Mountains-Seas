@@ -31,9 +31,4 @@ public class PassiveSkillDaoImpl extends BaseDaoImpl<PassiveSkill> implements Pa
     public List<PassiveSkill> findByTarget(String target) {
         return selectList("target", target, "code ASC", 0);
     }
-
-    @Override
-    public boolean existsByCode(String code) {
-        return count("code", code) > 0;
-    }
 }

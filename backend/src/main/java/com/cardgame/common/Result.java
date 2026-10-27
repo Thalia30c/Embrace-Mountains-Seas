@@ -14,6 +14,10 @@ public class Result<T> {
     public static final int PARAM_ERROR = 40001;
     /** 登录失败（账号不存在或密码错误） */
     public static final int LOGIN_FAIL = 40101;
+    /** 资源不存在 */
+    public static final int NOT_FOUND = 40004;
+    /** 服务器内部错误 */
+    public static final int SERVER_ERROR = 50000;
 
     private int code;
     private String msg;
@@ -33,6 +37,13 @@ public class Result<T> {
 
     public static <T> Result<T> ok(T data) {
         return new Result<>(SUCCESS, "success", data);
+    }
+
+    /**
+     * 成功且无返回数据（如删除操作）。
+     */
+    public static <T> Result<T> ok() {
+        return new Result<>(SUCCESS, "success", null);
     }
 
     public static <T> Result<T> ok(String msg, T data) {

@@ -14,6 +14,13 @@ Page({
     nickname: ''
   },
 
+  onLoad() {
+    // 已经登录过（本地有 token），直接进入首页，跳过登录页
+    if (getAppInstance().globalData.token) {
+      wx.reLaunch({ url: '/pages/index/index' });
+    }
+  },
+
   /** 输入框绑定 */
   onInput(e) {
     this.setData({ [e.currentTarget.dataset.field]: e.detail.value });
@@ -46,7 +53,7 @@ Page({
         rank: data.rank
       });
       wx.showToast({ title: isRegister ? '注册成功' : '登录成功', icon: 'success' });
-      setTimeout(() => wx.navigateBack(), 800);
+      setTimeout(() => wx.reLaunch({ url: '/pages/index/index' }), 800);
     } catch (e) {
       // 错误提示已在 request.js 统一处理
     }
@@ -70,7 +77,7 @@ Page({
         rank: data.rank
       });
       wx.showToast({ title: '登录成功', icon: 'success' });
-      setTimeout(() => wx.navigateBack(), 800);
+      setTimeout(() => wx.reLaunch({ url: '/pages/index/index' }), 800);
     } catch (e) {
       // 错误提示已在 request.js 统一处理
     }

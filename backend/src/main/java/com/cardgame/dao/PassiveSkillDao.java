@@ -17,7 +17,4 @@ public interface PassiveSkillDao extends BaseDao<PassiveSkill> {
 
     /** 按作用目标查询：S 己方 / E 对手 */
     List<PassiveSkill> findByTarget(String target);
-
-    /** 技能编码是否已存在 */
-    boolean existsByCode(String code);
 }
