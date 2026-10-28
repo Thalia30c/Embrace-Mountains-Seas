@@ -19,6 +19,12 @@ module.exports = {
   myCards: () => get('/card/mine'),
 
   // ---------------- 牌组 ----------------
+  // 当前登录用户仓库里的卡牌编号列表（来自 warehouse.card_list）
+  myWarehouseCards: (uid) => get('/warehouse/mine', { uid }),
+  // 读取当前用户卡组编队（四组已放置的卡牌编号 + 仓库全部卡牌）
+  deckLoad: (uid) => get('/warehouse/deck', { uid }),
+  // 锁卡：把四组卡组结果写回 warehouse 表
+  deckLock: (payload) => post('/warehouse/deck', payload),
   deckList: () => get('/deck/list'),
   deckCreate: (name) => post('/deck/create', null, { name }),
   deckDelete: (id) => del('/deck/' + id),

@@ -7,6 +7,8 @@
  * 查询方式：在电脑上执行 ipconfig，看 IPv4 地址
  */
 const BASE_URL =  'http://192.168.110.176:8080/api';
+//const BASE_URL =  'http://192.168.43.242:8080/api';
+//const BASE_URL =  'http://10.56.47.239:8080/api';
 
 module.exports = {
   BASE_URL

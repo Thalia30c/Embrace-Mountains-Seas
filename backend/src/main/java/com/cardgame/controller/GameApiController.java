@@ -7,6 +7,7 @@ import com.cardgame.dao.GameRankDao;
 import com.cardgame.dao.PassiveSkillDao;
 import com.cardgame.dao.UserDao;
 import com.cardgame.dao.WarehouseDao;
+import com.cardgame.dto.DeckSaveDTO;
 import com.cardgame.entity.Card;
 import com.cardgame.entity.GameRank;
 import com.cardgame.entity.PassiveSkill;
@@ -21,7 +22,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 统一对外接口类：前端与后端之间的唯一通道。
@@ -233,6 +238,25 @@ public class GameApiController {
         return Result.ok(warehouseDao.findCardIds(id));
     }
 
+    /**
+     * 当前登录用户自己的仓库卡牌编号列表。
+     *
+     * <p>按前端传来的 uid 找到对应用户，再取其 warehouse_id 去 warehouse 表读 card_list，
+     * 把逗号分隔的卡牌编号解析成列表返回。前端据此到 /photo/{id}.png 取对应图片。</p>
+     */
+    @GetMapping("/warehouse/mine")
+    public Result<List<Integer>> myWarehouseCards(@RequestParam Integer uid) {
+        User user = userDao.selectById(uid);
+        if (user == null) {
+            return Result.fail(Result.NOT_FOUND, "用户不存在");
+        }
+        Integer warehouseId = user.getWarehouseId();
+        if (warehouseId == null) {
+            return Result.ok(Collections.emptyList());
+        }
+        return Result.ok(warehouseDao.findCardIds(warehouseId));
+    }
+
     /** 仓库详情 */
     @GetMapping("/warehouse/{id}")
     public Result<Warehouse> getWarehouse(@PathVariable Integer id) {
@@ -241,6 +265,107 @@ public class GameApiController {
             return Result.fail(Result.NOT_FOUND, "仓库不存在");
         }
         return Result.ok(warehouse);
+    }
+
+    /**
+     * 读取当前登录用户的卡组编队：返回仓库全部卡牌（cardList）以及四组卡组
+     * （进攻 / 防御 / 法术 / 备选）各自已放置的卡牌编号列表。
+     *
+     * <p>前端据此在进场时复原上次锁卡后的状态（若从未锁卡则四组为空）。</p>
+     */
+    @GetMapping("/warehouse/deck")
+    public Result<Map<String, Object>> myDeck(@RequestParam Integer uid) {
+        User user = userDao.selectById(uid);
+        if (user == null) {
+            return Result.fail(Result.NOT_FOUND, "用户不存在");
+        }
+        Integer warehouseId = user.getWarehouseId();
+        if (warehouseId == null) {
+            return Result.fail(Result.NOT_FOUND, "用户未绑定仓库");
+        }
+        Warehouse warehouse = warehouseDao.selectById(warehouseId);
+        List<Integer> cardIds = warehouseDao.findCardIds(warehouseId);
+        List<Map<String, Object>> cardList = new ArrayList<>();
+        for (Integer cid : cardIds) {
+            Card c = cardDao.selectById(cid);
+            Map<String, Object> item = new LinkedHashMap<>();
+            item.put("card", cid);
+            item.put("kind", cardKind(c));
+            item.put("compound", c != null && c.compound());
+            cardList.add(item);
+        }
+        Map<String, Object> data = new LinkedHashMap<>();
+        data.put("cardList", cardList);
+        data.put("attack", parseCsv(warehouse == null ? null : warehouse.getAttack()));
+        data.put("defense", parseCsv(warehouse == null ? null : warehouse.getDefense()));
+        data.put("magic", parseCsv(warehouse == null ? null : warehouse.getMagic()));
+        data.put("backup", parseCsv(warehouse == null ? null : warehouse.getBackup()));
+        return Result.ok(data);
+    }
+
+    /**
+     * 锁卡：把四组卡组的准备结果写入 warehouse 表的 Attack / Defense / magic / backup 列。
+     *
+     * <p>空卡槽的校验（四组卡槽必须全部放置）由前端在点击“锁卡”时完成，
+     * 后端只负责把已提交的数据落库。</p>
+     */
+    @PostMapping("/warehouse/deck")
+    public Result<String> lockDeck(@RequestBody DeckSaveDTO dto) {
+        User user = userDao.selectById(dto.getUid());
+        if (user == null) {
+            return Result.fail(Result.NOT_FOUND, "用户不存在");
+        }
+        Integer warehouseId = user.getWarehouseId();
+        if (warehouseId == null) {
+            return Result.fail(Result.NOT_FOUND, "用户未绑定仓库");
+        }
+        Warehouse warehouse = warehouseDao.selectById(warehouseId);
+        if (warehouse == null) {
+            return Result.fail(Result.NOT_FOUND, "仓库不存在");
+        }
+        warehouse.setAttack(joinCsv(dto.getAttack()));
+        warehouse.setDefense(joinCsv(dto.getDefense()));
+        warehouse.setMagic(joinCsv(dto.getMagic()));
+        warehouse.setBackup(joinCsv(dto.getBackup()));
+        warehouseDao.updateById(warehouse);
+        return Result.ok("锁卡成功");
+    }
+
+    /** 把逗号分隔的编号字符串解析为列表，空串返回空列表 */
+    private List<Integer> parseCsv(String csv) {
+        List<Integer> ids = new ArrayList<>();
+        if (csv == null || csv.trim().isEmpty()) {
+            return ids;
+        }
+        for (String part : csv.split(",")) {
+            String trimmed = part.trim();
+            if (!trimmed.isEmpty()) {
+                ids.add(Integer.valueOf(trimmed));
+            }
+        }
+        return ids;
+    }
+
+    /** 把编号列表拼成逗号分隔字符串，null 返回空串 */
+    private String joinCsv(List<Integer> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return "";
+        }
+        List<String> parts = new ArrayList<>(ids.size());
+        for (Integer id : ids) {
+            parts.add(String.valueOf(id));
+        }
+        return String.join(",", parts);
+    }
+
+    /** 根据 card 表字段推导卡牌类型：数字伤害=attack，H 开头护盾=defense，null=法术 magic */
+    private String cardKind(Card card) {
+        if (card == null) return "magic";
+        String dos = card.getDamageOrShield();
+        if (dos == null) return "magic";
+        if (card.shield()) return "defense";
+        if (card.damage()) return "attack";
+        return "magic";
     }
 
     // ================================================================

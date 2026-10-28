@@ -67,9 +67,24 @@ function request(url, method = 'GET', data = {}, silent = false) {
   });
 }
 
-/** GET 请求 */
+/** 把参数对象拼成 query string（key=value&...），空值忽略 */
+function buildQuery(params) {
+  if (!params || typeof params !== 'object') return '';
+  const parts = [];
+  Object.keys(params).forEach((key) => {
+    const value = params[key];
+    if (value !== undefined && value !== null && value !== '') {
+      parts.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
+    }
+  });
+  return parts.length ? '?' + parts.join('&') : '';
+}
+
+/** GET 请求：参数显式拼到 URL 上，避免依赖 wx.request 对 GET data 的隐式序列化 */
 function get(url, params = {}, silent = false) {
-  return request(url, 'GET', params, silent);
+  const query = buildQuery(params);
+  const finalUrl = query ? url + query : url;
+  return request(finalUrl, 'GET', {}, silent);
 }
 
 /** POST 请求 */
