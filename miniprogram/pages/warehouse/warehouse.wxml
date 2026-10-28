@@ -1,0 +1,42 @@
+<view class="page-bg">
+  <image class="bg-image" src="../../dk.jpg" mode="aspectFill"></image>
+</view>
+
+<view class="wh-page">
+  <view class="wh-header">我的仓库（共 {{cards.length}} 张）</view>
+
+  <!-- 筛选栏：种类 + 等级 -->
+  <view class="wh-filters">
+    <view class="filter-row">
+      <text class="filter-label">种类</text>
+      <view class="chip {{typeFilter==='all'?'active':''}}" data-type="all" bindtap="onTypeFilter">全部</view>
+      <view class="chip {{typeFilter==='attack'?'active':''}}" data-type="attack" bindtap="onTypeFilter">攻击</view>
+      <view class="chip {{typeFilter==='defense'?'active':''}}" data-type="defense" bindtap="onTypeFilter">防御</view>
+      <view class="chip {{typeFilter==='magic'?'active':''}}" data-type="magic" bindtap="onTypeFilter">法术</view>
+    </view>
+    <view class="filter-row">
+      <text class="filter-label">等级</text>
+      <view class="chip {{levelFilter==='all'?'active':''}}" data-level="all" bindtap="onLevelFilter">全部</view>
+      <view class="chip {{levelFilter==='黄'?'active':''}}" data-level="黄" bindtap="onLevelFilter">黄</view>
+      <view class="chip {{levelFilter==='玄'?'active':''}}" data-level="玄" bindtap="onLevelFilter">玄</view>
+    </view>
+  </view>
+
+  <!-- 卡牌网格：每四张一排，整体可滑动 -->
+  <scroll-view class="wh-scroll" scroll-y="true">
+    <view class="wh-grid">
+      <view class="wh-card" wx:for="{{filteredCards}}" wx:key="card">
+        <view class="wh-inner">
+          <image class="wh-img" src="/photo/{{item.card}}.png" mode="aspectFill"></image>
+          <view class="wh-badges">
+            <text class="badge lv-{{item.lvClass}}">{{item.cLevel}}</text>
+            <text class="badge kd-{{item.kind}}">{{kindName[item.kind]}}</text>
+            <text class="badge cmp" wx:if="{{item.compound}}">复合</text>
+          </view>
+        </view>
+        <view class="wh-name">{{item.cName}}</view>
+      </view>
+    </view>
+    <view wx:if="{{!loading && filteredCards.length===0}}" class="wh-empty">暂无符合条件的卡牌</view>
+  </scroll-view>
+</view>

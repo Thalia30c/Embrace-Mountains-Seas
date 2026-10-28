@@ -42,6 +42,29 @@ page {
      0 4rpx 8rpx rgba(0, 0, 0, 0.85);
 }
 
+/* ---------------- 牌组页头部：标题 + 仓库入口 ---------------- */
+.deck-header {
+  flex: 0 0 auto;
+  position: relative;
+  padding: 4rpx 0 6rpx;
+}
+.wh-entry {
+  position: absolute;
+  right: 8rpx;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  padding: 8rpx 18rpx;
+  font-size: 24rpx;
+  color: #2a1c06;
+  font-weight: bold;
+  background: linear-gradient(180deg, #e6c16b, #b8862f);
+  border: 2rpx solid #ffe9a8;
+  border-radius: 30rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.4);
+}
+
 /* ---------------- 一级标题：金色牌匾 + 按钮感 ---------------- */
 .page-title {
   flex: 0 0 auto;

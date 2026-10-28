@@ -1,0 +1,130 @@
+/* 仓库页：暗金古风，与牌组页一致 */
+.page-bg {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 0;
+}
+.bg-image {
+  width: 100%;
+  height: 100%;
+}
+.wh-page {
+  position: relative;
+  z-index: 1;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  padding: 16rpx 16rpx 0;
+}
+.wh-header {
+  flex: 0 0 auto;
+  text-align: center;
+  font-size: 34rpx;
+  font-weight: bold;
+  color: #ffd98a;
+  letter-spacing: 2rpx;
+  text-shadow: 0 2rpx 4rpx #000;
+  padding: 12rpx 0;
+  font-family: "STKaiti", "KaiTi", "Songti SC", serif;
+}
+
+/* 筛选栏 */
+.wh-filters {
+  flex: 0 0 auto;
+  background: rgba(20, 14, 6, 0.78);
+  border: 2rpx solid #e6c16b;
+  border-radius: 14rpx;
+  padding: 14rpx 16rpx;
+  margin-bottom: 12rpx;
+}
+.filter-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  margin: 6rpx 0;
+}
+.filter-label {
+  color: #e6c16b;
+  font-size: 24rpx;
+  margin-right: 14rpx;
+  width: 60rpx;
+}
+.chip {
+  padding: 8rpx 22rpx;
+  margin: 6rpx 10rpx 6rpx 0;
+  font-size: 24rpx;
+  color: #f0e2c0;
+  background: rgba(255, 255, 255, 0.06);
+  border: 2rpx solid rgba(230, 193, 107, 0.5);
+  border-radius: 30rpx;
+}
+.chip.active {
+  background: linear-gradient(180deg, #e6c16b, #b8862f);
+  color: #2a1c06;
+  font-weight: bold;
+  border-color: #ffe9a8;
+}
+
+/* 可滑动区域 */
+.wh-scroll {
+  flex: 1 1 auto;
+}
+.wh-grid {
+  display: flex;
+  flex-wrap: wrap;
+  padding-bottom: 30rpx;
+}
+.wh-card {
+  width: 25%;
+  box-sizing: border-box;
+  padding: 10rpx;
+}
+.wh-inner {
+  position: relative;
+  border: 2rpx solid #e6c16b;
+  border-radius: 10rpx;
+  overflow: hidden;
+  background: linear-gradient(180deg, rgba(60, 42, 16, 0.90), rgba(24, 16, 4, 0.92));
+  box-shadow: 0 4rpx 10rpx rgba(0, 0, 0, 0.4);
+}
+.wh-img {
+  width: 100%;
+  height: 230rpx;
+  display: block;
+}
+.wh-badges {
+  position: absolute;
+  top: 4rpx; left: 4rpx;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4rpx;
+}
+.badge {
+  font-size: 18rpx;
+  padding: 2rpx 8rpx;
+  border-radius: 6rpx;
+  color: #ffffff;
+  text-shadow: 0 1rpx 2rpx #000;
+}
+.lv-huang { background: #c9a227; }
+.lv-xuan { background: #5b6e8c; }
+.kd-attack { background: #b5462f; }
+.kd-defense { background: #2f6fb5; }
+.kd-magic { background: #7a3fb5; }
+.cmp { background: #b8862f; }
+.wh-name {
+  text-align: center;
+  font-size: 20rpx;
+  color: #f0e2c0;
+  padding: 6rpx 2rpx;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.wh-empty {
+  text-align: center;
+  color: #f0e2c0;
+  font-size: 26rpx;
+  padding: 60rpx 0;
+}

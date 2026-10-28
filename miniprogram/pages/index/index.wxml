@@ -72,7 +72,7 @@
     </view>
     <view class="mini-btn" hover-class="mini-btn-press" bindtap="goProfile">
       <image class="mini-icon" src="/images/ico_me.jpg" mode="aspectFill"></image>
-      <text class="mini-text">个人</text>
+      <text class="mini-text">御灵师</text>
     </view>
   </view>
 
