@@ -118,13 +118,7 @@ Page({
       } else {
         data = await api.login(userAccount, userPwd);
       }
-      getAppInstance().setLogin(data.token, {
-        userId: data.userId,
-        nickname: data.nickname,
-        avatar: data.avatar,
-        coins: data.coins,
-        rank: data.rank
-      });
+      getAppInstance().setLogin(this.buildToken(data), this.buildUserInfo(data));
       wx.showToast({ title: isRegister ? '注册成功' : '登录成功', icon: 'success' });
       setTimeout(() => wx.reLaunch({ url: '/pages/index/index' }), 800);
     } catch (e) {
@@ -142,17 +136,33 @@ Page({
         });
       });
       const data = await api.wxLogin(loginRes.code);
-      getAppInstance().setLogin(data.token, {
-        userId: data.userId,
-        nickname: data.nickname,
-        avatar: data.avatar,
-        coins: data.coins,
-        rank: data.rank
-      });
+      getAppInstance().setLogin(this.buildToken(data), this.buildUserInfo(data));
       wx.showToast({ title: '登录成功', icon: 'success' });
       setTimeout(() => wx.reLaunch({ url: '/pages/index/index' }), 800);
     } catch (e) {
       // 错误提示已在 request.js 统一处理
     }
+  },
+
+  /**
+   * 后端当前不返回 token，这里兜底生成一个本地令牌，
+   * 否则 globalData.token 为空，一进首页就会被判定为未登录踢回来
+   */
+  buildToken(data) {
+    return data.token || 'local-' + (data.userId || Date.now());
+  },
+
+  /** 保存后端带回的完整用户信息，总览页要用 warehouseId / score / gameLevel */
+  buildUserInfo(data) {
+    return {
+      userId: data.userId,
+      userAccount: data.userAccount,
+      nickname: data.nickname || data.userAccount || '玩家',
+      avatar: data.avatar || '',
+      rank: data.rank || '',
+      score: data.score || 0,
+      gameLevel: data.gameLevel || 1,
+      warehouseId: data.warehouseId || 0
+    };
   }
 });

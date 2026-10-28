@@ -34,6 +34,19 @@ module.exports = {
   roomStart: (id) => post('/room/' + id + '/start'),
   roomDetail: (id) => get('/room/' + id),
 
+  // ---------------- 总览（与当前后端 GameApiController 对齐） ----------------
+  // 说明：后端只暴露 /user/{uid}、/card/list、/warehouse/{id}/cards、/rank/*、/health，
+  // 没有 /user/info、/card/mine 之类接口，总览页统一用下面这几个
+  userDetail: (uid) => get('/user/' + uid),
+  warehouseCards: (id) => get('/warehouse/' + id + '/cards', {}, true),
+  warehouseDetail: (id) => get('/warehouse/' + id, {}, true),
+  rankList: () => get('/rank/list', {}, true),
+  rankByScore: (score) => get('/rank/by-score', { score }, true),
+  nextRank: (rankId) => get('/rank/' + rankId + '/next', {}, true),
+  skillList: (effectType) => get('/skill/list', effectType ? { effectType } : {}, true),
+  compoundCards: () => get('/card/compound', {}, true),
+  health: () => get('/health', {}, true),
+
   // ---------------- 对战 ----------------
   battleState: (id) => get('/battle/' + id + '/state'),
   battlePlay: (battleId, cardId, targetUserId) =>

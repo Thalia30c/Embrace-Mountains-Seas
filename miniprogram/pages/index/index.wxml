@@ -1,40 +1,84 @@
-<view class="container">
-  <!-- 顶部玩家信息 -->
-  <view class="header">
-    <block wx:if="{{isLogin}}">
-      <image class="avatar" src="{{userInfo.avatar}}" mode="aspectFill"></image>
-      <view class="user-meta">
-        <view class="nickname">{{userInfo.nickname}}</view>
-        <view class="text-muted">段位 {{userInfo.rank}} · 金币 {{userInfo.coins}}</view>
+<!-- pages/index/index.wxml
+     山海异兽卡牌对战系统 · 首页总览（融合参考实现与真实接口数据）
+     五大区域：顶部标题+资源栏 → 双主按钮（抽卡/战斗）→ 欢迎面板
+     → 底部三按钮（卡组/商店/个人）→ 免责备注
+     自定义导航栏，右上资源栏已避让微信胶囊安全区
+-->
+<view class="home">
+
+  <!-- 全屏背景图（山海麒麟水墨黑金） -->
+  <image class="bg" src="/images/bg_home.jpg" mode="aspectFill"></image>
+  <view class="bg-mask"></view>
+
+  <!-- 区域1：顶部标题 + 资源栏 -->
+  <view class="top">
+    <view class="top-left">
+      <view class="main-title">山海异兽</view>
+      <view class="sub-title">卡牌对战系统</view>
+      <view class="tag">功能总览</view>
+    </view>
+    <view class="currency">
+      <view class="cur-item">
+        <image class="cur-icon" src="/images/res_jade.jpg" mode="aspectFill"></image>
+        <view class="cur-num">{{userInfo.score || 0}}</view>
       </view>
-    </block>
-    <block wx:else>
-      <view class="user-meta">
-        <view class="nickname">未登录</view>
-        <view class="text-muted">登录后即可开始对战</view>
+      <view class="cur-item">
+        <image class="cur-icon" src="/images/res_coin.jpg" mode="aspectFill"></image>
+        <view class="cur-num">{{myCardCount}}</view>
       </view>
-      <button class="btn-mini" bindtap="goLogin">登录</button>
-    </block>
+      <view class="cur-item">
+        <image class="cur-icon" src="/images/res_point.jpg" mode="aspectFill"></image>
+        <view class="cur-num">{{cardTotal}}</view>
+      </view>
+    </view>
   </view>
 
-  <!-- 功能入口 -->
-  <view class="menu">
-    <view class="menu-item" bindtap="goHall">
-      <view class="menu-title">对战大厅</view>
-      <view class="text-muted">创建房间 / 加入房间</view>
+  <!-- 区域2：核心主按钮（抽卡 / 战斗） -->
+  <view class="main-btns">
+    <view class="big-btn" hover-class="big-btn-press" bindtap="onGacha">
+      <image class="btn-bg" src="/images/btn_gacha.jpg" mode="aspectFill"></image>
+      <view class="btn-inner">
+        <text class="btn-text">抽卡</text>
+        <text class="btn-sub">唤灵</text>
+      </view>
     </view>
-    <view class="menu-item" bindtap="goDeck">
-      <view class="menu-title">我的牌组</view>
-      <view class="text-muted">配置出战卡组</view>
-    </view>
-    <view class="menu-item" bindtap="goProfile">
-      <view class="menu-title">个人中心</view>
-      <view class="text-muted">战绩与排行榜</view>
+    <view class="big-btn" hover-class="big-btn-press" bindtap="goHall">
+      <image class="btn-bg" src="/images/btn_gacha.jpg" mode="aspectFill"></image>
+      <view class="btn-inner">
+        <text class="btn-text">战斗</text>
+        <text class="btn-sub">对战</text>
+      </view>
     </view>
   </view>
 
-  <view class="tip">
-    <view class="tip-title">游戏规则</view>
-    <view class="text-muted">每回合获得 5 点费用，卡牌费用不能超过剩余费用。攻击卡对对手造成伤害，防御卡回复自身血量，技能卡回复生命。对手血量归零即获胜。</view>
+  <!-- 中部云雾装饰 -->
+  <view class="fog"></view>
+
+  <!-- 区域3：欢迎面板 -->
+  <view class="welcome">
+    <image class="welcome-bg" src="/images/banner_gold.jpg" mode="aspectFill"></image>
+    <text class="welcome-text">欢迎来到山海世界</text>
   </view>
+
+  <!-- 区域4：底部次级按钮（卡组 / 商店 / 个人） -->
+  <view class="bottom-bar">
+    <view class="mini-btn" hover-class="mini-btn-press" bindtap="goDeck">
+      <image class="mini-icon" src="/images/ico_deck.jpg" mode="aspectFill"></image>
+      <text class="mini-text">卡组</text>
+    </view>
+    <view class="mini-btn" hover-class="mini-btn-press" bindtap="onShop">
+      <image class="mini-icon" src="/images/ico_shop.jpg" mode="aspectFill"></image>
+      <text class="mini-text">商店</text>
+    </view>
+    <view class="mini-btn" hover-class="mini-btn-press" bindtap="goProfile">
+      <image class="mini-icon" src="/images/ico_me.jpg" mode="aspectFill"></image>
+      <text class="mini-text">个人</text>
+    </view>
+  </view>
+
+  <!-- 区域5：免责备注 -->
+  <view class="notice">
+    <text>付费限定卡池仅为后续版本规划，当前版本无付费内容</text>
+  </view>
+
 </view>
