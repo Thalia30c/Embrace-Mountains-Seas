@@ -1,83 +1,182 @@
-.list-title {
-  font-size: 32rpx;
-  font-weight: bold;
+page {
+  background-color: #d2b48c; /* 浅褐色 */
 }
 
-.btn-mini {
-  background: #1f2a44;
-  color: #ffffff;
-  font-size: 24rpx;
-  padding: 0 24rpx;
-  height: 60rpx;
-  line-height: 60rpx;
-  border-radius: 30rpx;
-  margin: 0;
+/* ---------------- 背景图 ---------------- */
+.page-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+.bg-image {
+  width: 100%;
+  height: 100%;
 }
 
-.btn-mini::after {
-  border: none;
-}
-
-.empty {
-  padding: 80rpx 0;
-  text-align: center;
-}
-
-.deck-card {
-  margin-bottom: 24rpx;
-}
-
-.deck-name {
-  font-size: 32rpx;
-  font-weight: bold;
-  margin-bottom: 8rpx;
-}
-
-.badge {
-  font-size: 20rpx;
-  color: #ffffff;
-  background: #e8a33d;
-  border-radius: 8rpx;
-  padding: 2rpx 10rpx;
-  margin-left: 10rpx;
-}
-
-.deck-ops {
+/* ---------------- 页面：整屏纵向弹性布局，重心上移 ---------------- */
+.page-wrap {
+  position: relative;
+  z-index: 1;
+  height: 100vh;
+  box-sizing: border-box;
+  padding: 10rpx 20rpx 6rpx;
   display: flex;
   flex-direction: column;
 }
 
-.op {
-  font-size: 24rpx;
-  color: #1f2a44;
-  margin-bottom: 8rpx;
+/* ---------------- 说明文字：白字 + 黑色描边 ---------------- */
+.page-title,
+.deck-title,
+.pool-label,
+.slot-card,
+.pool-card {
+  color: #ffffff;
+  text-shadow:
+    -2rpx -2rpx 0 #000000,
+     2rpx -2rpx 0 #000000,
+    -2rpx  2rpx 0 #000000,
+     2rpx  2rpx 0 #000000,
+     0 4rpx 8rpx rgba(0, 0, 0, 0.85);
 }
 
-.op.danger {
-  color: #d64545;
-}
-
-.deck-cards {
-  display: flex;
-  flex-wrap: wrap;
-  margin-top: 20rpx;
-  padding-top: 20rpx;
-  border-top: 2rpx solid #f0f1f5;
-}
-
-.mini-card {
-  background: #f2f3f7;
-  border-radius: 12rpx;
-  padding: 16rpx 20rpx;
-  margin: 0 16rpx 16rpx 0;
-  min-width: 150rpx;
-}
-
-.mini-name {
-  font-size: 26rpx;
+/* ---------------- 一级标题：金色牌匾 + 按钮感 ---------------- */
+.page-title {
+  flex: 0 0 auto;
+  font-size: 34rpx;
   font-weight: bold;
+  text-align: center;
+  letter-spacing: 3rpx;
+  margin-bottom: 10rpx;
+  padding: 8rpx 20rpx;
+  background: linear-gradient(180deg, #4a3413 0%, #241802 100%);
+  border: 2rpx solid #e6c16b;
+  border-radius: 16rpx;
+  box-shadow:
+    0 8rpx 20rpx rgba(0, 0, 0, 0.55),
+    inset 0 2rpx 0 rgba(255, 255, 255, 0.14),
+    inset 0 0 24rpx rgba(230, 193, 107, 0.22);
 }
 
+/* ---------------- 二级：卡组框，等分剩余高度 ---------------- */
+.deck-container {
+  flex: 1 1 0;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background: rgba(24, 16, 6, 0.55);
+  border: 2rpx solid #e6c16b;
+  border-radius: 14rpx;
+  padding: 8rpx 10rpx;
+  margin-bottom: 8rpx;
+  box-sizing: border-box;
+  box-shadow:
+    0 6rpx 18rpx rgba(0, 0, 0, 0.40),
+    inset 0 0 0 2rpx rgba(255, 255, 255, 0.05);
+}
+
+/* 卡组标题条：按钮感 */
+.deck-title {
+  flex: 0 0 auto;
+  text-align: center;
+  font-size: 24rpx;
+  font-weight: bold;
+  letter-spacing: 2rpx;
+  margin-bottom: 6rpx;
+  padding: 4rpx 16rpx;
+  background: linear-gradient(180deg, rgba(74, 52, 19, 0.95) 0%, rgba(36, 24, 2, 0.95) 100%);
+  border: 2rpx solid #c9a227;
+  border-radius: 12rpx;
+  box-shadow:
+    0 4rpx 10rpx rgba(0, 0, 0, 0.45),
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.12);
+}
+
+/* ---------------- 卡槽行：占满卡组框剩余高度 ---------------- */
+.card-slot-row {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex !important;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+  width: 100%;
+}
+
+/* 空卡槽：深色底框 + 金色虚线（3:4，随屏高伸缩） */
+.slot-empty {
+  flex: 0 0 auto;
+  width: 9vh;
+  height: 12vh;
+  max-height: 100%;
+  background: rgba(0, 0, 0, 0.35);
+  border: 2rpx dashed rgba(230, 193, 107, 0.75);
+  border-radius: 12rpx;
+  box-sizing: border-box;
+}
+
+/* 放入卡牌之后（3:4，随屏高伸缩） */
+.slot-card {
+  flex: 0 0 auto;
+  width: 9vh;
+  height: 12vh;
+  max-height: 100%;
+  background: linear-gradient(180deg, rgba(60, 42, 16, 0.88) 0%, rgba(24, 16, 4, 0.90) 100%);
+  border: 2rpx solid #e6c16b;
+  border-radius: 12rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22rpx;
+  font-weight: bold;
+  box-sizing: border-box;
+  box-shadow: 0 6rpx 14rpx rgba(0, 0, 0, 0.45);
+}
+
+/* ---------------- 底部卡牌池：紧跟卡组区，无多余留白 ---------------- */
+.pool-label {
+  flex: 0 0 auto;
+  text-align: center;
+  font-size: 22rpx;
+  margin: 2rpx 0 6rpx;
+  padding: 8rpx 16rpx;
+  background: rgba(18, 12, 6, 0.80);
+  border: 2rpx solid rgba(0, 0, 0, 0.85);
+  border-left: 6rpx solid #e6c16b;
+  border-radius: 10rpx;
+}
+
+.card-scroll-pool {
+  flex: 0 0 auto;
+  white-space: nowrap;
+  padding: 6rpx 10rpx;
+  background: rgba(24, 16, 6, 0.50);
+  border: 2rpx solid rgba(230, 193, 107, 0.55);
+  border-radius: 12rpx;
+  box-sizing: border-box;
+}
+
+.pool-card {
+  display: inline-flex;
+  width: 7.5vh;
+  height: 10vh;
+  background: linear-gradient(180deg, rgba(60, 42, 16, 0.90) 0%, rgba(24, 16, 4, 0.92) 100%);
+  border: 2rpx solid #e6c16b;
+  border-radius: 10rpx;
+  align-items: center;
+  justify-content: center;
+  font-size: 22rpx;
+  box-sizing: border-box;
+  font-weight: bold;
+  margin: 0 8rpx;
+  box-shadow: 0 6rpx 14rpx rgba(0, 0, 0, 0.45);
+}
+
+/* ---------------- 弹窗样式保留 ---------------- */
 .mask {
   position: fixed;
   top: 0;
@@ -90,7 +189,6 @@
   justify-content: center;
   z-index: 100;
 }
-
 .dialog {
   width: 620rpx;
   max-height: 80vh;
@@ -98,19 +196,16 @@
   border-radius: 20rpx;
   padding: 36rpx 32rpx;
 }
-
 .dialog-title {
   font-size: 32rpx;
   font-weight: bold;
   text-align: center;
   margin-bottom: 24rpx;
 }
-
 .picker-list {
   max-height: 56vh;
   margin-bottom: 24rpx;
 }
-
 .picker-item {
   padding: 20rpx;
   border-bottom: 2rpx solid #f0f1f5;

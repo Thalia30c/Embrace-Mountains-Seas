@@ -34,6 +34,15 @@ public class LoginResult {
     /** 仓库编号 */
     private Integer warehouseId;
 
+    /** 登录令牌（JWT），小程序端保存并在后续请求中携带 */
+    private String token;
+
+    /** 头像地址，当前无头像数据，默认 null */
+    private String avatar;
+
+    /** 金币数，当前无该字段，默认 0 */
+    private Integer coins;
+
     public LoginResult() {
     }
 
@@ -44,7 +53,6 @@ public class LoginResult {
         result.message = message;
         return result;
     }
-
     /** 登录成功：success = true 并带回用户信息 */
     public static LoginResult ok(User user, String rankName) {
         LoginResult result = new LoginResult();
@@ -57,6 +65,8 @@ public class LoginResult {
         result.rank = rankName;
         result.score = user.getScore();
         result.warehouseId = user.getWarehouseId();
+        result.avatar = null;
+        result.coins = 0;
         return result;
     }
 
@@ -130,5 +140,29 @@ public class LoginResult {
 
     public void setWarehouseId(Integer warehouseId) {
         this.warehouseId = warehouseId;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+
+    public Integer getCoins() {
+        return coins;
+    }
+
+    public void setCoins(Integer coins) {
+        this.coins = coins;
     }
 }

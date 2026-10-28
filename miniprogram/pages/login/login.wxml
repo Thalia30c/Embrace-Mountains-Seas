@@ -1,40 +1,92 @@
 <!-- pages/login/login.wxml -->
-<view class="login-wrap">
-  <!-- 背景图与动态光晕 -->
+<view class="login-wrap {{inputError ? 'is-error' : ''}}">
+
+  <!-- 背景图：常态即为浅红棕色，输入非法字符时进一步加深以示警示 -->
   <view class="bg-container">
-    <!-- 注意这里的路径：../../bg.png 表示往上两级找图片 -->
     <image class="bg-image" src="../../bg.png" mode="aspectFill"></image>
-    <!-- 虚化遮罩层 -->
     <view class="bg-overlay"></view>
+    <view class="bg-error-layer"></view>
   </view>
 
   <!-- 页面内容 -->
   <view class="login-content">
+
     <view class="logo-area">
       <view class="title">引入山海</view>
+      <view class="logo-divider">
+        <text class="divider-line left"></text>
+        <text class="divider-dot">❖</text>
+        <text class="divider-line right"></text>
+      </view>
       <view class="subtitle">御灵对决 · 以牌论道</view>
     </view>
 
-    <view class="form">
-      <view class="input-wrap">
-        <text class="input-label">名</text>
-        <input class="input" placeholder="请输入用户名" value="{{username}}" bindinput="onInput" data-field="username" />
-      </view>
-      <view class="input-wrap">
-        <text class="input-label">符</text>
-        <input class="input" password placeholder="请输入密码" value="{{password}}" bindinput="onInput" data-field="password" />
-      </view>
-      <view wx:if="{{isRegister}}" class="input-wrap">
-        <text class="input-label">号</text>
-        <input class="input" placeholder="昵称（选填）" value="{{nickname}}" bindinput="onInput" data-field="nickname" />
-      </view>
+    <view class="card {{inputError ? 'card-shake' : ''}}">
+      <view class="card-title">{{isRegister ? '修 士 注 册' : '修 士 登 录'}}</view>
 
-      <button class="btn-primary btn-ink" bindtap="onLogin">{{isRegister ? '注 册' : '登 录'}}</button>
-      <button class="btn-secondary btn-ink-outline" bindtap="onWxLogin">微信一键登录</button>
-      
-      <view class="toggle" bindtap="toggleMode">
-        {{isRegister ? '已有账号？去登录' : '没有账号？去注册'}}
+      <view class="form">
+
+        <!-- 账号：对应 user.user_account，varchar(32)，仅字母/数字/下划线 -->
+        <view class="field">
+          <text class="field-label">账号</text>
+          <input
+            class="field-input"
+            placeholder="请输入账号（字母 / 数字 / _）"
+            placeholder-class="field-placeholder"
+            maxlength="32"
+            value="{{userAccount}}"
+            bindinput="onAccountInput" />
+        </view>
+
+        <!-- 密码：对应 user.user_pwd，varchar(64)，仅字母/数字 -->
+        <view class="field">
+          <text class="field-label">密码</text>
+          <input
+            class="field-input"
+            placeholder="密码至少 6 位（字母 / 数字）"
+            placeholder-class="field-placeholder"
+            maxlength="64"
+            password="{{showPwd ? false : true}}"
+            value="{{userPwd}}"
+            bindinput="onPwdInput"
+            bindblur="onPwdBlur" />
+          <text class="field-eye" catchtap="togglePwdShow">{{showPwd ? '隐' : '显'}}</text>
+        </view>
+
+        <!-- 输入为空时提示长度规则，一开始输入即消失 -->
+        <view wx:if="{{!userPwd}}" class="field-hint">密码至少 {{minPwdLen}} 位，仅限字母和数字</view>
+
+        <!-- 注册态额外录入用户名（昵称）：对应 user.username，varchar(32) -->
+        <view wx:if="{{isRegister}}" class="field">
+          <text class="field-label">名号</text>
+          <input
+            class="field-input"
+            placeholder="请输入用户名（昵称）"
+            placeholder-class="field-placeholder"
+            maxlength="32"
+            value="{{nickname}}"
+            bindinput="onNicknameInput" />
+        </view>
+
+        <!-- 非法输入提示 -->
+        <view wx:if="{{inputError}}" class="err-tip">
+          <text class="err-icon">!</text>
+          <text class="err-text">输入错误，请重新输入</text>
+        </view>
+
+        <button class="btn btn-primary" hover-class="btn-primary-hover" bindtap="onLogin">
+          {{isRegister ? '注 册' : '登 录'}}
+        </button>
+        <button class="btn btn-ghost" hover-class="btn-ghost-hover" bindtap="onWxLogin">
+          微信一键登录
+        </button>
+
+        <view class="toggle" bindtap="toggleMode">
+          {{isRegister ? '已有账号？去登录' : '没有账号？去注册'}}
+        </view>
       </view>
     </view>
+
+    <view class="footer-tip">账号限 32 位内字母 / 数字，密码限 64 位内字母 / 数字</view>
   </view>
 </view>

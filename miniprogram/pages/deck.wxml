@@ -1,0 +1,56 @@
+<view class="page-bg">
+  <image class="bg-image" src="../../dk.jpg" mode="aspectFill"></image>
+</view>
+
+<view class="page-wrap">
+  <view class="page-title">出战卡组编组</view>
+
+  <!-- 进攻卡组【固定3卡槽，无循环，用来测试】 -->
+  <view class="deck-container">
+    <view class="deck-title">进攻卡组</view>
+    <view class="card-slot-row">
+      <view class="slot-empty"></view>
+      <view class="slot-empty"></view>
+      <view class="slot-empty"></view>
+    </view>
+  </view>
+
+  <!-- 防御卡组 -->
+  <view class="deck-container">
+    <view class="deck-title">防御卡组</view>
+    <view class="card-slot-row">
+      <view class="slot-empty"></view>
+      <view class="slot-empty"></view>
+      <view class="slot-empty"></view>
+    </view>
+  </view>
+
+  <!-- 法术卡组 -->
+  <view class="deck-container">
+    <view class="deck-title">法术卡组</view>
+    <view class="card-slot-row">
+      <view class="slot-empty"></view>
+      <view class="slot-empty"></view>
+      <view class="slot-empty"></view>
+    </view>
+  </view>
+
+  <!-- 备选卡组 -->
+  <view class="deck-container">
+    <view class="deck-title">备选卡组</view>
+    <view class="card-slot-row">
+      <view class="slot-empty"></view>
+      <view class="slot-empty"></view>
+      <view class="slot-empty"></view>
+    </view>
+  </view>
+
+  <!-- 底部已有卡牌 -->
+  <view class="pool-label">已有卡牌（横向滑动，拖拽卡牌到上方卡组）</view>
+  <scroll-view scroll-x class="card-scroll-pool">
+    <view class="pool-card">卡1</view>
+    <view class="pool-card">卡2</view>
+    <view class="pool-card">卡3</view>
+    <view class="pool-card">卡4</view>
+  </scroll-view>
+</view>
