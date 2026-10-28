@@ -60,6 +60,21 @@ page {
     inset 0 0 24rpx rgba(230, 193, 107, 0.22);
 }
 
+/* ---------------- 选中卡牌操作提示 ---------------- */
+.sel-tip {
+  flex: 0 0 auto;
+  margin-bottom: 8rpx;
+  padding: 8rpx 16rpx;
+  text-align: center;
+  font-size: 22rpx;
+  font-weight: bold;
+  color: #2a1c06;
+  background: linear-gradient(180deg, #ffd24d 0%, #e6a92f 100%);
+  border: 2rpx solid #fff3c4;
+  border-radius: 10rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.45);
+}
+
 /* ---------------- 二级：卡组框，等分剩余高度 ---------------- */
 .deck-container {
   flex: 1 1 0;
@@ -121,6 +136,7 @@ page {
 
 /* 放入卡牌之后（3:4，随屏高伸缩） */
 .slot-card {
+  position: relative;
   flex: 0 0 auto;
   width: 9vh;
   height: 12vh;
@@ -128,13 +144,31 @@ page {
   background: linear-gradient(180deg, rgba(60, 42, 16, 0.88) 0%, rgba(24, 16, 4, 0.90) 100%);
   border: 2rpx solid #e6c16b;
   border-radius: 12rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 22rpx;
-  font-weight: bold;
+  overflow: hidden;
   box-sizing: border-box;
   box-shadow: 0 6rpx 14rpx rgba(0, 0, 0, 0.45);
+}
+
+/* 卡槽中的卡牌图片充满 */
+.slot-img {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* 卡槽中卡牌编号浮于图片上方 */
+.slot-num {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  text-align: center;
+  font-size: 18rpx;
+  font-weight: bold;
+  color: #ffffff;
+  background: rgba(0, 0, 0, 0.55);
+  text-shadow: 0 1rpx 2rpx #000;
+  padding: 2rpx 0;
 }
 
 /* ---------------- 底部卡牌池：紧跟卡组区，无多余留白 ---------------- */
@@ -161,47 +195,181 @@ page {
 }
 
 .pool-card {
+  position: relative;
   display: inline-flex;
   width: 7.5vh;
   height: 10vh;
-  background: linear-gradient(180deg, rgba(60, 42, 16, 0.90) 0%, rgba(24, 16, 4, 0.92) 100%);
   border: 2rpx solid #e6c16b;
   border-radius: 10rpx;
   align-items: center;
   justify-content: center;
-  font-size: 22rpx;
   box-sizing: border-box;
-  font-weight: bold;
   margin: 0 8rpx;
+  overflow: hidden;
   box-shadow: 0 6rpx 14rpx rgba(0, 0, 0, 0.45);
 }
 
-/* ---------------- 弹窗样式保留 ---------------- */
-.mask {
-  position: fixed;
-  top: 0;
+/* 卡牌图片充满卡片 */
+.pool-img {
+  width: 100%;
+  height: 100%;
+}
+
+/* 卡牌编号浮于图片上方 */
+.pool-num {
+  position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  text-align: center;
+  font-size: 18rpx;
+  font-weight: bold;
+  color: #ffffff;
+  background: rgba(0, 0, 0, 0.55);
+  text-shadow: 0 1rpx 2rpx #000;
+  padding: 2rpx 0;
+}
+
+/* 空状态提示 */
+.pool-empty {
+  display: inline-flex;
+  align-items: center;
+  height: 10vh;
+  padding: 0 24rpx;
+  color: #ffffff;
+  font-size: 22rpx;
+  text-shadow: 0 2rpx 4rpx #000;
+}
+
+/* 底池卡牌选中态高亮 */
+.pool-card.selected {
+  border-color: #ffd24d;
+  box-shadow: 0 0 16rpx 2rpx #ffd24d;
+  transform: translateY(-4rpx);
+}
+
+/* 底部按钮行：清空 + 锁卡 */
+.btn-row {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 20rpx;
+  padding: 10rpx 20rpx 4rpx;
+}
+.clear-btn {
+  flex: 1 1 0;
+  background: linear-gradient(180deg, #6b6b6b 0%, #3a3a3a 100%);
+  color: #ffffff;
+  font-size: 30rpx;
+  font-weight: bold;
+  border-radius: 14rpx;
+  box-shadow: 0 6rpx 16rpx rgba(0, 0, 0, 0.45);
+}
+.clear-btn::after {
+  border: none;
+}
+.lock-btn {
+  flex: 1 1 0;
+  background: linear-gradient(180deg, #e6c16b 0%, #b8862f 100%);
+  color: #2a1c06;
+  font-size: 30rpx;
+  font-weight: bold;
+  border-radius: 14rpx;
+  box-shadow: 0 6rpx 16rpx rgba(0, 0, 0, 0.45);
+}
+.lock-btn::after {
+  border: none;
+}
+
+/* ---------------- 古风奇幻确认弹窗 ---------------- */
+.mask {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.62);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 100;
 }
 .dialog {
-  width: 620rpx;
-  max-height: 80vh;
-  background: #ffffff;
+  width: 600rpx;
+  box-sizing: border-box;
+  background: linear-gradient(160deg, #3a2814 0%, #21160a 100%);
+  border: 3rpx solid #e6c16b;
   border-radius: 20rpx;
-  padding: 36rpx 32rpx;
+  padding: 42rpx 38rpx 32rpx;
+  box-shadow:
+    0 16rpx 48rpx rgba(0, 0, 0, 0.6),
+    inset 0 0 30rpx rgba(230, 193, 107, 0.12);
+  position: relative;
+}
+/* 卷轴四角金饰 */
+.dialog::before,
+.dialog::after {
+  content: "";
+  position: absolute;
+  width: 28rpx;
+  height: 28rpx;
+  border: 3rpx solid #e6c16b;
+}
+.dialog::before {
+  top: 12rpx; left: 12rpx;
+  border-right: none; border-bottom: none;
+}
+.dialog::after {
+  bottom: 12rpx; right: 12rpx;
+  border-left: none; border-top: none;
 }
 .dialog-title {
-  font-size: 32rpx;
-  font-weight: bold;
   text-align: center;
-  margin-bottom: 24rpx;
+  font-size: 36rpx;
+  font-weight: bold;
+  letter-spacing: 4rpx;
+  color: #ffd98a;
+  text-shadow: 0 2rpx 4rpx #000;
+  margin-bottom: 20rpx;
+  font-family: "STKaiti", "KaiTi", "Songti SC", "SimSun", serif;
 }
+.dialog-content {
+  text-align: center;
+  font-size: 28rpx;
+  line-height: 1.7;
+  color: #f0e2c0;
+  margin-bottom: 32rpx;
+  font-family: "STKaiti", "KaiTi", "Songti SC", "SimSun", serif;
+}
+.dialog-btns {
+  display: flex;
+  gap: 24rpx;
+}
+.dialog-btn {
+  flex: 1 1 0;
+  height: 78rpx;
+  line-height: 78rpx;
+  text-align: center;
+  border-radius: 12rpx;
+  font-size: 30rpx;
+  font-weight: bold;
+  font-family: "STKaiti", "KaiTi", "Songti SC", "SimSun", serif;
+  box-sizing: border-box;
+}
+.dialog-btn.cancel {
+  background: rgba(255, 255, 255, 0.08);
+  color: #cdbfa0;
+  border: 2rpx solid rgba(230, 193, 107, 0.5);
+}
+.dialog-btn.confirm {
+  background: linear-gradient(180deg, #e6c16b 0%, #b8862f 100%);
+  color: #2a1c06;
+  border: 2rpx solid #ffe9a8;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.4);
+}
+.dialog-btn.confirm.danger {
+  background: linear-gradient(180deg, #c75b4a 0%, #8a2f24 100%);
+  color: #ffffff;
+  border-color: #e6a89a;
+}
+
+/* 旧选择器样式（保留兼容） */
 .picker-list {
   max-height: 56vh;
   margin-bottom: 24rpx;

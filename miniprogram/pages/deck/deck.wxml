@@ -5,52 +5,49 @@
 <view class="page-wrap">
   <view class="page-title">出战卡组编组</view>
 
-  <!-- 进攻卡组【固定3卡槽，无循环，用来测试】 -->
-  <view class="deck-container">
-    <view class="deck-title">进攻卡组</view>
+  <!-- 选中底池卡牌后的操作提示 -->
+  <view class="sel-tip" wx:if="{{selected >= 0}}">已选中 No.{{pool[selected].card}} —— 点击上方卡槽放入（再次点击该卡可取消选中）</view>
+
+  <!-- 四组卡组：进攻 / 防御 / 法术 / 备选，每组 3 个卡槽 -->
+  <view class="deck-container" wx:for="{{groups}}" wx:for-item="g" wx:key="key">
+    <view class="deck-title">{{g.label}}</view>
     <view class="card-slot-row">
-      <view class="slot-empty"></view>
-      <view class="slot-empty"></view>
-      <view class="slot-empty"></view>
+      <view wx:for="{{g.slots}}" wx:for-item="s" wx:for-index="si" wx:key="si"
+            class="{{s === 0 ? 'slot-empty' : 'slot-card'}}"
+            data-group="{{g.key}}" data-slot="{{si}}" bindtap="onTapSlot">
+        <image wx:if="{{s !== 0}}" class="slot-img" src="/photo/{{s}}.png" mode="aspectFill"></image>
+        <text wx:if="{{s !== 0}}" class="slot-num">No.{{s}}</text>
+      </view>
     </view>
   </view>
 
-  <!-- 防御卡组 -->
-  <view class="deck-container">
-    <view class="deck-title">防御卡组</view>
-    <view class="card-slot-row">
-      <view class="slot-empty"></view>
-      <view class="slot-empty"></view>
-      <view class="slot-empty"></view>
-    </view>
-  </view>
-
-  <!-- 法术卡组 -->
-  <view class="deck-container">
-    <view class="deck-title">法术卡组</view>
-    <view class="card-slot-row">
-      <view class="slot-empty"></view>
-      <view class="slot-empty"></view>
-      <view class="slot-empty"></view>
-    </view>
-  </view>
-
-  <!-- 备选卡组 -->
-  <view class="deck-container">
-    <view class="deck-title">备选卡组</view>
-    <view class="card-slot-row">
-      <view class="slot-empty"></view>
-      <view class="slot-empty"></view>
-      <view class="slot-empty"></view>
-    </view>
-  </view>
-
-  <!-- 底部已有卡牌 -->
-  <view class="pool-label">已有卡牌（横向滑动，拖拽卡牌到上方卡组）</view>
+  <!-- 底部已有卡牌：选中后点上方卡槽放置；点已放置卡牌可取消退回 -->
+  <view class="pool-label">已有卡牌（选中下方卡牌 → 点击上方卡槽放置，点击已放置卡牌可取消）</view>
   <scroll-view scroll-x class="card-scroll-pool">
-    <view class="pool-card">卡1</view>
-    <view class="pool-card">卡2</view>
-    <view class="pool-card">卡3</view>
-    <view class="pool-card">卡4</view>
+    <view wx:for="{{pool}}" wx:for-item="p" wx:for-index="pi" wx:key="pi"
+          wx:if="{{!p.placed}}"
+          class="pool-card {{selected === pi ? 'selected' : ''}}"
+          data-pidx="{{pi}}" bindtap="onSelectPool">
+      <image class="pool-img" src="/photo/{{p.card}}.png" mode="aspectFill"></image>
+      <text class="pool-num">No.{{p.card}}</text>
+    </view>
+    <view class="pool-empty" wx:if="{{poolHint}}">{{poolHint}}</view>
   </scroll-view>
+
+  <view class="btn-row">
+    <button class="clear-btn" bindtap="onClear">清空</button>
+    <button class="lock-btn" bindtap="onLock">锁卡</button>
+  </view>
+
+  <!-- 古风奇幻确认弹窗 -->
+  <view class="mask" wx:if="{{modal.show}}" bindtap="onModalCancel">
+    <view class="dialog" catchtap="noop">
+      <view class="dialog-title">{{modal.title}}</view>
+      <view class="dialog-content">{{modal.content}}</view>
+      <view class="dialog-btns">
+        <view class="dialog-btn cancel" wx:if="{{modal.cancelText}}" bindtap="onModalCancel">{{modal.cancelText}}</view>
+        <view class="dialog-btn confirm {{modal.danger ? 'danger' : ''}}" bindtap="onModalConfirm">{{modal.confirmText}}</view>
+      </view>
+    </view>
+  </view>
 </view>
