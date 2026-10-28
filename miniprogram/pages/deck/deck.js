@@ -65,6 +65,11 @@ Page({
     this.loadDeck();
   },
 
+  /** 跳转仓库页 */
+  goWarehouse() {
+    wx.navigateTo({ url: '/pages/warehouse/warehouse' });
+  },
+
   /** 进场加载：读取当前用户卡组编队，复原上次锁卡后的状态 */
   loadDeck() {
     const userInfo = getAppInstance().globalData.userInfo;

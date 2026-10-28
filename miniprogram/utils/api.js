@@ -25,6 +25,8 @@ module.exports = {
   deckLoad: (uid) => get('/warehouse/deck', { uid }),
   // 锁卡：把四组卡组结果写回 warehouse 表
   deckLock: (payload) => post('/warehouse/deck', payload),
+  // 仓库页：该用户拥有的全部卡牌详情（按 uid 查，返回含类型/等级的卡牌对象列表）
+  ownedCards: (uid) => get('/warehouse/cards', { uid }),
   deckList: () => get('/deck/list'),
   deckCreate: (name) => post('/deck/create', null, { name }),
   deckDelete: (id) => del('/deck/' + id),

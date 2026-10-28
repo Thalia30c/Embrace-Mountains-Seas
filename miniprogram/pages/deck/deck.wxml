@@ -3,7 +3,10 @@
 </view>
 
 <view class="page-wrap">
-  <view class="page-title">出战卡组编组</view>
+  <view class="deck-header">
+    <view class="page-title">出战卡组编组</view>
+    <view class="wh-entry" bindtap="goWarehouse">🏯 仓库</view>
+  </view>
 
   <!-- 选中底池卡牌后的操作提示 -->
   <view class="sel-tip" wx:if="{{selected >= 0}}">已选中 No.{{pool[selected].card}} —— 点击上方卡槽放入（再次点击该卡可取消选中）</view>

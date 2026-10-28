@@ -6,6 +6,7 @@
     "pages/room/room",
     "pages/battle/battle",
     "pages/deck/deck",
+    "pages/warehouse/warehouse",
     "pages/profile/profile"
   ],
   "window": {

@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,8 +24,10 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * 统一对外接口类：前端与后端之间的唯一通道。
@@ -301,6 +302,44 @@ public class GameApiController {
         data.put("magic", parseCsv(warehouse == null ? null : warehouse.getMagic()));
         data.put("backup", parseCsv(warehouse == null ? null : warehouse.getBackup()));
         return Result.ok(data);
+    }
+
+    /**
+     * 仓库页：返回该用户拥有的全部卡牌详情（含类型/等级，用于分类展示）
+     */
+    @GetMapping("/warehouse/cards")
+    public Result<List<Map<String, Object>>> warehouseCardDetails(@RequestParam Integer uid) {
+        User user = userDao.selectById(uid);
+        if (user == null) {
+            return Result.fail(Result.NOT_FOUND, "用户不存在");
+        }
+        Integer warehouseId = user.getWarehouseId();
+        if (warehouseId == null) {
+            return Result.fail(Result.NOT_FOUND, "用户未绑定仓库");
+        }
+        List<Integer> cardIds = warehouseDao.findCardIds(warehouseId);
+        List<Map<String, Object>> cards = new ArrayList<>();
+        Set<Integer> seen = new LinkedHashSet<>();
+        for (Integer cid : cardIds) {
+            if (!seen.add(cid)) {
+                continue; // card_list 中可能重复出现同一张卡，去重展示
+            }
+            Card c = cardDao.selectById(cid);
+            if (c == null) {
+                continue;
+            }
+            Map<String, Object> item = new LinkedHashMap<>();
+            item.put("card", c.getId());
+            item.put("cName", c.getCName());
+            item.put("cLevel", c.getCLevel());
+            item.put("kind", cardKind(c));
+            item.put("compound", c.compound());
+            item.put("hp", c.getHp());
+            item.put("damageOrShield", c.getDamageOrShield());
+            item.put("skillName", c.getSkillName());
+            cards.add(item);
+        }
+        return Result.ok(cards);
     }
 
     /**
