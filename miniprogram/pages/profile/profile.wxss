@@ -1,60 +1,288 @@
-.nickname {
-  font-size: 36rpx;
-  font-weight: bold;
-  margin-bottom: 8rpx;
+/* pages/profile/profile.wxss */
+/* 说明：个人中心通用背景.png 是深青灰古风画卷，完整显示不遮盖；
+   组件改用半透明白 + 墨青（与图片同色系）配色，保证可读又不发暖。 */
+
+.page {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+  background-color: #23363f;
+}
+
+/* ============ 背景：原图完整显示 ============ */
+.bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+/* 极淡的中性渐变，仅用于底部轻微压暗、衬托白色卡片，不改变图片色调 */
+.bg-scrim {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(20, 30, 36, 0) 0%,
+    rgba(20, 30, 36, 0.12) 60%,
+    rgba(20, 30, 36, 0.28) 100%
+  );
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  padding: 48rpx 40rpx 64rpx;
+}
+
+/* ============ 1. 顶部：头像 + 昵称/账号 ============ */
+.header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 44rpx;
 }
 
 .avatar {
-  width: 96rpx;
-  height: 96rpx;
+  width: 148rpx;
+  height: 148rpx;
   border-radius: 50%;
-  background: #e8ecf5;
+  background: linear-gradient(145deg, #3a545f 0%, #1e2e36 100%);
+  border: 6rpx solid rgba(255, 255, 255, 0.85);
+  box-shadow: 0 8rpx 20rpx rgba(0, 0, 0, 0.35);
+  color: #f2f4f2;
+  font-size: 64rpx;
+  font-family: "KaiTi", "STKaiti", "STXingkai", serif;
+  text-align: center;
+  line-height: 148rpx;
+  flex-shrink: 0;
 }
 
-.stat-row {
-  display: flex;
-  margin-top: 32rpx;
-  padding-top: 24rpx;
-  border-top: 2rpx solid #f0f1f5;
-}
-
-.stat {
+.header-info {
+  margin-left: 28rpx;
   flex: 1;
+}
+
+.info-box {
+  display: flex;
+  align-items: center;
+  height: 76rpx;
+  margin-bottom: 16rpx;
+  padding: 0 22rpx;
+  background: rgba(255, 255, 255, 0.88);
+  border: 2rpx solid rgba(255, 255, 255, 0.55);
+  border-radius: 16rpx;
+  box-shadow: 0 4rpx 14rpx rgba(0, 0, 0, 0.18);
+  backdrop-filter: blur(8rpx);
+}
+
+.info-box:last-child { margin-bottom: 0; }
+
+.info-label {
+  width: 40rpx;
+  margin-right: 18rpx;
+  font-size: 24rpx;
+  color: #3a545f;
+  font-family: "KaiTi", "STKaiti", serif;
+}
+
+.info-value {
+  flex: 1;
+  font-size: 30rpx;
+  color: #22303a;
+  letter-spacing: 2rpx;
+  font-family: "KaiTi", "STKaiti", "PingFang SC", serif;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* ============ 2. 中部数据统计行 ============ */
+.stats {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 40rpx;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 23%;
+}
+
+.stat-icon {
+  width: 92rpx;
+  height: 92rpx;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #46636f 0%, #22323a 100%);
+  border: 4rpx solid rgba(255, 255, 255, 0.80);
+  box-shadow: 0 8rpx 18rpx rgba(0, 0, 0, 0.30);
+  color: #f2f4f2;
+  font-size: 38rpx;
+  font-family: "KaiTi", "STKaiti", serif;
+  text-align: center;
+  line-height: 92rpx;
+  margin-bottom: 16rpx;
+}
+
+.stat-box {
+  width: 100%;
+  padding: 12rpx 0;
+  background: rgba(255, 255, 255, 0.85);
+  border: 2rpx solid rgba(255, 255, 255, 0.5);
+  border-radius: 14rpx;
+  text-align: center;
+  backdrop-filter: blur(8rpx);
+}
+
+.stat-value {
+  display: block;
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #22323a;
+  line-height: 1.2;
+  font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+.stat-name {
+  display: block;
+  margin-top: 4rpx;
+  font-size: 22rpx;
+  color: #5d6a70;
+  letter-spacing: 2rpx;
+  font-family: "KaiTi", "STKaiti", "PingFang SC", serif;
+}
+
+/* ============ 3. 下方功能按钮区 ============ */
+.funcs {
+  padding: 36rpx 24rpx 20rpx;
+  background: rgba(255, 255, 255, 0.62);
+  border: 2rpx solid rgba(255, 255, 255, 0.45);
+  border-radius: 24rpx;
+  backdrop-filter: blur(12rpx);
+  box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.18);
+}
+
+.func-row {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 30rpx;
+}
+
+.func-row:last-child { margin-bottom: 0; }
+
+.func-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 140rpx;
+  border-radius: 20rpx;
+  padding-bottom: 8rpx;
+}
+
+.func-item-hover { opacity: 0.75; }
+
+/* 圆形功能按钮，flex 居中避免文字偏移 */
+.func-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 108rpx;
+  height: 108rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92);
+  border: 3rpx solid rgba(58, 84, 95, 0.30);
+  box-shadow: 0 6rpx 14rpx rgba(0, 0, 0, 0.16), inset 0 2rpx 6rpx rgba(255, 255, 255, 0.9);
+  color: #2f4550;
+  font-size: 42rpx;
+  font-family: "KaiTi", "STKaiti", serif;
   text-align: center;
 }
 
-.stat-num {
-  font-size: 34rpx;
-  font-weight: bold;
-  color: #1f2a44;
-  margin-bottom: 8rpx;
+.func-name {
+  margin-top: 12rpx;
+  font-size: 24rpx;
+  color: #2f4550;
+  letter-spacing: 2rpx;
+  font-family: "KaiTi", "STKaiti", "PingFang SC", serif;
 }
 
-.list-title {
-  font-size: 32rpx;
-  font-weight: bold;
-  margin: 32rpx 0 20rpx;
-}
-
-.rank-item {
+/* ============ 退出登录 ============ */
+.logout-btn {
   display: flex;
   align-items: center;
-  padding: 24rpx;
+  justify-content: center;
+  height: 92rpx;
+  margin-top: 48rpx;
+  padding: 0;
+  border-radius: 46rpx;
+  background: linear-gradient(135deg, #3a545f 0%, #1e2e36 100%);
+  color: #f2f4f2;
+  font-size: 32rpx;
+  letter-spacing: 10rpx;
+  font-family: "KaiTi", "STKaiti", "PingFang SC", serif;
+  box-shadow: 0 10rpx 24rpx rgba(0, 0, 0, 0.30);
+  border: none;
 }
 
-.rank-no {
-  width: 60rpx;
-  font-size: 30rpx;
+.logout-btn::after { border: none; }
+
+.logout-hover { opacity: 0.85; }
+
+/* ============ “即将开放”弹窗 ============ */
+.soon-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(10, 18, 22, 0.45);
+  animation: maskIn 0.2s ease both;
+}
+
+.soon-card {
+  padding: 52rpx 80rpx;
+  background: rgba(255, 255, 255, 0.97);
+  border: 2rpx solid rgba(58, 84, 95, 0.35);
+  border-radius: 24rpx;
+  box-shadow: 0 16rpx 48rpx rgba(0, 0, 0, 0.35);
+  text-align: center;
+  animation: cardIn 0.25s ease both;
+}
+
+.soon-title {
+  font-size: 42rpx;
   font-weight: bold;
-  color: #8a90a2;
+  color: #22323a;
+  letter-spacing: 8rpx;
+  text-indent: 8rpx;
+  font-family: "KaiTi", "STKaiti", "STXingkai", serif;
 }
 
-.rank-no.top {
-  color: #e8a33d;
+.soon-sub {
+  margin-top: 14rpx;
+  font-size: 26rpx;
+  color: #5d6a70;
+  letter-spacing: 3rpx;
+  font-family: "KaiTi", "STKaiti", "PingFang SC", serif;
 }
 
-.rank-name {
-  flex: 1;
-  font-size: 28rpx;
-  font-weight: bold;
+@keyframes maskIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes cardIn {
+  from { opacity: 0; transform: scale(0.85); }
+  to   { opacity: 1; transform: scale(1); }
 }

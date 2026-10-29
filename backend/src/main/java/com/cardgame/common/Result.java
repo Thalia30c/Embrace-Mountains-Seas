@@ -16,6 +16,8 @@ public class Result<T> {
     public static final int LOGIN_FAIL = 40101;
     /** 资源不存在 */
     public static final int NOT_FOUND = 40004;
+    /** 登录令牌缺失或失效（前端收到后清除登录态并跳登录页） */
+    public static final int TOKEN_INVALID = 40002;
     /** 服务器内部错误 */
     public static final int SERVER_ERROR = 50000;
 

@@ -8,7 +8,7 @@ module.exports = {
   login: (username, password) => post('/user/login', { username, password }),
   register: (username, password, nickname) => post('/user/register', { username, password, nickname }),
   wxLogin: (code, nickname, avatar) => post('/user/wxLogin', { code, nickname, avatar }),
-  userInfo: () => get('/user/info'),
+  userInfo: (silent) => get('/user/info', {}, silent),
   updateProfile: (nickname, avatar) => post('/user/profile', null, { nickname, avatar }),
   ranking: (limit = 20) => get('/user/ranking', { limit }),
 
