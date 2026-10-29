@@ -1,46 +1,75 @@
-<view class="container">
-  <!-- 我的信息 -->
-  <view class="card" wx:if="{{isLogin && userInfo}}">
-    <view class="row">
-      <view>
-        <view class="nickname">{{userInfo.nickname}}</view>
-        <view class="text-muted">{{userInfo.username}}</view>
+<!-- pages/profile/profile.wxml -->
+<view class="page">
+
+  <!-- 背景：古风画卷，完整显示 -->
+  <image class="bg" src="../../个人中心通用背景.png" mode="aspectFill"></image>
+  <view class="bg-scrim"></view>
+
+  <view class="content">
+
+    <!-- 1. 顶部：圆形头像 + 右侧昵称/账号两个圆角框 -->
+    <view class="header">
+      <view class="avatar">{{avatarChar}}</view>
+      <view class="header-info">
+        <view class="info-box">
+          <text class="info-label">名</text>
+          <text class="info-value">{{nickname}}</text>
+        </view>
+        <view class="info-box">
+          <text class="info-label">号</text>
+          <text class="info-value">{{userAccount}}</text>
+        </view>
       </view>
-      <image class="avatar" src="{{userInfo.avatar}}" mode="aspectFill"></image>
     </view>
 
-    <view class="stat-row">
-      <view class="stat">
-        <view class="stat-num">{{userInfo.coins}}</view>
-        <view class="text-muted">金币</view>
-      </view>
-      <view class="stat">
-        <view class="stat-num">{{userInfo.winCount}}</view>
-        <view class="text-muted">胜场</view>
-      </view>
-      <view class="stat">
-        <view class="stat-num">{{userInfo.loseCount}}</view>
-        <view class="text-muted">负场</view>
-      </view>
-      <view class="stat">
-        <view class="stat-num">{{userInfo.rank}}</view>
-        <view class="text-muted">段位</view>
+    <!-- 2. 中部数据统计行：金币 / 胜场 / 败场 / 段位 -->
+    <view class="stats">
+      <view class="stat-item" wx:for="{{stats}}" wx:key="key">
+        <view class="stat-icon">{{item.icon}}</view>
+        <view class="stat-box">
+          <text class="stat-value">{{item.value}}</text>
+          <text class="stat-name">{{item.name}}</text>
+        </view>
       </view>
     </view>
+
+    <!-- 3. 下方功能按钮区 -->
+    <view class="funcs">
+      <view class="func-row">
+        <view
+          class="func-item"
+          wx:for="{{row1}}"
+          wx:key="name"
+          hover-class="func-item-hover"
+          bindtap="onFuncTap"
+          data-name="{{item.name}}">
+          <view class="func-btn">{{item.icon}}</view>
+          <text class="func-name">{{item.name}}</text>
+        </view>
+      </view>
+      <view class="func-row">
+        <view
+          class="func-item"
+          wx:for="{{row2}}"
+          wx:key="name"
+          hover-class="func-item-hover"
+          bindtap="onFuncTap"
+          data-name="{{item.name}}">
+          <view class="func-btn">{{item.icon}}</view>
+          <text class="func-name">{{item.name}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 退出登录 -->
+    <button class="logout-btn" hover-class="logout-hover" bindtap="onLogout">退 出 登 录</button>
   </view>
 
-  <view class="card" wx:if="{{!isLogin}}">
-    <view class="text-muted">未登录</view>
-    <button class="btn-primary" bindtap="goLogin">去登录</button>
-  </view>
-
-  <button class="btn-secondary" wx:if="{{isLogin}}" bindtap="onLogout">退出登录</button>
-
-  <!-- 排行榜 -->
-  <view class="list-title">排行榜</view>
-  <view wx:for="{{ranking}}" wx:key="id" class="card rank-item">
-    <view class="rank-no {{index <= 2 ? 'top' : ''}}">{{index + 1}}</view>
-    <view class="rank-name">{{item.nickname}}</view>
-    <view class="text-muted">{{item.rank}} · {{item.winCount}}胜</view>
+  <!-- “即将开放”弹窗 -->
+  <view wx:if="{{showSoon}}" class="soon-mask" catchtap="hideSoon">
+    <view class="soon-card">
+      <view class="soon-title">即将开放</view>
+      <view class="soon-sub">{{soonName}}</view>
+    </view>
   </view>
 </view>

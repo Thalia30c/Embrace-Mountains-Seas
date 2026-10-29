@@ -66,7 +66,8 @@ public class LoginResult {
         result.score = user.getScore();
         result.warehouseId = user.getWarehouseId();
         result.avatar = null;
-        result.coins = 0;
+        // user 表暂无金币字段，金币暂取现有积分（score）
+        result.coins = user.getScore();
         return result;
     }
 

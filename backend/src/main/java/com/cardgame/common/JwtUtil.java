@@ -1,5 +1,6 @@
 package com.cardgame.common;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -37,5 +38,25 @@ public class JwtUtil {
                 .setExpiration(new Date(now + expireSeconds * 1000))
                 .signWith(key(), SignatureAlgorithm.HS256)
                 .compact();
+    }
+
+    /**
+     * 解析 token：有效且未过期返回其中的 uid，无效 / 过期 / 格式错误返回 null。
+     */
+    public Integer parseUid(String token) {
+        if (token == null || token.isBlank()) {
+            return null;
+        }
+        try {
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(key())
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+            Object uid = claims.get("uid");
+            return uid == null ? null : Integer.valueOf(uid.toString());
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

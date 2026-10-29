@@ -161,6 +161,7 @@ Page({
       avatar: data.avatar || '',
       rank: data.rank || '',
       score: data.score || 0,
+      coins: data.coins != null ? data.coins : (data.score || 0),
       gameLevel: data.gameLevel || 1,
       warehouseId: data.warehouseId || 0
     };
