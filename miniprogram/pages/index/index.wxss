@@ -54,15 +54,19 @@ page { background: #121216; }
 .card .c-top { display: flex; justify-content: space-between; align-items: center; padding: 8rpx 14rpx 0; }
 .card .c-badge { font-size: 20rpx; color: #241a08; background: #f6e6b0; border-radius: 10rpx; padding: 2rpx 14rpx; }
 .card .c-type { font-size: 20rpx; color: #a89a7c; }
-/* 兽形徽章（替代SVG兽形） */
+/* 兽形徽章 / 数据库卡牌图片（图片比例 180x252，即高=宽x1.4） */
 .card .c-beast {
+  position: relative;
   margin: 6rpx 12rpx 3rpx;
-  height: 56rpx;
+  min-height: 56rpx;
   border-radius: 12rpx;
+  overflow: hidden;
   display: flex; align-items: center; justify-content: center;
   background: radial-gradient(circle at 50% 40%, rgba(212,184,120,.22), rgba(18,18,22,.6));
   border: 2rpx solid rgba(212,184,120,.25);
 }
+.card .c-imgbox { position: relative; width: 100%; padding-top: 140%; background: #17141c; }
+.card .c-img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: block; }
 .card .c-beast .b-char { font-size: 28rpx; color: #f6e6b0; text-shadow: 0 0 20rpx rgba(212,184,120,.7); font-weight: 700; }
 .card .c-name { text-align: center; font-size: 18rpx; color: #f6e6b0; letter-spacing: 2rpx; text-shadow: 0 2rpx 4rpx #000; }
 .card .c-stat { display: flex; justify-content: space-around; margin-top: 3rpx; font-size: 14rpx; color: #a89a7c; }
@@ -148,7 +152,7 @@ page { background: #121216; }
 .roundbar { display: flex; justify-content: space-between; align-items: center; margin: 10rpx 0; }
 .round-tag { font-size: 26rpx; color: #f6e6b0; font-weight: 700; text-shadow: 0 0 8rpx rgba(0,0,0,.9); }
 /* 落桌 */
-.table-area { min-height: 210rpx; }
+.table-area { min-height: 250rpx; }
 .table-inner .row-label { text-align: center; color: #f6e6b0; font-size: 22rpx; letter-spacing: 4rpx; margin: 4rpx 0; }
 .table-inner .hand-label { text-align: center; color: #f0e2b0; font-size: 20rpx; letter-spacing: 4rpx; margin-bottom: 8rpx; }
 .table-row { display: flex; gap: 12rpx; justify-content: center; align-items: flex-end; }
@@ -157,7 +161,7 @@ page { background: #121216; }
 .table-inner .mini .m-card { width: 96rpx; transform: rotateX(40deg); box-shadow: 0 16rpx 24rpx rgba(0,0,0,.5); border-width: 2rpx; }
 .table-inner .mini .m-card .c-top { padding: 4rpx 6rpx 0; }
 .table-inner .mini .m-card .c-badge { font-size: 12rpx; padding: 0 6rpx; }
-.table-inner .mini .m-card .c-beast { height: 48rpx; margin: 4rpx 8rpx; border-radius: 8rpx; }
+.table-inner .mini .m-card .c-beast { min-height: 48rpx; margin: 4rpx 8rpx; border-radius: 8rpx; }
 .table-inner .mini .m-card .c-beast .b-char { font-size: 24rpx; }
 .table-inner .mini .m-card .c-name { font-size: 12rpx; letter-spacing: 1rpx; }
 .table-inner .mini .m-card .c-stat { font-size: 11rpx; margin-top: 2rpx; }
@@ -175,7 +179,7 @@ page { background: #121216; }
 .hand-head .play-hint { font-size: 20rpx; color: #b9ac8e; }
 .your-cards { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8rpx; }
 .your-cards .card { padding-bottom: 4rpx; }
-.your-cards .card .c-beast { height: 64rpx; font-size: 30rpx; }
+.your-cards .card .c-beast { min-height: 64rpx; font-size: 30rpx; }
 .your-cards .card .c-beast .b-char { font-size: 30rpx; }
 .your-cards .card .c-name { font-size: 20rpx; }
 .confirm-row { display: flex; justify-content: flex-end; margin-top: 10rpx; }
@@ -190,7 +194,7 @@ page { background: #121216; }
 .reveal-pop .rp-side .card { padding-bottom: 5rpx; }
 .reveal-pop .rp-side .rp-who { font-size: 24rpx; font-weight: 700; color: #f6e6b0; letter-spacing: 4rpx; margin-top: 10rpx; text-shadow: 0 1px 3px #000; }
 .reveal-pop .rp-vs { font-size: 34rpx; font-weight: 800; color: #f6e6b0; text-shadow: 0 0 24rpx rgba(212,184,120,.65); }
-.reveal-pop .rp-nocard { width: 170rpx; height: 150rpx; display: flex; align-items: center; justify-content: center; border: 2rpx dashed rgba(212,184,120,.4); border-radius: 16rpx; color: #a89a7c; font-size: 22rpx; }
+.reveal-pop .rp-nocard { width: 170rpx; height: 240rpx; display: flex; align-items: center; justify-content: center; border: 2rpx dashed rgba(212,184,120,.4); border-radius: 16rpx; color: #a89a7c; font-size: 22rpx; }
 
 /* ===== 右下角按钮 ===== */
 .corner-btns { position: fixed; right: 24rpx; bottom: 60rpx; z-index: 70; display: flex; gap: 16rpx; }

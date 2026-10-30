@@ -280,6 +280,7 @@ Page({
     return {
       id: c.id, name: c.name, badge: TYPE_LABEL[t], sub: c.sub || '',
       beastChar: c.name ? c.name.charAt(0) : '',
+      img: c.dbId ? ('/photo/' + c.dbId + '.png') : '',   // 数据库卡牌图片（photo/{id}.png）
       type: { attack: 'atk', defense: 'def', magic: 'mag', tongue: 'tong' }[t],
       stat: stat, selected: !!selected, isEmpty: false
     };

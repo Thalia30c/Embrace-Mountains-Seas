@@ -22,7 +22,7 @@
         <block wx:for="{{pool}}" wx:key="id">
           <view class="card {{item.type}} {{item.selected?'selected':''}}" data-id="{{item.id}}" bindtap="onPoolTap">
             <view class="c-top"><text class="c-badge">{{item.badge}}</text><text wx:if="{{item.sub}}" class="c-type">{{item.sub}}</text></view>
-            <view class="c-beast"><text class="b-char">{{item.beastChar}}</text></view>
+            <view class="c-beast"><view wx:if="{{item.img}}" class="c-imgbox"><image class="c-img" src="{{item.img}}" mode="aspectFit"></image></view><text wx:else class="b-char">{{item.beastChar}}</text></view>
             <view class="c-name">{{item.name}}</view>
             <view class="c-stat"><text wx:for="{{item.stat}}" wx:for-item="st" wx:key="k"><text>{{st.k}}</text><text><text class="num">{{st.v}}</text></text></text></view>
           </view>
@@ -40,7 +40,7 @@
             <view class="card {{item.type}} {{item.selected?'selected':''}} {{item.isEmpty?'c-slot':''}}" data-g="attack" data-i="{{index}}" bindtap="onSlotTap">
               <block wx:if="{{!item.isEmpty}}">
                 <view class="c-top"><text class="c-badge">{{item.badge}}</text><text wx:if="{{item.sub}}" class="c-type">{{item.sub}}</text></view>
-                <view class="c-beast"><text class="b-char">{{item.beastChar}}</text></view>
+                <view class="c-beast"><view wx:if="{{item.img}}" class="c-imgbox"><image class="c-img" src="{{item.img}}" mode="aspectFit"></image></view><text wx:else class="b-char">{{item.beastChar}}</text></view>
                 <view class="c-name">{{item.name}}</view>
                 <view class="c-stat"><text wx:for="{{item.stat}}" wx:for-item="st" wx:key="k"><text>{{st.k}}</text><text><text class="num">{{st.v}}</text></text></text></view>
               </block>
@@ -55,7 +55,7 @@
             <view class="card {{item.type}} {{item.selected?'selected':''}} {{item.isEmpty?'c-slot':''}}" data-g="defense" data-i="{{index}}" bindtap="onSlotTap">
               <block wx:if="{{!item.isEmpty}}">
                 <view class="c-top"><text class="c-badge">{{item.badge}}</text><text wx:if="{{item.sub}}" class="c-type">{{item.sub}}</text></view>
-                <view class="c-beast"><text class="b-char">{{item.beastChar}}</text></view>
+                <view class="c-beast"><view wx:if="{{item.img}}" class="c-imgbox"><image class="c-img" src="{{item.img}}" mode="aspectFit"></image></view><text wx:else class="b-char">{{item.beastChar}}</text></view>
                 <view class="c-name">{{item.name}}</view>
                 <view class="c-stat"><text wx:for="{{item.stat}}" wx:for-item="st" wx:key="k"><text>{{st.k}}</text><text><text class="num">{{st.v}}</text></text></text></view>
               </block>
@@ -70,7 +70,7 @@
             <view class="card {{item.type}} {{item.selected?'selected':''}} {{item.isEmpty?'c-slot':''}}" data-g="magic" data-i="{{index}}" bindtap="onSlotTap">
               <block wx:if="{{!item.isEmpty}}">
                 <view class="c-top"><text class="c-badge">{{item.badge}}</text><text wx:if="{{item.sub}}" class="c-type">{{item.sub}}</text></view>
-                <view class="c-beast"><text class="b-char">{{item.beastChar}}</text></view>
+                <view class="c-beast"><view wx:if="{{item.img}}" class="c-imgbox"><image class="c-img" src="{{item.img}}" mode="aspectFit"></image></view><text wx:else class="b-char">{{item.beastChar}}</text></view>
                 <view class="c-name">{{item.name}}</view>
                 <view class="c-stat"><text wx:for="{{item.stat}}" wx:for-item="st" wx:key="k"><text>{{st.k}}</text><text><text class="num">{{st.v}}</text></text></text></view>
               </block>
@@ -85,7 +85,7 @@
             <view class="card {{item.type}} {{item.selected?'selected':''}} {{item.isEmpty?'c-slot':''}}" data-g="reserve" data-i="{{index}}" bindtap="onSlotTap">
               <block wx:if="{{!item.isEmpty}}">
                 <view class="c-top"><text class="c-badge">{{item.badge}}</text><text wx:if="{{item.sub}}" class="c-type">{{item.sub}}</text></view>
-                <view class="c-beast"><text class="b-char">{{item.beastChar}}</text></view>
+                <view class="c-beast"><view wx:if="{{item.img}}" class="c-imgbox"><image class="c-img" src="{{item.img}}" mode="aspectFit"></image></view><text wx:else class="b-char">{{item.beastChar}}</text></view>
                 <view class="c-name">{{item.name}}</view>
                 <view class="c-stat"><text wx:for="{{item.stat}}" wx:for-item="st" wx:key="k"><text>{{st.k}}</text><text><text class="num">{{st.v}}</text></text></text></view>
               </block>
@@ -120,7 +120,7 @@
             <view class="card {{item.type}} {{item.selected?'selected':''}} {{item.isEmpty?'c-slot':''}}" data-g="attack" data-i="{{index}}" bindtap="onSwapTap">
               <block wx:if="{{!item.isEmpty}}">
                 <view class="c-top"><text class="c-badge">{{item.badge}}</text><text wx:if="{{item.sub}}" class="c-type">{{item.sub}}</text></view>
-                <view class="c-beast"><text class="b-char">{{item.beastChar}}</text></view>
+                <view class="c-beast"><view wx:if="{{item.img}}" class="c-imgbox"><image class="c-img" src="{{item.img}}" mode="aspectFit"></image></view><text wx:else class="b-char">{{item.beastChar}}</text></view>
                 <view class="c-name">{{item.name}}</view>
                 <view class="c-stat"><text wx:for="{{item.stat}}" wx:for-item="st" wx:key="k"><text>{{st.k}}</text><text><text class="num">{{st.v}}</text></text></text></view>
               </block>
@@ -135,7 +135,7 @@
             <view class="card {{item.type}} {{item.selected?'selected':''}} {{item.isEmpty?'c-slot':''}}" data-g="defense" data-i="{{index}}" bindtap="onSwapTap">
               <block wx:if="{{!item.isEmpty}}">
                 <view class="c-top"><text class="c-badge">{{item.badge}}</text><text wx:if="{{item.sub}}" class="c-type">{{item.sub}}</text></view>
-                <view class="c-beast"><text class="b-char">{{item.beastChar}}</text></view>
+                <view class="c-beast"><view wx:if="{{item.img}}" class="c-imgbox"><image class="c-img" src="{{item.img}}" mode="aspectFit"></image></view><text wx:else class="b-char">{{item.beastChar}}</text></view>
                 <view class="c-name">{{item.name}}</view>
                 <view class="c-stat"><text wx:for="{{item.stat}}" wx:for-item="st" wx:key="k"><text>{{st.k}}</text><text><text class="num">{{st.v}}</text></text></text></view>
               </block>
@@ -150,7 +150,7 @@
             <view class="card {{item.type}} {{item.selected?'selected':''}} {{item.isEmpty?'c-slot':''}}" data-g="magic" data-i="{{index}}" bindtap="onSwapTap">
               <block wx:if="{{!item.isEmpty}}">
                 <view class="c-top"><text class="c-badge">{{item.badge}}</text><text wx:if="{{item.sub}}" class="c-type">{{item.sub}}</text></view>
-                <view class="c-beast"><text class="b-char">{{item.beastChar}}</text></view>
+                <view class="c-beast"><view wx:if="{{item.img}}" class="c-imgbox"><image class="c-img" src="{{item.img}}" mode="aspectFit"></image></view><text wx:else class="b-char">{{item.beastChar}}</text></view>
                 <view class="c-name">{{item.name}}</view>
                 <view class="c-stat"><text wx:for="{{item.stat}}" wx:for-item="st" wx:key="k"><text>{{st.k}}</text><text><text class="num">{{st.v}}</text></text></text></view>
               </block>
@@ -165,7 +165,7 @@
             <view class="card {{item.type}} {{item.selected?'selected':''}} {{item.isEmpty?'c-slot':''}}" data-g="reserve" data-i="{{index}}" bindtap="onSwapTap">
               <block wx:if="{{!item.isEmpty}}">
                 <view class="c-top"><text class="c-badge">{{item.badge}}</text><text wx:if="{{item.sub}}" class="c-type">{{item.sub}}</text></view>
-                <view class="c-beast"><text class="b-char">{{item.beastChar}}</text></view>
+                <view class="c-beast"><view wx:if="{{item.img}}" class="c-imgbox"><image class="c-img" src="{{item.img}}" mode="aspectFit"></image></view><text wx:else class="b-char">{{item.beastChar}}</text></view>
                 <view class="c-name">{{item.name}}</view>
                 <view class="c-stat"><text wx:for="{{item.stat}}" wx:for-item="st" wx:key="k"><text>{{st.k}}</text><text><text class="num">{{st.v}}</text></text></text></view>
               </block>
@@ -241,7 +241,7 @@
               <block wx:if="{{item.card}}">
                 <view class="m-card card {{item.card.type}}">
                   <view class="c-top"><text class="c-badge">{{item.card.badge}}</text></view>
-                  <view class="c-beast"><text class="b-char">{{item.card.beastChar}}</text></view>
+                  <view class="c-beast"><view wx:if="{{item.card.img}}" class="c-imgbox"><image class="c-img" src="{{item.card.img}}" mode="aspectFit"></image></view><text wx:else class="b-char">{{item.card.beastChar}}</text></view>
                   <view class="c-name">{{item.card.name}}</view>
                   <view class="c-stat"><text wx:for="{{item.card.stat}}" wx:for-item="st" wx:key="k"><text>{{st.k}}</text><text><text class="num">{{st.v}}</text></text></text></view>
                 </view>
@@ -257,7 +257,7 @@
               <block wx:if="{{item.card}}">
                 <view class="m-card card {{item.card.type}}">
                   <view class="c-top"><text class="c-badge">{{item.card.badge}}</text></view>
-                  <view class="c-beast"><text class="b-char">{{item.card.beastChar}}</text></view>
+                  <view class="c-beast"><view wx:if="{{item.card.img}}" class="c-imgbox"><image class="c-img" src="{{item.card.img}}" mode="aspectFit"></image></view><text wx:else class="b-char">{{item.card.beastChar}}</text></view>
                   <view class="c-name">{{item.card.name}}</view>
                   <view class="c-stat"><text wx:for="{{item.card.stat}}" wx:for-item="st" wx:key="k"><text>{{st.k}}</text><text><text class="num">{{st.v}}</text></text></text></view>
                 </view>
@@ -277,7 +277,7 @@
           <block wx:for="{{handPool}}" wx:for-item="c" wx:for-index="i" wx:key="id">
             <view class="card {{c.type}} {{c.selected?'selected':''}}" data-i="{{i}}" bindtap="onSelectHand">
               <view class="c-top"><text class="c-badge">{{c.badge}}</text><text wx:if="{{c.sub}}" class="c-type">{{c.sub}}</text></view>
-              <view class="c-beast"><text class="b-char">{{c.beastChar}}</text></view>
+              <view class="c-beast"><view wx:if="{{c.img}}" class="c-imgbox"><image class="c-img" src="{{c.img}}" mode="aspectFit"></image></view><text wx:else class="b-char">{{c.beastChar}}</text></view>
               <view class="c-name">{{c.name}}</view>
               <view class="c-stat"><text wx:for="{{c.stat}}" wx:for-item="st" wx:key="k"><text>{{st.k}}</text><text><text class="num">{{st.v}}</text></text></text></view>
             </view>
@@ -347,7 +347,7 @@
           <block wx:if="{{revealX.card}}">
             <view class="card {{revealX.card.type}}">
               <view class="c-top"><text class="c-badge">{{revealX.card.badge}}</text></view>
-              <view class="c-beast"><text class="b-char">{{revealX.card.beastChar}}</text></view>
+              <view class="c-beast"><view wx:if="{{revealX.card.img}}" class="c-imgbox"><image class="c-img" src="{{revealX.card.img}}" mode="aspectFit"></image></view><text wx:else class="b-char">{{revealX.card.beastChar}}</text></view>
               <view class="c-name">{{revealX.card.name}}</view>
               <view class="c-stat"><text wx:for="{{revealX.card.stat}}" wx:for-item="st" wx:key="k"><text>{{st.k}}</text><text><text class="num">{{st.v}}</text></text></text></view>
             </view>
@@ -360,7 +360,7 @@
           <block wx:if="{{revealY.card}}">
             <view class="card {{revealY.card.type}}">
               <view class="c-top"><text class="c-badge">{{revealY.card.badge}}</text></view>
-              <view class="c-beast"><text class="b-char">{{revealY.card.beastChar}}</text></view>
+              <view class="c-beast"><view wx:if="{{revealY.card.img}}" class="c-imgbox"><image class="c-img" src="{{revealY.card.img}}" mode="aspectFit"></image></view><text wx:else class="b-char">{{revealY.card.beastChar}}</text></view>
               <view class="c-name">{{revealY.card.name}}</view>
               <view class="c-stat"><text wx:for="{{revealY.card.stat}}" wx:for-item="st" wx:key="k"><text>{{st.k}}</text><text><text class="num">{{st.v}}</text></text></text></view>
             </view>
