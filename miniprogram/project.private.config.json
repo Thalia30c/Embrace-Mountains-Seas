@@ -1,7 +1,19 @@
 {
   "libVersion": "3.17.5",
   "projectname": "miniprogram",
-  "condition": {},
+  "condition": {
+    "miniprogram": {
+      "list": [
+        {
+          "id": -1,
+          "name": "山海战斗（pages/index）",
+          "pathName": "pages/index/index",
+          "query": "",
+          "scene": null
+        }
+      ]
+    }
+  },
   "setting": {
     "urlCheck": false,
     "coverView": true,
