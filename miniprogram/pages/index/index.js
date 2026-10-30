@@ -1,11 +1,15 @@
 /* ============ 山海异兽·战略博弈战斗 · 逻辑 ============ */
+const api = require('../../utils/api');
+
 const ROLES = {
   A: { key: 'A', name: '甲', isPlayer: true },
   B: { key: 'B', name: '乙', isPlayer: false },
   C: { key: 'C', name: '丙', isPlayer: false }
 };
 const TYPE_LABEL = { attack: '攻', defense: '防', magic: '法', tongue: '通' };
-const CARD_DB = [
+
+/* 兜底卡组：接口不可用（后端未启动/未登录）时使用，保证功能仍可跑通 */
+const FALLBACK_CARDS = [
   { id: 'atk1', name: '玄甲犀', type: 'attack', out: 5, guard: 0, heal: 0 },
   { id: 'atk2', name: '裂山貔', type: 'attack', out: 4, guard: 1, heal: 0 },
   { id: 'atk3', name: '噬魂狰', type: 'attack', out: 6, guard: 0, heal: 0 },
@@ -26,6 +30,11 @@ const CARD_DB = [
   { id: 'tongD1', name: '玄法龟', type: 'tongue', kind: 'def', out: 1, guard: 4, heal: 0, mana: 4, sub: '防·法' },
   { id: 'tongD2', name: '灵法犀', type: 'tongue', kind: 'def', out: 1, guard: 5, heal: 2, mana: 3, sub: '防·法' }
 ];
+
+/* 实际使用的卡库：启动时用数据库卡牌覆盖，失败则保持兜底卡 */
+let CARD_DB = FALLBACK_CARDS.slice();
+let cardFromDb = false;
+
 const RANKS = [
   { n: '青铜', min: 0 }, { n: '白银', min: 100 }, { n: '黄金', min: 200 },
   { n: '铂金', min: 300 }, { n: '钻石', min: 400 }, { n: '王者', min: 500 }
@@ -56,16 +65,82 @@ const state = {
 
 function clone(o) { return JSON.parse(JSON.stringify(o)); }
 function rankOf(score) { let r = RANKS[0]; RANKS.forEach(k => { if (score >= k.min) r = k; }); return r; }
-function defaultDeck() {
-  const byId = id => CARD_DB.find(c => c.id === id);
-  return {
-    attack: [byId('atk1'), byId('atk2'), byId('atk3')],
-    defense: [byId('def1'), byId('def2'), byId('def3')],
-    magic: [byId('mag1'), byId('mag2'), byId('mag3')],
-    reserve: [byId('tongA1'), byId('mag4'), byId('def4')]
-  };
+/* ---------- 数据库卡牌 → 战斗卡牌 ----------
+ * card 表字段映射规则：
+ *   damage_or_shield 为纯数字(1-6)            → 攻击卡，out = 该数字
+ *   damage_or_shield 为 H数字(H1-H5)          → 防御卡，guard = 该数字，out = 1
+ *   两者皆无（法术/被动卡）                    → 法术卡，按 passive_skill 的效果类型折算：
+ *        H 治疗 → heal   /  D 防御增益、N 减益 → guard  /  其余 → out
+ *   is_compound = 1（同时有主动+被动技能）     → 通卡，kind 由攻/防决定，mana 由 hp 折算
+ */
+function numOf(v) { const n = parseInt(v, 10); return isNaN(n) ? 0 : n; }
+function mapDbCards(list, skills) {
+  const skillMap = {};
+  (skills || []).forEach(s => { skillMap[s.code] = s; });
+  return (list || []).map(raw => {
+    const rawDos = raw.damageOrShield;
+    const dos = (rawDos === null || rawDos === undefined || rawDos === 'null' || rawDos === '无') ? '' : String(rawDos);
+    const dbId = raw.id !== undefined ? raw.id : raw.card;
+    const card = {
+      id: 'db' + dbId, dbId: dbId,
+      name: raw.cName || ('卡牌' + dbId),
+      level: raw.cLevel || '', hp: raw.hp || 0,
+      skillName: raw.skillName || '', passiveCode: raw.passiveCode || '',
+      type: 'magic', out: 0, guard: 0, heal: 0
+    };
+    if (/^\d+$/.test(dos)) {
+      card.type = 'attack'; card.out = numOf(dos);
+    } else if (/^H\d+$/i.test(dos)) {
+      card.type = 'defense'; card.guard = numOf(dos.slice(1)); card.out = 1;
+    } else {
+      const sk = raw.passiveCode ? skillMap[raw.passiveCode] : null;
+      const et = sk ? sk.effectType : '';
+      const ev = sk ? (sk.effectValue || 0) : 0;
+      if (et === 'H') card.heal = ev || 2;
+      else if (et === 'D' || et === 'N') card.guard = ev || 1;
+      else card.out = Math.max(2, ev);
+    }
+    const compound = raw.isCompound === 1 || raw.isCompound === true || raw.compound === true;
+    if (compound) {
+      card.kind = (card.type === 'defense') ? 'def' : 'atk';
+      card.type = 'tongue';
+      card.mana = Math.max(3, Math.min(6, Math.round((card.hp || 8) / 3)));
+      card.sub = card.kind === 'atk' ? '攻·法' : '防·法';
+    } else {
+      card.sub = card.level || '';   // 非通卡副标题显示品级（黄 / 玄）
+    }
+    return card;
+  }).filter(c => !!c.name);
 }
-function aiDeck() { return defaultDeck(); }
+
+/* 卡强度：用于默认卡组取该类型里最强的前 3 张 */
+function strength(c) { return (c.out || 0) + (c.guard || 0) + (c.heal || 0) + (c.mana || 0); }
+function topOf(list, n) { return list.slice().sort((a, b) => strength(b) - strength(a)).slice(0, n); }
+
+/** 默认卡组：与具体卡库无关，攻/防/法各取最强的 3 张，备用放通卡（≤2）+ 补位 */
+function defaultDeck() {
+  const atk = topOf(CARD_DB.filter(c => c.type === 'attack'), 3);
+  const def = topOf(CARD_DB.filter(c => c.type === 'defense'), 3);
+  const mag = topOf(CARD_DB.filter(c => c.type === 'magic'), 3);
+  const tongs = topOf(CARD_DB.filter(c => c.type === 'tongue'), 2);
+  const used = {};
+  [].concat(atk, def, mag, tongs).forEach(c => { used[c.id] = 1; });
+  const res = tongs.slice(0, 3);
+  topOf(CARD_DB.filter(c => !used[c.id]), 3 - res.length).forEach(c => res.push(c));
+  return { attack: atk, defense: def, magic: mag, reserve: res };
+}
+/** AI 卡组：从当前卡库里随机抽 攻3/防3/法3 */
+function aiDeck() {
+  const pick = (kind, n) => {
+    const pool = CARD_DB.filter(c => c.type === kind).slice();
+    const out = [];
+    while (out.length < n && pool.length) {
+      out.push(pool.splice(Math.floor(Math.random() * pool.length), 1)[0]);
+    }
+    return out;
+  };
+  return { attack: pick('attack', 3), defense: pick('defense', 3), magic: pick('magic', 3) };
+}
 function isInDeck(id) {
   return ['attack', 'defense', 'magic', 'reserve'].some(g => state.deck[g].some(c => c.id === id));
 }
@@ -96,6 +171,7 @@ Page({
     chatShown: false, chatLogs: [], chatInput: '', emojis: CHAT_ICONS,
     cornerBtns: false,
     safeTop: 24, safeBottom: 28,
+    loading: false, cardSource: '',
     reveal: false, revealTitle: '', revealX: { card: null, who: '' }, revealY: { card: null, who: '' },
     trophy: '', resultTitle: '', resultSub: '', rankRows: [], scoreLines: [], rankChange: '', rankCls: '',
     toastMsg: ''
@@ -115,9 +191,52 @@ Page({
     } catch (e) { }
     const saved = wx.getStorageSync('shanhai_score');
     state.score = (typeof saved === 'number' && saved >= 0) ? saved : 100;
-    this.initPickA();
     this.showView('picka');
-    this.startPickACountdown();
+    this.loadCards();
+  },
+
+  /* ---------- 从数据库加载卡牌 ----------
+   * 1) /card/list 取全量卡（含 passive_code 等完整字段）
+   * 2) /skill/list 取被动技能（法术卡的数值来源）
+   * 3) 已登录则再取 /warehouse/cards，优先只用我仓库里的卡
+   * 任一环节失败都自动回退到 FALLBACK_CARDS，保证页面可用
+   */
+  loadCards() {
+    const app = getApp();
+    const ui = app.globalData.userInfo || {};
+    const uid = ui.userId || ui.uid;
+    this.setData({ loading: true });
+
+    const skillP = api.skillList().then(s => s || []).catch(() => []);
+    const cardP = api.cardList().catch(() => null);
+
+    Promise.all([cardP, skillP])
+      .then(([cards, skills]) => {
+        if (!cards || !cards.length) { return null; }   // 拿不到就保持兜底卡
+        const ownedP = uid ? api.ownedCards(uid).catch(() => null) : Promise.resolve(null);
+        return ownedP.then(owned => {
+          let list = cards;
+          if (owned && owned.length) {
+            const ids = {};
+            owned.forEach(o => { ids[o.card !== undefined ? o.card : o.id] = 1; });
+            const mine = cards.filter(c => ids[c.id]);
+            if (mine.length >= 9) { list = mine; }      // 仓库卡够组一套才启用
+          }
+          const mapped = mapDbCards(list, skills);
+          if (mapped.length) {
+            CARD_DB = mapped;
+            cardFromDb = true;
+            this.setData({ cardSource: '数据库 · ' + mapped.length + ' 张' });
+          }
+        });
+      })
+      .catch(() => { })
+      .then(() => {
+        this.setData({ loading: false });
+        if (!cardFromDb) { this.toast('未读到数据库卡牌，已使用本地卡组'); }
+        this.initPickA();
+        this.startPickACountdown();
+      });
   },
   onUnload() {
     this.clearTimers();

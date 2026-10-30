@@ -7,6 +7,7 @@
     <view class="pick-a-title">
       <view class="h2">战前选牌 · 仓库配卡</view>
       <view class="tip">从仓库挑选卡牌填入四组；攻/防/法各 3 张，备用 3 张</view>
+      <view wx:if="{{cardSource}}" class="tip src">卡源：{{cardSource}}</view>
       <view class="picka-bar">
         <view class="timer-row">
           <view class="ring {{pickaDanger?'danger':''}}">{{pickaRing}}</view><text class="sub">选牌</text>
@@ -368,6 +369,14 @@
           <view class="rp-who">{{revealY.who}}</view>
         </view>
       </view>
+    </view>
+  </view>
+
+  <!-- 数据库卡牌加载遮罩 -->
+  <view wx:if="{{loading}}" class="load-mask">
+    <view class="load-box">
+      <view class="load-ring"></view>
+      <view class="load-txt">数据库卡牌加载中…</view>
     </view>
   </view>
 

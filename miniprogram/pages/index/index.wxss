@@ -230,6 +230,16 @@ page { background: #121216; }
 .rank-change .up { color: #7dce9a; }
 .rank-change .down { color: #e67e22; }
 
+/* 卡源提示 */
+.pick-a-title .tip.src { color: #7dce9a; font-size: 20rpx; margin-top: 4rpx; }
+
+/* 数据库卡牌加载遮罩 */
+.load-mask { position: fixed; top: 0; right: 0; bottom: 0; left: 0; background: rgba(8,7,11,.72); z-index: 95; display: flex; align-items: center; justify-content: center; }
+.load-box { background: linear-gradient(160deg, #2c2734, #141119); border: 2rpx solid #b89b58; border-radius: 28rpx; padding: 40rpx 56rpx; text-align: center; box-shadow: 0 0 60rpx rgba(212,184,120,.35); }
+.load-ring { width: 56rpx; height: 56rpx; margin: 0 auto 20rpx; border-radius: 50%; border: 6rpx solid rgba(212,184,120,.25); border-top-color: #f6e6b0; animation: loadSpin 900ms linear infinite; }
+.load-txt { font-size: 26rpx; color: #f6e6b0; letter-spacing: 2rpx; }
+@keyframes loadSpin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
 /* toast */
 .toast { position: fixed; left: 50%; top: 22%; transform: translateX(-50%); background: rgba(18,18,22,.92); color: #f6e6b0; border: 2rpx solid #b89b58; padding: 20rpx 36rpx; border-radius: 20rpx; z-index: 99; font-size: 26rpx; max-width: 80%; text-align: center; }
 
