@@ -223,6 +223,9 @@ page { background: #121216; }
 .reveal-pop .rp-vs { font-size: 34rpx; font-weight: 800; color: #f6e6b0; text-shadow: 0 0 24rpx rgba(212,184,120,.65); }
 .reveal-pop .rp-nocard { width: 170rpx; height: 240rpx; display: flex; align-items: center; justify-content: center; border: 2rpx dashed rgba(212,184,120,.4); border-radius: 16rpx; color: #a89a7c; font-size: 22rpx; }
 
+/* 手牌区吸底：整体下移，停在右下角按钮上方 */
+.view-inner .hand-zone { margin-top: auto; margin-bottom: 148rpx; }
+
 /* ===== 右下角按钮 ===== */
 .corner-btns { position: fixed; right: 24rpx; bottom: 60rpx; z-index: 70; display: flex; gap: 16rpx; }
 .corner-btn { font-size: 26rpx; color: #f6e6b0; background: rgba(18,18,22,.88); border: 2rpx solid #b89b58; border-radius: 40rpx; padding: 14rpx 32rpx; box-shadow: 0 8rpx 24rpx rgba(0,0,0,.5); }
