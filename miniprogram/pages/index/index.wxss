@@ -156,7 +156,7 @@ page { background: #121216; }
 .dice-cell.me .pts { color: #f6e6b0; text-shadow: 0 0 24rpx rgba(212,184,120,.7); }
 
 /* 战斗桌面 */
-.fight-zone { background: linear-gradient(180deg, rgba(10,9,13,.5), rgba(10,9,13,.75)); border-radius: 22rpx; border: 2rpx solid #b89b58; padding: 14rpx 18rpx; }
+.fight-zone { background: linear-gradient(180deg, rgba(10,9,13,.5), rgba(10,9,13,.75)); border-radius: 22rpx; padding: 14rpx 18rpx; }
 .oppbar, .player { display: flex; align-items: center; gap: 16rpx; justify-content: center; }
 .fight-zone .player { margin-top: 8rpx; }
 .fight-zone .player .ava { border-color: #f6e6b0; box-shadow: 0 0 22rpx rgba(246,230,176,.45); }
