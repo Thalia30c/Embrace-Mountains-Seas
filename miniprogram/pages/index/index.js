@@ -190,6 +190,11 @@ Page({
       /* 页面高度用真实可用窗口高度（rpx），避免 100vh 与状态栏/安全区叠加导致整页能滑动 */
       const viewH = Math.round((sys.windowHeight || 667) * 750 / w);
       this.setData({ safeTop: safeTop, safeBottom: safeBottom, viewH: viewH });
+      /* 便于排查贴合度问题：打印真实视口参数 */
+      console.log('[山海战斗] 视口 w=' + sys.windowWidth + ' h=' + sys.windowHeight,
+        '| 屏幕 ' + sys.screenWidth + 'x' + sys.screenHeight,
+        '| 状态栏=' + sys.statusBarHeight,
+        '| 底部安全区=' + (sys.safeArea && sys.screenHeight ? (sys.screenHeight - sys.safeArea.bottom) : 'n/a'));
     } catch (e) { }
     const saved = wx.getStorageSync('shanhai_score');
     state.score = (typeof saved === 'number' && saved >= 0) ? saved : 100;
