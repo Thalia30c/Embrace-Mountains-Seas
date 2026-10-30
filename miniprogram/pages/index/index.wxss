@@ -5,7 +5,6 @@ page { background: #121216; }
 .view-box {
   position: relative;
   border-radius: 28rpx;
-  border: 2rpx solid #b89b58;
   background: #141219;
   box-sizing: border-box;
 }
