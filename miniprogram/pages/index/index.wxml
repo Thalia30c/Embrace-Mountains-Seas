@@ -1,84 +1,364 @@
-<!-- pages/index/index.wxml
-     山海异兽卡牌对战系统 · 首页总览（融合参考实现与真实接口数据）
-     五大区域：顶部标题+资源栏 → 双主按钮（抽卡/战斗）→ 欢迎面板
-     → 底部三按钮（卡组/商店/个人）→ 免责备注
-     自定义导航栏，右上资源栏已避让微信胶囊安全区
--->
-<view class="home">
+<!--pages/index/index.wxml-->
+<!-- 山海异兽 · 战略博弈战斗：配卡 / 交换 / 战斗 / 结算 四界面 -->
 
-  <!-- 全屏背景图（山海麒麟水墨黑金） -->
-  <image class="bg" src="/images/bg_home.jpg" mode="aspectFill"></image>
-  <view class="bg-mask"></view>
+<view class="page">
+  <!-- 国风山水底纹 -->
+  <image class="page-bg" src="/images/bg_home.jpg" mode="aspectFill"></image>
+  <view class="page-mask"></view>
 
-  <!-- 区域1：顶部标题 + 资源栏 -->
-  <view class="top">
-    <view class="top-left">
-      <view class="main-title">山海异兽</view>
-      <view class="sub-title">卡牌对战系统</view>
-      <view class="tag">功能总览</view>
+  <view class="wrap">
+
+    <!-- ==================== 界面A：战前配卡 ==================== -->
+    <view wx:if="{{view === 'picka'}}" class="view">
+      <view class="picka-title">
+        <view class="t1">战前选牌 · 仓库配卡</view>
+        <view class="t2">从仓库挑选卡牌填入四组；攻/防/法各 3 张，备用 3 张</view>
+        <view class="picka-bar">
+          <text class="sub">三方确认后可提前进入</text>
+          <view class="timer">
+            <view class="ring {{pickaTime <= 10 ? 'danger' : ''}}">{{pickaTime}}</view>
+            <text class="tl">选牌</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="panel">
+        <view class="section-title">我的卡牌仓库</view>
+        <view class="storage">
+          <view wx:for="{{storage}}" wx:key="id" class="cw" data-id="{{item.id}}" bindtap="onStorageTap">
+            <template is="cardTpl" data="{{...item}}"></template>
+          </view>
+        </view>
+      </view>
+
+      <view class="constraint">规则：攻组只放攻击/攻法通卡 · 防组只放防御/防法通卡 · 法组只放法术卡 · 通卡最多 2 张</view>
+
+      <view class="groups4">
+        <view class="group-col">
+          <view class="gl">
+            <text class="tag tag-atk">攻</text>
+            <text class="gname">进攻卡组</text>
+            <text class="gcount">{{counts.attack}}</text>
+          </view>
+          <view class="slots">
+            <view wx:for="{{groups.attack}}" wx:for-index="i" wx:key="i" class="cw" data-group="attack" data-index="{{i}}" bindtap="onSlotTap">
+              <template wx:if="{{item}}" is="cardTpl" data="{{...item}}"></template>
+              <view wx:else class="card c-slot"><view class="slot-plus">+</view></view>
+            </view>
+          </view>
+        </view>
+
+        <view class="group-col">
+          <view class="gl">
+            <text class="tag tag-def">防</text>
+            <text class="gname">防御卡组</text>
+            <text class="gcount">{{counts.defense}}</text>
+          </view>
+          <view class="slots">
+            <view wx:for="{{groups.defense}}" wx:for-index="i" wx:key="i" class="cw" data-group="defense" data-index="{{i}}" bindtap="onSlotTap">
+              <template wx:if="{{item}}" is="cardTpl" data="{{...item}}"></template>
+              <view wx:else class="card c-slot"><view class="slot-plus">+</view></view>
+            </view>
+          </view>
+        </view>
+
+        <view class="group-col">
+          <view class="gl">
+            <text class="tag tag-mag">法</text>
+            <text class="gname">法术卡组</text>
+            <text class="gcount">{{counts.magic}}</text>
+          </view>
+          <view class="slots">
+            <view wx:for="{{groups.magic}}" wx:for-index="i" wx:key="i" class="cw" data-group="magic" data-index="{{i}}" bindtap="onSlotTap">
+              <template wx:if="{{item}}" is="cardTpl" data="{{...item}}"></template>
+              <view wx:else class="card c-slot"><view class="slot-plus">+</view></view>
+            </view>
+          </view>
+        </view>
+
+        <view class="group-col">
+          <view class="gl">
+            <text class="tag tag-res">备</text>
+            <text class="gname">备用卡组</text>
+            <text class="gcount">{{counts.reserve}}</text>
+          </view>
+          <view class="slots">
+            <view wx:for="{{groups.reserve}}" wx:for-index="i" wx:key="i" class="cw" data-group="reserve" data-index="{{i}}" bindtap="onSlotTap">
+              <template wx:if="{{item}}" is="cardTpl" data="{{...item}}"></template>
+              <view wx:else class="card c-slot"><view class="slot-plus">+</view></view>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <view class="operate">
+        <view class="btn primary" bindtap="confirmPickA">确认配卡</view>
+        <view class="btn ghost" bindtap="resetDefault">默认配置</view>
+      </view>
     </view>
-    <view class="currency">
-      <view class="cur-item">
-        <image class="cur-icon" src="/images/res_jade.jpg" mode="aspectFill"></image>
-        <view class="cur-num">{{userInfo.score || 0}}</view>
+
+    <!-- ==================== 界面B：组内交换 ==================== -->
+    <view wx:if="{{view === 'pickb'}}" class="view">
+      <view class="swap-bar">
+        <text class="st">{{swapTitle}}</text>
+        <view class="timer">
+          <view class="ring {{swapTime <= 5 ? 'danger' : ''}}">{{swapTime}}</view>
+          <text class="tl">交换</text>
+        </view>
       </view>
-      <view class="cur-item">
-        <image class="cur-icon" src="/images/res_coin.jpg" mode="aspectFill"></image>
-        <view class="cur-num">{{myCardCount}}</view>
+      <view class="sub sub-line">只能在自己四组卡牌之间交换调整，不能从仓库新增 · 20 秒倒计时</view>
+
+      <view class="groups4">
+        <view class="group-col">
+          <view class="gl"><text class="tag tag-atk">攻</text><text class="gname">进攻卡组</text></view>
+          <view class="slots">
+            <view wx:for="{{swapGroups.attack}}" wx:for-index="i" wx:key="i" class="cw" data-group="attack" data-index="{{i}}" bindtap="onSwapTap">
+              <template wx:if="{{item}}" is="cardTpl" data="{{...item}}"></template>
+              <view wx:else class="card c-slot"></view>
+            </view>
+          </view>
+        </view>
+
+        <view class="group-col">
+          <view class="gl"><text class="tag tag-def">防</text><text class="gname">防御卡组</text></view>
+          <view class="slots">
+            <view wx:for="{{swapGroups.defense}}" wx:for-index="i" wx:key="i" class="cw" data-group="defense" data-index="{{i}}" bindtap="onSwapTap">
+              <template wx:if="{{item}}" is="cardTpl" data="{{...item}}"></template>
+              <view wx:else class="card c-slot"></view>
+            </view>
+          </view>
+        </view>
+
+        <view class="group-col">
+          <view class="gl"><text class="tag tag-mag">法</text><text class="gname">法术卡组</text></view>
+          <view class="slots">
+            <view wx:for="{{swapGroups.magic}}" wx:for-index="i" wx:key="i" class="cw" data-group="magic" data-index="{{i}}" bindtap="onSwapTap">
+              <template wx:if="{{item}}" is="cardTpl" data="{{...item}}"></template>
+              <view wx:else class="card c-slot"></view>
+            </view>
+          </view>
+        </view>
+
+        <view class="group-col">
+          <view class="gl"><text class="tag tag-res">备</text><text class="gname">备用卡组</text></view>
+          <view class="slots">
+            <view wx:for="{{swapGroups.reserve}}" wx:for-index="i" wx:key="i" class="cw" data-group="reserve" data-index="{{i}}" bindtap="onSwapTap">
+              <template wx:if="{{item}}" is="cardTpl" data="{{...item}}"></template>
+              <view wx:else class="card c-slot"></view>
+            </view>
+          </view>
+        </view>
       </view>
-      <view class="cur-item">
-        <image class="cur-icon" src="/images/res_point.jpg" mode="aspectFill"></image>
-        <view class="cur-num">{{cardTotal}}</view>
+
+      <view class="constraint">通卡最多 2 张 · 攻/防/法组只能放对应类型</view>
+
+      <view class="operate">
+        <view class="btn primary" bindtap="startBattleFromSwap">开始战斗</view>
+      </view>
+    </view>
+
+    <!-- ==================== 界面C：战斗 ==================== -->
+    <view wx:if="{{view === 'battle'}}" class="view">
+      <view class="arena-stage">
+        <view class="ar-title">{{arenaTitle}}</view>
+        <view class="ar-meta">{{arenaMeta}}</view>
+      </view>
+
+      <!-- 掷骰 -->
+      <view wx:if="{{stage === 'dice'}}" class="dice-zone">
+        <view wx:if="{{!dice}}" class="dice-stage">
+          <view class="dice-cube {{diceSpinning ? 'spinning' : ''}}">
+            <view class="face f-f">
+              <view class="p p-tl"></view><view class="p p-c"></view><view class="p p-br"></view>
+            </view>
+            <view class="face f-b">
+              <view class="p p-tl"></view><view class="p p-br"></view>
+            </view>
+            <view class="face f-r">
+              <view class="p p-tl"></view><view class="p p-tr"></view><view class="p p-c"></view><view class="p p-bl"></view><view class="p p-br"></view>
+            </view>
+            <view class="face f-l">
+              <view class="p p-c"></view>
+            </view>
+            <view class="face f-u">
+              <view class="p p-tl"></view><view class="p p-tr"></view><view class="p p-ml"></view><view class="p p-mr"></view><view class="p p-bl"></view><view class="p p-br"></view>
+            </view>
+            <view class="face f-d">
+              <view class="p p-tl"></view><view class="p p-tr"></view><view class="p p-bl"></view><view class="p p-br"></view>
+            </view>
+          </view>
+        </view>
+        <view wx:if="{{!dice}}" class="dice-tip">三人掷骰，点数最高两人进入首轮对战，第三人观战</view>
+        <view wx:if="{{!dice}}" class="btn primary btn-block" bindtap="rollDice">掷骰决定对手</view>
+
+        <view wx:if="{{dice}}" class="dice-result">
+          <view class="dice-title">· 本 轮 点 数 ·</view>
+          <view class="dice-grid">
+            <view class="dice-cell me">
+              <view class="who">我 · 甲</view>
+              <view class="pts">{{dice.A}}</view>
+            </view>
+            <view class="dice-cell">
+              <view class="who">乙</view>
+              <view class="pts">{{dice.B}}</view>
+            </view>
+            <view class="dice-cell">
+              <view class="who">丙</view>
+              <view class="pts">{{dice.C}}</view>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 对局桌面 -->
+      <view wx:if="{{stage === 'fight'}}" class="fight-zone">
+        <view class="oppbar">
+          <view class="ava">{{opp.key}}</view>
+          <view class="pinfo">
+            <view class="pnm">{{opp.name}}</view>
+            <view class="hp-txt">{{opp.hp}}/10</view>
+            <view class="hpbar"><view class="bar {{opp.hp <= 3 ? 'low' : ''}}" style="width:{{opp.bar}}%"></view></view>
+            <view class="pdeck">{{opp.deckText}}</view>
+          </view>
+        </view>
+
+        <view wx:if="{{spectator}}" class="spec-float">
+          <view class="sp-ava">{{spectator.key}}</view>
+          <view class="sp-nm">{{spectator.name}}<text class="sp-small">观战</text></view>
+          <view class="sp-hp">累计 {{spectator.total}} 血</view>
+        </view>
+
+        <view class="roundbar">
+          <view class="round-tag">{{roundTag}}</view>
+          <view class="timer">
+            <view class="ring {{fightTime <= 5 ? 'danger' : ''}}">{{fightTime}}</view>
+            <text class="tl">出牌</text>
+          </view>
+        </view>
+
+        <view class="table-area">
+          <view class="table-inner">
+            <view wx:if="{{!table.has}}" class="row-label">双方尚未出牌</view>
+            <block wx:if="{{table.has}}">
+              <view class="hand-label">本场已打出 · 落桌</view>
+              <view class="table-row">
+                <view class="row-tag">{{table.oppName}}</view>
+                <view wx:for="{{table.oppRow}}" wx:for-index="i" wx:key="i" class="mini {{item.current ? 'revealed' : ''}}">
+                  <template wx:if="{{item.card}}" is="cardTpl" data="{{...item.card}}"></template>
+                  <view wx:else class="pass">{{item.text}}</view>
+                </view>
+              </view>
+              <view class="table-row">
+                <view class="row-tag">{{table.meName}}</view>
+                <view wx:for="{{table.meRow}}" wx:for-index="i" wx:key="i" class="mini {{item.current ? 'revealed' : ''}}">
+                  <template wx:if="{{item.card}}" is="cardTpl" data="{{...item.card}}"></template>
+                  <view wx:else class="pass">{{item.text}}</view>
+                </view>
+              </view>
+            </block>
+          </view>
+        </view>
+
+        <view class="player player-bottom">
+          <view class="ava">{{me.key}}</view>
+          <view class="pinfo">
+            <view class="pnm">{{me.name}}</view>
+            <view class="hp-txt">{{me.hp}}/10</view>
+            <view class="hpbar"><view class="bar {{me.hp <= 3 ? 'low' : ''}}" style="width:{{me.bar}}%"></view></view>
+            <view class="pdeck">{{me.deckText}}</view>
+          </view>
+        </view>
+
+        <view class="hand-zone">
+          <view class="hand-head">
+            <text class="hh-t">{{playTitle}}</text>
+          </view>
+          <view class="hh-s">{{playHint}}</view>
+          <view wx:if="{{showHand}}" class="your-cards">
+            <view wx:for="{{hand}}" wx:key="id" class="cw {{item.selected ? 'selected' : ''}}" data-id="{{item.id}}" bindtap="onHandTap">
+              <template is="cardTpl" data="{{...item}}"></template>
+            </view>
+          </view>
+          <view class="confirm-row">
+            <view wx:if="{{showHand}}" class="btn primary confirm-btn" bindtap="confirmPlay">确认出牌</view>
+            <view wx:else class="btn ghost confirm-btn" bindtap="skipSpectate">跳过观战</view>
+          </view>
+        </view>
+
+        <view class="panel battle-status">
+          <view class="battle-msg">{{msg}}</view>
+          <view class="battle-log">
+            <view wx:for="{{log}}" wx:for-index="i" wx:key="i" class="lg">{{item}}</view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- ==================== 界面D：结算 ==================== -->
+    <view wx:if="{{view === 'result'}}" class="view">
+      <view class="panel result-wrap">
+        <image wx:if="{{result}}" class="trophy" src="{{result.trophy}}" mode="aspectFit"></image>
+        <view class="rs-title">{{result.title}}</view>
+        <view class="winner-sub">{{result.sub}}</view>
+
+        <view class="rank">
+          <view wx:for="{{result.ranks}}" wx:key="key" class="rank-row {{index === 0 ? 'first' : ''}}">
+            <view class="no">{{index + 1}}</view>
+            <view class="nm">{{item.name}}<text wx:if="{{item.isMe}}" class="me-tag">（我）</text></view>
+            <view class="hp">{{item.total}} 血</view>
+          </view>
+        </view>
+
+        <view class="score-box">
+          <view class="line"><text>本局结果</text><text class="b">{{result.resultText}}</text></view>
+          <view class="line"><text>我的积分</text><text class="b">{{result.scoreFrom}} → {{result.scoreTo}}</text></view>
+          <view class="line"><text>段位</text><text class="b">{{result.rankFrom}} → {{result.rankTo}}</text></view>
+        </view>
+
+        <view class="rank-change">{{result.changeText}}</view>
+
+        <view class="operate">
+          <view class="btn primary" bindtap="backHome">确定 · 返回首页</view>
+        </view>
+      </view>
+    </view>
+
+  </view>
+
+  <!-- 亮牌弹窗 -->
+  <view wx:if="{{reveal}}" class="reveal-mask">
+    <view class="reveal-pop">
+      <view class="rp-title">亮牌 · {{reveal.phaseName}}</view>
+      <view class="rp-cards">
+        <view class="rp-side">
+          <template wx:if="{{reveal.xCard}}" is="cardTpl" data="{{...reveal.xCard}}"></template>
+          <view wx:else class="rp-nocard">不出牌</view>
+          <view class="rp-who">{{reveal.xName}}</view>
+        </view>
+        <view class="rp-vs">VS</view>
+        <view class="rp-side">
+          <template wx:if="{{reveal.yCard}}" is="cardTpl" data="{{...reveal.yCard}}"></template>
+          <view wx:else class="rp-nocard">不出牌</view>
+          <view class="rp-who">{{reveal.yName}}</view>
+        </view>
       </view>
     </view>
   </view>
-
-  <!-- 区域2：核心主按钮（抽卡 / 战斗） -->
-  <view class="main-btns">
-    <view class="big-btn" hover-class="big-btn-press" bindtap="onGacha">
-      <image class="btn-bg" src="/images/btn_gacha.jpg" mode="aspectFill"></image>
-      <view class="btn-inner">
-        <text class="btn-text">抽卡</text>
-        <text class="btn-sub">唤灵</text>
-      </view>
-    </view>
-    <view class="big-btn" hover-class="big-btn-press" bindtap="goHall">
-      <image class="btn-bg" src="/images/btn_gacha.jpg" mode="aspectFill"></image>
-      <view class="btn-inner">
-        <text class="btn-text">战斗</text>
-        <text class="btn-sub">对战</text>
-      </view>
-    </view>
-  </view>
-
-  <!-- 中部云雾装饰 -->
-  <view class="fog"></view>
-
-  <!-- 区域3：欢迎面板 -->
-  <view class="welcome">
-    <image class="welcome-bg" src="/images/banner_gold.jpg" mode="aspectFill"></image>
-    <text class="welcome-text">欢迎来到山海世界</text>
-  </view>
-
-  <!-- 区域4：底部次级按钮（卡组 / 商店 / 个人） -->
-  <view class="bottom-bar">
-    <view class="mini-btn" hover-class="mini-btn-press" bindtap="goDeck">
-      <image class="mini-icon" src="/images/ico_deck.jpg" mode="aspectFill"></image>
-      <text class="mini-text">卡组</text>
-    </view>
-    <view class="mini-btn" hover-class="mini-btn-press" bindtap="onShop">
-      <image class="mini-icon" src="/images/ico_shop.jpg" mode="aspectFill"></image>
-      <text class="mini-text">商店</text>
-    </view>
-    <view class="mini-btn" hover-class="mini-btn-press" bindtap="goProfile">
-      <image class="mini-icon" src="/images/ico_me.jpg" mode="aspectFill"></image>
-      <text class="mini-text">御灵师</text>
-    </view>
-  </view>
-
-  <!-- 区域5：免责备注 -->
-  <view class="notice">
-    <text>付费限定卡池仅为后续版本规划，当前版本无付费内容</text>
-  </view>
-
 </view>
+
+<!-- 卡牌模板 -->
+<template name="cardTpl">
+  <view class="card type-{{type}} {{selected ? 'selected' : ''}}">
+    <view class="c-top">
+      <view class="c-badge">{{typeLabel}}</view>
+      <view wx:if="{{sub}}" class="c-type">{{sub}}</view>
+    </view>
+    <view class="c-beast">
+      <image class="beast" src="{{icon}}" mode="aspectFit"></image>
+    </view>
+    <view class="c-name">{{name}}</view>
+    <view class="c-stat">
+      <view wx:for="{{stat}}" wx:for-index="si" wx:key="si" class="st">{{item.k}}<text class="stv">{{item.v}}</text></view>
+    </view>
+  </view>
+</template>

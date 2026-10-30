@@ -1,6 +1,8 @@
 {
   "usingComponents": {},
-  "navigationStyle": "custom",
+  "navigationBarTitleText": "山海异兽 · 战略博弈战斗",
+  "navigationBarBackgroundColor": "#121216",
+  "navigationBarTextStyle": "white",
   "backgroundColor": "#121216",
   "enablePullDownRefresh": false
 }
