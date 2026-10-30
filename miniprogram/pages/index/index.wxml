@@ -1,7 +1,7 @@
 <view class="container">
 
   <!-- ===== 视图：战前配卡（界面A） ===== -->
-  <view class="view view-box {{view=='picka'?'active':''}}">
+  <view class="view view-box {{view=='picka'?'active':''}}" style="padding-top:{{safeTop}}rpx;padding-bottom:{{safeBottom}}rpx">
     <image class="view-bg" src="/assets/bg-picka.jpg" mode="aspectFill"></image>
     <view class="view-inner">
     <view class="pick-a-title">
@@ -102,7 +102,7 @@
   </view>
 
   <!-- ===== 视图：组内交换（界面B） ===== -->
-  <view class="view view-box {{view=='pickb'?'active':''}}">
+  <view class="view view-box {{view=='pickb'?'active':''}}" style="padding-top:{{safeTop}}rpx;padding-bottom:{{safeBottom}}rpx">
     <image class="view-bg" src="/assets/bg-pickb.jpg" mode="aspectFill"></image>
     <view class="view-inner">
     <view class="swap-bar">
@@ -179,7 +179,7 @@
   </view>
 
   <!-- ===== 视图：战斗 ===== -->
-  <view class="view view-box battle {{view=='battle'?'active':''}}">
+  <view class="view view-box battle {{view=='battle'?'active':''}}" style="padding-top:{{safeTop}}rpx;padding-bottom:{{safeBottom}}rpx">
     <image class="view-bg" src="/assets/bg-battle.jpg" mode="aspectFill"></image>
     <view class="view-inner">
     <view class="arena-stage">
@@ -294,10 +294,10 @@
       <!-- 聊天（战斗时可收起） -->
       <view wx:if="{{chatShown}}" class="chat-box">
         <view class="chat-log">
-          <view class="msg {{item.sys?'sys':''}}" wx:for="{{chatLogs}}" wx:key="index"><text wx:if="{{!item.sys}}"><text class="who">{{item.who}}：</text></text>{{item.txt}}</view>
+          <view class="msg {{item.sys?'sys':''}}" wx:for="{{chatLogs}}" wx:key="index"><text wx:if="{{!item.sys}}"><text class="who">{{item.who}}：</text></text><block wx:for="{{item.parts}}" wx:for-item="p" wx:key="index"><text wx:if="{{p.t=='text'}}">{{p.v}}</text><image wx:else class="chat-icon" src="{{p.src}}" mode="aspectFit"></image></block></view>
         </view>
         <view class="chat-input">
-          <view class="emoji-pick"><text wx:for="{{emojis}}" wx:key="*this" bindtap="addEmoji">{{item}}</text></view>
+          <view class="emoji-pick"><image wx:for="{{emojis}}" wx:key="key" class="emoji-ico" src="{{item.src}}" data-key="{{item.key}}" bindtap="addEmoji" mode="aspectFit"></image></view>
           <input value="{{chatInput}}" bindinput="onChatInput" placeholder="说点什么…" />
           <view class="send" bindtap="sendChat">发送</view>
         </view>
@@ -313,7 +313,7 @@
   </view>
 
   <!-- ===== 视图：结算 ===== -->
-  <view class="view view-box {{view=='result'?'active':''}}">
+  <view class="view view-box {{view=='result'?'active':''}}" style="padding-top:{{safeTop}}rpx;padding-bottom:{{safeBottom}}rpx">
     <image class="view-bg" src="/assets/bg-result.jpg" mode="aspectFill"></image>
     <view class="view-inner">
     <view class="panel result-wrap">

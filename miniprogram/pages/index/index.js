@@ -32,6 +32,16 @@ const RANKS = [
 ];
 const WIN_GAIN = 30, LOSE_LOSS = 20;
 
+/* 聊天表情：内联 SVG 图标（不使用 emoji） */
+const CHAT_ICONS = [
+  { key: '笑', svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="#f6e6b0" stroke-width="1.6"/><circle cx="9" cy="10" r="1" fill="#f6e6b0"/><circle cx="15" cy="10" r="1" fill="#f6e6b0"/><path d="M8.5 14.6a4.6 4.6 0 0 0 7 0" fill="none" stroke="#f6e6b0" stroke-width="1.6" stroke-linecap="round"/></svg>' },
+  { key: '泪', svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="#f6e6b0" stroke-width="1.6"/><circle cx="9" cy="10" r="1" fill="#f6e6b0"/><circle cx="15" cy="10" r="1" fill="#f6e6b0"/><path d="M8.2 11.6c1.4 1.6 1.9 2.6 1 3.4-.7.6-1.7.2-2-.8-.3-1 .1-1.9 1-2.6z" fill="#7fd0ff"/><path d="M8.6 15.4a4.4 4.4 0 0 0 6.8 0" fill="none" stroke="#f6e6b0" stroke-width="1.6" stroke-linecap="round"/></svg>' },
+  { key: '火', svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 3c4 4 6 6.4 6 10a6 6 0 0 1-12 0c0-2.4 1.2-4.2 3.6-6.6.6 1.6 1.3 2.5 2.4 2.9C11.4 6.9 11.6 4.8 12 3z" fill="#e67e22"/><path d="M12 10.6c1.4 1.6 2.2 2.7 2.2 3.9a2.2 2.2 0 0 1-4.4 0c0-1.1.8-2.3 2.2-3.9z" fill="#f6e6b0"/></svg>' },
+  { key: '刃', svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2l2 4.4v8.2h-4V6.4z" fill="#e9dbb0"/><path d="M8.4 15.2h7.2" stroke="#b89b58" stroke-width="1.8" stroke-linecap="round"/><path d="M12 16v4.4" stroke="#b89b58" stroke-width="1.8" stroke-linecap="round"/></svg>' },
+  { key: '龙', svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><text x="12" y="18" font-size="16" text-anchor="middle" fill="#f6e6b0" font-family="STKaiti,KaiTi,serif">龙</text></svg>' },
+  { key: '曜', svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2.5l2.2 5.6 5.8 2.2-5.8 2.2L12 18.3 9.8 12.5 4 10.3l5.8-2.2z" fill="#f6e6b0"/></svg>' }
+].map(i => ({ key: i.key, src: 'data:image/svg+xml,' + encodeURIComponent(i.svg) }));
+
 /* 全局状态（不入 data，渲染时映射到 data） */
 const state = {
   view: 'picka',
@@ -83,14 +93,26 @@ Page({
     tableOpp: [], tableMe: [], battleMsg: '',
     handShown: false, handEmpty: false, handEmptyMsg: '', handPool: [], playTitle: '',
     statusShown: false, battleLogs: [],
-    chatShown: false, chatLogs: [], chatInput: '', emojis: ['😀', '😂', '🔥', '⚔️', '🐉', '✨'],
+    chatShown: false, chatLogs: [], chatInput: '', emojis: CHAT_ICONS,
     cornerBtns: false,
+    safeTop: 24, safeBottom: 28,
     reveal: false, revealTitle: '', revealX: { card: null, who: '' }, revealY: { card: null, who: '' },
     trophy: '', resultTitle: '', resultSub: '', rankRows: [], scoreLines: [], rankChange: '', rankCls: '',
     toastMsg: ''
   },
 
   onLoad() {
+    /* 自定义导航栏：按机型状态栏高度补安全区（rpx） */
+    try {
+      const sys = wx.getSystemInfoSync();
+      const w = sys.windowWidth || 375;
+      const sb = sys.statusBarHeight || 20;
+      const safeTop = Math.round(sb * 750 / w) + 24;
+      const safeBottom = sys.screenHeight && sys.safeArea
+        ? Math.round((sys.screenHeight - sys.safeArea.bottom) * 750 / w) + 28
+        : 28;
+      this.setData({ safeTop: safeTop, safeBottom: safeBottom });
+    } catch (e) { }
     const saved = wx.getStorageSync('shanhai_score');
     state.score = (typeof saved === 'number' && saved >= 0) ? saved : 100;
     this.initPickA();
@@ -611,10 +633,26 @@ Page({
     const txt = (this.data.chatInput || '').trim();
     if (!txt) return;
     const logs = this.data.chatLogs.slice();
-    logs.push({ who: '我', txt, sys: false });
+    logs.push({ who: '我', txt: txt, parts: this.parseChat(txt), sys: false });
     this.setData({ chatLogs: logs, chatInput: '' });
   },
+  /* 把 [笑] 之类的标记解析为「文字片段 + SVG 图标片段」 */
+  parseChat(txt) {
+    const parts = [];
+    const map = {};
+    CHAT_ICONS.forEach(i => { map[i.key] = i.src; });
+    const re = /\[([^\]\[]{1,6})\]/g;
+    let last = 0, m;
+    while ((m = re.exec(txt)) !== null) {
+      if (m.index > last) parts.push({ t: 'text', v: txt.slice(last, m.index) });
+      if (map[m[1]]) parts.push({ t: 'icon', src: map[m[1]] });
+      else parts.push({ t: 'text', v: m[0] });
+      last = m.index + m[0].length;
+    }
+    if (last < txt.length) parts.push({ t: 'text', v: txt.slice(last) });
+    return parts;
+  },
   addEmoji(e) {
-    this.setData({ chatInput: (this.data.chatInput || '') + e.currentTarget.dataset.emoji });
+    this.setData({ chatInput: (this.data.chatInput || '') + '[' + e.currentTarget.dataset.key + ']' });
   }
 });
