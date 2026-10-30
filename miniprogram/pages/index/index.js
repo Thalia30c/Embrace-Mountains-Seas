@@ -1,85 +1,53 @@
-// pages/index/index.js
-// 山海异兽 · 战略博弈战斗
-// 状态用普通对象维护，界面统一由 render* 函数重渲染（无框架依赖）
-
-/* ===================== 基础数据 ===================== */
-
+/* ============ 山海异兽·战略博弈战斗 · 逻辑 ============ */
 const ROLES = {
   A: { key: 'A', name: '甲', isPlayer: true },
   B: { key: 'B', name: '乙', isPlayer: false },
   C: { key: 'C', name: '丙', isPlayer: false }
 };
-
 const TYPE_LABEL = { attack: '攻', defense: '防', magic: '法', tongue: '通' };
-const GROUP_LABEL = { attack: '进攻卡组', defense: '防御卡组', magic: '法术卡组', reserve: '备用卡组' };
-const GROUP_TAG = { attack: '攻', defense: '防', magic: '法', reserve: '备' };
-const GROUPS = ['attack', 'defense', 'magic', 'reserve'];
-
-const RANKS = [
-  { n: '青铜', min: 0 },
-  { n: '白银', min: 100 },
-  { n: '黄金', min: 200 },
-  { n: '铂金', min: 300 },
-  { n: '钻石', min: 400 },
-  { n: '王者', min: 500 }
+const CARD_DB = [
+  { id: 'atk1', name: '玄甲犀', type: 'attack', out: 5, guard: 0, heal: 0 },
+  { id: 'atk2', name: '裂山貔', type: 'attack', out: 4, guard: 1, heal: 0 },
+  { id: 'atk3', name: '噬魂狰', type: 'attack', out: 6, guard: 0, heal: 0 },
+  { id: 'atk4', name: '赤焰猁', type: 'attack', out: 6, guard: 1, heal: 0 },
+  { id: 'atk5', name: '玄岩犼', type: 'attack', out: 5, guard: 1, heal: 0 },
+  { id: 'def1', name: '镇海龟', type: 'defense', out: 1, guard: 4, heal: 0 },
+  { id: 'def2', name: '玄武', type: 'defense', out: 1, guard: 5, heal: 0 },
+  { id: 'def3', name: '金甲兽', type: 'defense', out: 3, guard: 3, heal: 0 },
+  { id: 'def4', name: '灵犀', type: 'defense', out: 1, guard: 4, heal: 2 },
+  { id: 'def5', name: '玄壁貔', type: 'defense', out: 2, guard: 5, heal: 0 },
+  { id: 'mag1', name: '回春鹤', type: 'magic', out: 0, guard: 0, heal: 4 },
+  { id: 'mag2', name: '噬灵魈', type: 'magic', out: 5, guard: 0, heal: 0 },
+  { id: 'mag3', name: '天雷彘', type: 'magic', out: 7, guard: 0, heal: 0 },
+  { id: 'mag4', name: '玄冰貉', type: 'magic', out: 4, guard: 0, heal: 2 },
+  { id: 'mag5', name: '炎符鹤', type: 'magic', out: 5, guard: 0, heal: 1 },
+  { id: 'tongA1', name: '炎雷獠', type: 'tongue', kind: 'atk', out: 5, guard: 0, heal: 0, mana: 4, sub: '攻·法' },
+  { id: 'tongA2', name: '雷霆貔', type: 'tongue', kind: 'atk', out: 4, guard: 0, heal: 0, mana: 6, sub: '攻·法' },
+  { id: 'tongD1', name: '玄法龟', type: 'tongue', kind: 'def', out: 1, guard: 4, heal: 0, mana: 4, sub: '防·法' },
+  { id: 'tongD2', name: '灵法犀', type: 'tongue', kind: 'def', out: 1, guard: 5, heal: 2, mana: 3, sub: '防·法' }
 ];
-const WIN_GAIN = 30;
-const LOSE_LOSS = 20;
-const MAX_HP = 10;
+const RANKS = [
+  { n: '青铜', min: 0 }, { n: '白银', min: 100 }, { n: '黄金', min: 200 },
+  { n: '铂金', min: 300 }, { n: '钻石', min: 400 }, { n: '王者', min: 500 }
+];
+const WIN_GAIN = 30, LOSE_LOSS = 20;
 
-/* 神兽图标（内联 SVG，转 data-uri 供 <image> 使用） */
-const BEAST_SVG = {
-  'b-wolf': '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M34,62 L28,44 L40,52 L50,46 L48,58 L62,66 L68,80 L40,80 L30,80 Z" fill="#c9b98a"/><path d="M40,52 L50,46 L52,54 L42,58 Z" fill="#e8d9a8"/></svg>',
-  'b-tiger': '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M22,72 Q20,46 40,40 Q52,36 58,42 Q66,48 66,58 L64,72 Q50,78 40,78 Q28,78 22,72 Z" fill="#c9b98a"/><path d="M30,50 L36,44 L42,50 L38,56 Z" fill="#e8d9a8"/></svg>',
-  'b-turtle': '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M30,66 Q30,42 50,40 Q70,42 70,66 L68,74 Q50,80 32,74 Z" fill="#c9b98a"/><path d="M24,60 L34,60 L34,70 L24,66 Z M66,60 L76,60 L76,66 L66,70 Z M48,72 L52,84 L48,84 Z" fill="#e8d9a8"/></svg>',
-  'b-crane': '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M48,20 L52,20 Q56,22 54,26 L52,30 L50,36 L52,42 Q54,48 52,52 L50,62 Q50,66 46,68 L42,66 Q42,60 44,56 L46,50 L44,44 Q42,38 44,34 L46,28 Z" fill="#c9b98a"/><path d="M30,66 Q40,62 44,64 L40,74 Q36,72 30,70 Z M56,64 Q64,62 66,66 L62,74 Q58,72 56,68 Z M42,72 L46,84 L40,84 Z M50,72 L54,84 L48,84 Z" fill="#e8d9a8"/></svg>',
-  'b-rhino': '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M20,72 Q18,50 34,46 L40,42 Q44,40 46,42 L48,46 Q58,46 64,52 L70,58 Q74,62 72,68 L68,74 Q50,80 34,76 Q24,76 20,72 Z" fill="#c9b98a"/><path d="M40,42 L44,26 L46,42 Z" fill="#e8d9a8"/></svg>',
-  'b-boar': '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M22,70 Q20,46 40,42 Q54,40 60,46 Q68,52 66,62 L64,70 Q50,76 38,76 Q26,76 22,70 Z" fill="#c9b98a"/><path d="M30,52 L34,58 L40,54 L38,60 Z M58,52 L54,58 L48,54 L50,60 Z" fill="#e8d9a8"/></svg>',
-  'b-qilin': '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M30,70 Q26,46 44,40 L50,36 Q52,32 56,36 L54,40 Q62,42 66,50 L70,58 Q74,64 72,70 L64,76 Q48,80 36,76 Q28,76 30,70 Z" fill="#c9b98a"/><path d="M50,36 L56,20 L58,36 Z M54,40 L62,30 L60,42 Z" fill="#e8d9a8"/></svg>',
-  'b-trophy': '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><path d="M12 6h24v9a12 12 0 0 1-24 0z" fill="#f6e6b0"/><rect x="20" y="27" width="8" height="7" fill="#b89b58"/><rect x="15" y="33" width="18" height="3" fill="#b89b58"/><rect x="22" y="36" width="4" height="6" fill="#b89b58"/></svg>'
+/* 全局状态（不入 data，渲染时映射到 data） */
+const state = {
+  view: 'picka',
+  deck: { attack: [], defense: [], magic: [], reserve: [] },
+  pickSel: null,
+  swapSel: null,
+  order: [], matchIndex: 0, pendingMatch: null,
+  totals: { A: 0, B: 0, C: 0 },
+  firstX: null, firstY: null, firstZ: null,
+  fight: null, fightHistory: [], score: 100
 };
 
-const BEAST_URI = {};
-Object.keys(BEAST_SVG).forEach(function (k) {
-  BEAST_URI[k] = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(BEAST_SVG[k]);
-});
-
-/* 卡牌库 */
-const CARD_DB = [
-  { id: 'atk1', name: '玄甲犀', type: 'attack', out: 5, guard: 0, heal: 0, beast: 'b-rhino' },
-  { id: 'atk2', name: '裂山貔', type: 'attack', out: 4, guard: 1, heal: 0, beast: 'b-wolf' },
-  { id: 'atk3', name: '噬魂狰', type: 'attack', out: 6, guard: 0, heal: 0, beast: 'b-tiger' },
-  { id: 'atk4', name: '赤焰猁', type: 'attack', out: 6, guard: 1, heal: 0, beast: 'b-tiger' },
-  { id: 'atk5', name: '玄岩犼', type: 'attack', out: 5, guard: 1, heal: 0, beast: 'b-qilin' },
-
-  { id: 'def1', name: '镇海龟', type: 'defense', out: 1, guard: 4, heal: 0, beast: 'b-turtle' },
-  { id: 'def2', name: '玄武', type: 'defense', out: 1, guard: 5, heal: 0, beast: 'b-turtle' },
-  { id: 'def3', name: '金甲兽', type: 'defense', out: 3, guard: 3, heal: 0, beast: 'b-rhino' },
-  { id: 'def4', name: '灵犀', type: 'defense', out: 1, guard: 4, heal: 2, beast: 'b-rhino' },
-  { id: 'def5', name: '玄壁貔', type: 'defense', out: 2, guard: 5, heal: 0, beast: 'b-wolf' },
-
-  { id: 'mag1', name: '回春鹤', type: 'magic', out: 0, guard: 0, heal: 4, beast: 'b-crane' },
-  { id: 'mag2', name: '噬灵魈', type: 'magic', out: 5, guard: 0, heal: 0, beast: 'b-wolf' },
-  { id: 'mag3', name: '天雷彘', type: 'magic', out: 7, guard: 0, heal: 0, beast: 'b-boar' },
-  { id: 'mag4', name: '玄冰貉', type: 'magic', out: 4, guard: 0, heal: 2, beast: 'b-crane' },
-  { id: 'mag5', name: '炎符鹤', type: 'magic', out: 5, guard: 0, heal: 1, beast: 'b-crane' },
-
-  { id: 'tongA1', name: '炎雷獠', type: 'tongue', kind: 'atk', out: 5, guard: 0, heal: 0, mana: 4, beast: 'b-qilin', sub: '攻·法' },
-  { id: 'tongA2', name: '雷霆貔', type: 'tongue', kind: 'atk', out: 4, guard: 0, heal: 0, mana: 6, beast: 'b-wolf', sub: '攻·法' },
-  { id: 'tongD1', name: '玄法龟', type: 'tongue', kind: 'def', out: 1, guard: 4, heal: 0, mana: 4, beast: 'b-turtle', sub: '防·法' },
-  { id: 'tongD2', name: '灵法犀', type: 'tongue', kind: 'def', out: 1, guard: 5, heal: 2, mana: 3, beast: 'b-rhino', sub: '防·法' }
-];
-
-/* ===================== 工具函数 ===================== */
-
-function byId(id) {
-  for (let i = 0; i < CARD_DB.length; i++) { if (CARD_DB[i].id === id) return CARD_DB[i]; }
-  return null;
-}
-
 function clone(o) { return JSON.parse(JSON.stringify(o)); }
-
+function rankOf(score) { let r = RANKS[0]; RANKS.forEach(k => { if (score >= k.min) r = k; }); return r; }
 function defaultDeck() {
+  const byId = id => CARD_DB.find(c => c.id === id);
   return {
     attack: [byId('atk1'), byId('atk2'), byId('atk3')],
     defense: [byId('def1'), byId('def2'), byId('def3')],
@@ -87,450 +55,335 @@ function defaultDeck() {
     reserve: [byId('tongA1'), byId('mag4'), byId('def4')]
   };
 }
-
+function aiDeck() { return defaultDeck(); }
+function isInDeck(id) {
+  return ['attack', 'defense', 'magic', 'reserve'].some(g => state.deck[g].some(c => c.id === id));
+}
+function tongCount() {
+  return ['attack', 'defense', 'magic', 'reserve'].reduce((s, g) => s + state.deck[g].filter(c => c.type === 'tongue').length, 0);
+}
 function canPlace(card, group) {
-  if (!card) return true;
   if (group === 'attack') return card.type === 'attack' || (card.type === 'tongue' && card.kind === 'atk');
   if (group === 'defense') return card.type === 'defense' || (card.type === 'tongue' && card.kind === 'def');
   if (group === 'magic') return card.type === 'magic';
   return true;
 }
-
 function phaseName(phase) { return phase === 'top' ? '争锋' : '运玄'; }
-
-function availablePool(deck, phase) {
-  return phase === 'top' ? deck.attack.concat(deck.defense) : deck.magic;
-}
-
-function removeFromDeck(deck, cardId) {
-  ['attack', 'defense', 'magic'].forEach(function (g) {
-    const i = deck[g].findIndex(function (c) { return c.id === cardId; });
-    if (i >= 0) deck[g].splice(i, 1);
-  });
-}
-
-function skillName(card) {
-  if (!card) return '不出牌';
-  if (card.type === 'tongue') return card.name + '·' + (card.kind === 'atk' ? '攻' : '防') + '·法';
-  return card.name + '·' + TYPE_LABEL[card.type];
-}
-
-function rankOf(score) {
-  let r = RANKS[0];
-  RANKS.forEach(function (k) { if (score >= k.min) r = k; });
-  return r;
-}
-
-function playerSlotOf(f) {
-  if (ROLES[f.x].isPlayer) return 'x';
-  if (ROLES[f.y].isPlayer) return 'y';
-  return null;
-}
-
-/* 卡牌 -> 视图数据 */
-function cardVM(card, selected) {
-  if (!card) return null;
-  const stat = [];
-  if (card.type === 'attack') {
-    stat.push({ k: '攻', v: card.out });
-  } else if (card.type === 'defense') {
-    stat.push({ k: '防', v: card.guard });
-    stat.push({ k: '攻', v: card.out });
-  } else if (card.type === 'magic') {
-    stat.push(card.out ? { k: '法', v: card.out } : { k: '疗', v: card.heal });
-  } else {
-    stat.push(card.kind === 'atk' ? { k: '攻', v: card.out } : { k: '防', v: card.guard });
-    stat.push({ k: '法', v: card.mana });
-  }
-  return {
-    id: card.id,
-    name: card.name,
-    type: card.type,
-    typeLabel: TYPE_LABEL[card.type],
-    sub: card.sub || '',
-    stat: stat,
-    icon: BEAST_URI[card.beast] || '',
-    selected: !!selected
-  };
-}
-
-function createState() {
-  return {
-    view: 'picka',
-    stage: 'dice',
-    deck: defaultDeck(),
-    pickSel: null,
-    swapSel: null,
-    pendingMatch: 0,
-    order: [],
-    matchIndex: 0,
-    totals: { A: 0, B: 0, C: 0 },
-    firstX: null, firstY: null, firstZ: null,
-    fight: null,
-    fightHistory: [],
-    score: 100,
-    dice: null,
-    diceSpinning: false,
-    isWatch: false,
-    msg: '',
-    log: [],
-    reveal: null
-  };
-}
-
-/* ===================== 页面 ===================== */
 
 Page({
   data: {
     view: 'picka',
-    stage: 'dice',
-    storage: [],
-    groups: { attack: [], defense: [], magic: [], reserve: [] },
-    counts: { attack: '0/3', defense: '0/3', magic: '0/3', reserve: '0/3' },
-    pickaTime: 120,
-    swapTitle: '第 1 场 · 组内交换',
-    swapTime: 20,
-    swapGroups: { attack: [], defense: [], magic: [], reserve: [] },
-    arenaTitle: '对局准备',
-    arenaMeta: '三人掷骰，点数最高两人进入首轮对战',
-    diceSpinning: false,
-    dice: null,
-    opp: null,
-    me: null,
-    spectator: null,
-    roundTag: '回合 1 / 6 · 【争锋】',
-    fightTime: 30,
-    table: { has: false },
-    hand: [],
-    showHand: false,
-    playTitle: '请出牌',
-    playHint: '点选一张卡牌，双方同时亮牌结算',
-    msg: '',
-    log: [],
-    reveal: null,
-    result: null
+    pool: [], deck: { attack: [], defense: [], magic: [], reserve: [] }, counts: {},
+    pickaRing: 120, pickaDanger: false,
+    swapTitle: '', swapRing: 20, swapDanger: false, swapDeck: { attack: [], defense: [], magic: [], reserve: [] },
+    arenaTitle: '', arenaMeta: '',
+    dicePhase: false, diceSpinning: false, diceResult: null, rollDone: false,
+    fightShown: false, spectator: null,
+    opp: {}, me: {}, roundTag: '', timerRing: 30, timerDanger: false,
+    tableOpp: [], tableMe: [], battleMsg: '',
+    handShown: false, handEmpty: false, handEmptyMsg: '', handPool: [], playTitle: '',
+    statusShown: false, battleLogs: [],
+    chatShown: false, chatLogs: [], chatInput: '', emojis: ['😀', '😂', '🔥', '⚔️', '🐉', '✨'],
+    cornerBtns: false,
+    reveal: false, revealTitle: '', revealX: { card: null, who: '' }, revealY: { card: null, who: '' },
+    trophy: '', resultTitle: '', resultSub: '', rankRows: [], scoreLines: [], rankChange: '', rankCls: '',
+    toastMsg: ''
   },
 
-  onLoad: function () {
+  onLoad() {
     const saved = wx.getStorageSync('shanhai_score');
-    this.st = createState();
-    if (saved !== '' && saved !== null && !isNaN(Number(saved))) this.st.score = Number(saved);
-    this.t = { picka: null, swap: null, fight: null, ai: null, reveal: null, flow: null, dice: null };
-    this.resetToPickA();
-  },
-
-  onUnload: function () { this.clearTimers(); },
-  onHide: function () { this.clearTimers(); },
-
-  clearTimers: function () {
-    if (!this.t) return;
-    Object.keys(this.t).forEach((k) => {
-      if (this.t[k]) { clearInterval(this.t[k]); clearTimeout(this.t[k]); this.t[k] = null; }
-    });
-  },
-
-  toast: function (msg) {
-    wx.showToast({ title: msg, icon: 'none', duration: 1500 });
-  },
-
-  /* ---------- 通用查询 ---------- */
-  isInDeck: function (id) {
-    const d = this.st.deck;
-    return GROUPS.some((g) => d[g].some((c) => c && c.id === id));
-  },
-  tongCount: function () {
-    const d = this.st.deck;
-    return GROUPS.reduce((s, g) => s + d[g].filter((c) => c && c.type === 'tongue').length, 0);
-  },
-  fightDeck: function (roleKey) {
-    if (ROLES[roleKey].isPlayer) {
-      const d = this.st.deck;
-      return clone({ attack: d.attack, defense: d.defense, magic: d.magic });
-    }
-    const d = defaultDeck();
-    return clone({ attack: d.attack, defense: d.defense, magic: d.magic });
-  },
-
-  /* ===================== 界面A：仓库配卡 ===================== */
-
-  resetToPickA: function () {
-    this.clearTimers();
-    this.st.deck = defaultDeck();
-    this.st.pickSel = null;
-    this.renderPickA();
+    state.score = (typeof saved === 'number' && saved >= 0) ? saved : 100;
+    this.initPickA();
+    this.showView('picka');
     this.startPickACountdown();
   },
-
-  renderPickA: function () {
-    const st = this.st;
-    const pool = CARD_DB.filter((c) => !this.isInDeck(c.id));
-    const storage = pool.map((c) => cardVM(c, st.pickSel === c.id));
-    const groups = {};
-    const counts = {};
-    GROUPS.forEach((g) => {
-      const arr = [];
-      for (let i = 0; i < 3; i++) {
-        const c = st.deck[g][i];
-        arr.push(c ? cardVM(c, false) : null);
-      }
-      groups[g] = arr;
-      counts[g] = st.deck[g].length + '/3';
-    });
-    this.setData({ view: 'picka', storage: storage, groups: groups, counts: counts });
+  onUnload() {
+    this.clearTimers();
   },
 
-  startPickACountdown: function () {
-    clearInterval(this.t.picka);
-    let t = 120;
-    this.setData({ pickaTime: t });
-    this.t.picka = setInterval(() => {
-      t -= 1;
-      this.setData({ pickaTime: Math.max(0, t) });
-      if (t <= 0) {
-        clearInterval(this.t.picka);
-        this.confirmPickA();
+  /* ---------- 工具 ---------- */
+  clearTimers() {
+    if (this._timers) this._timers.forEach(t => { clearTimeout(t); clearInterval(t); });
+    this._timers = [];
+    if (this._pickaT) { clearInterval(this._pickaT); this._pickaT = null; }
+    if (this._swapT) { clearInterval(this._swapT); this._swapT = null; }
+    if (this._fightT) { clearInterval(this._fightT); this._fightT = null; }
+    if (this._aiT) { clearTimeout(this._aiT); this._aiT = null; }
+  },
+  _later(fn, ms) {
+    if (!this._timers) this._timers = [];
+    this._timers.push(setTimeout(() => { fn(); }, ms));
+  },
+  showView(name) {
+    state.view = name;
+    this.setData({ view: name });
+  },
+  toast(msg) {
+    this.setData({ toastMsg: msg });
+    if (this._toastT) clearTimeout(this._toastT);
+    this._toastT = setTimeout(() => this.setData({ toastMsg: '' }), 1500);
+  },
+
+  /* ---------- 卡牌渲染对象 ---------- */
+  renderCard(c, selected) {
+    const t = c.type;
+    let stat = [];
+    if (t === 'attack') stat = [{ k: '攻', v: c.out }];
+    if (t === 'defense') stat = [{ k: '防', v: c.guard }, { k: '攻', v: c.out }];
+    if (t === 'magic') stat = c.out ? [{ k: '法', v: c.out }] : [{ k: '疗', v: c.heal }];
+    if (t === 'tongue') stat = (c.kind === 'atk') ? [{ k: '攻', v: c.out }, { k: '法', v: c.mana }] : [{ k: '防', v: c.guard }, { k: '法', v: c.mana }];
+    return {
+      id: c.id, name: c.name, badge: TYPE_LABEL[t], sub: c.sub || '',
+      beastChar: c.name ? c.name.charAt(0) : '',
+      type: { attack: 'atk', defense: 'def', magic: 'mag', tongue: 'tong' }[t],
+      stat: stat, selected: !!selected, isEmpty: false
+    };
+  },
+  emptySlot(id) { return { id: id, name: '', badge: '', sub: '', beastChar: '', type: '', stat: [], selected: false, isEmpty: true }; },
+  renderGroup(deck, sel) {
+    const arr = [];
+    for (let i = 0; i < 3; i++) {
+      arr.push(deck[i] ? this.renderCard(deck[i], sel && sel.group === 'g' && sel.index === i) : this.emptySlot('slot-' + i));
+    }
+    return arr;
+  },
+
+  /* ---------- 界面A：仓库配卡 ---------- */
+  initPickA() {
+    state.deck = defaultDeck();
+    state.pickSel = null;
+    this.renderPickA();
+  },
+  renderPickA() {
+    const pool = CARD_DB.filter(c => !isInDeck(c.id)).map(c => this.renderCard(c, state.pickSel === c.id));
+    const deck = {};
+    ['attack', 'defense', 'magic', 'reserve'].forEach(g => {
+      deck[g] = [];
+      for (let i = 0; i < 3; i++) {
+        deck[g].push(state.deck[g][i] ? this.renderCard(state.deck[g][i]) : this.emptySlot('slot-' + g + i));
       }
+    });
+    const counts = {};
+    ['attack', 'defense', 'magic', 'reserve'].forEach(g => { counts[g] = state.deck[g].length + '/3'; });
+    this.setData({ pool, deck, counts });
+  },
+  onPoolTap(e) {
+    const id = e.currentTarget.dataset.id;
+    state.pickSel = (state.pickSel === id) ? null : id;
+    this.renderPickA();
+  },
+  onSlotTap(e) {
+    const g = e.currentTarget.dataset.g;
+    const idx = e.currentTarget.dataset.i;
+    if (state.deck[g][idx]) { state.deck[g].splice(idx, 1); state.pickSel = null; this.renderPickA(); return; }
+    if (!state.pickSel) { this.toast('请先点选一张仓库卡'); return; }
+    const card = CARD_DB.find(c => c.id === state.pickSel);
+    if (!canPlace(card, g)) { this.toast('该卡不能放入此组'); return; }
+    if (card.type === 'tongue' && tongCount() >= 2) { this.toast('通卡最多携带 2 张'); return; }
+    state.deck[g].push(card); state.pickSel = null; this.renderPickA();
+  },
+  defaultPickA() { this.initPickA(); this.toast('已重置为默认配置'); },
+  startPickACountdown() {
+    let t = 120;
+    this.setData({ pickaRing: t, pickaDanger: false });
+    if (this._pickaT) clearInterval(this._pickaT);
+    this._pickaT = setInterval(() => {
+      t--;
+      this.setData({ pickaRing: Math.max(0, t), pickaDanger: t <= 10 });
+      if (t <= 0) { clearInterval(this._pickaT); this.confirmPickA(); }
     }, 1000);
   },
 
-  onStorageTap: function (e) {
-    const id = e.currentTarget.dataset.id;
-    this.st.pickSel = this.st.pickSel === id ? null : id;
-    this.renderPickA();
-  },
-
-  onSlotTap: function (e) {
-    const g = e.currentTarget.dataset.group;
-    const idx = Number(e.currentTarget.dataset.index);
-    const st = this.st;
-    if (st.deck[g][idx]) {
-      st.deck[g].splice(idx, 1);
-      st.pickSel = null;
-      this.renderPickA();
-      return;
-    }
-    if (!st.pickSel) { this.toast('请先点选一张仓库卡'); return; }
-    const card = byId(st.pickSel);
-    if (!canPlace(card, g)) { this.toast('该卡不能放入' + GROUP_LABEL[g].replace('卡组', '')); return; }
-    if (card.type === 'tongue' && this.tongCount() >= 2) { this.toast('通卡最多携带 2 张'); return; }
-    st.deck[g].push(card);
-    st.pickSel = null;
-    this.renderPickA();
-  },
-
-  confirmPickA: function () {
-    clearInterval(this.t.picka);
-    const st = this.st;
-    st.order = [];
-    st.matchIndex = 0;
-    st.fightHistory = [];
-    st.totals = { A: 0, B: 0, C: 0 };
-    st.stage = 'dice';
-    st.dice = null;
-    st.diceSpinning = false;
+  /* ---------- 掷骰与对阵 ---------- */
+  confirmPickA() {
+    if (this._pickaT) clearInterval(this._pickaT);
+    state.order = []; state.matchIndex = 0;
+    this.showView('battle');
     this.setData({
-      view: 'battle',
-      stage: 'dice',
-      arenaTitle: '对局准备',
-      arenaMeta: '三人掷骰，点数最高两人进入首轮对战，第三人观战',
-      dice: null,
-      diceSpinning: false,
-      log: [],
-      msg: '点击掷骰，决定首轮对手'
+      dicePhase: true, fightShown: false, diceResult: null, rollDone: false,
+      arenaTitle: '对局准备', arenaMeta: '三人掷骰，点数最高两人进入首轮对战',
+      spectator: null, cornerBtns: false, statusShown: false, chatShown: false
     });
   },
-
-  resetDefault: function () {
-    this.st.deck = defaultDeck();
-    this.st.pickSel = null;
-    this.renderPickA();
-    this.toast('已重置为默认配置');
-  },
-
-  /* ===================== 掷骰 ===================== */
-
-  rollDice: function () {
-    const st = this.st;
-    if (st.dice) return;
-    const dice = {
-      A: Math.floor(Math.random() * 6) + 1,
-      B: Math.floor(Math.random() * 6) + 1,
-      C: Math.floor(Math.random() * 6) + 1
-    };
-    st.diceSpinning = true;
+  rollDice() {
+    const dice = {};
+    ['A', 'B', 'C'].forEach(k => dice[k] = Math.floor(Math.random() * 6) + 1);
     this.setData({ diceSpinning: true });
-    clearTimeout(this.t.dice);
-    this.t.dice = setTimeout(() => {
+    this._later(() => {
+      this.setData({ diceSpinning: false, diceResult: dice, rollDone: true });
       const list = ['A', 'B', 'C'].sort((a, b) => dice[b] - dice[a]);
-      st.firstX = list[0]; st.firstY = list[1]; st.firstZ = list[2];
-      st.order = [[list[0], list[1]]];
-      st.dice = dice;
-      st.diceSpinning = false;
-      this.setData({
-        dice: dice,
-        diceSpinning: false,
-        arenaMeta: ROLES[list[0]].name + ' 与 ' + ROLES[list[1]].name + ' 首轮对战，' + ROLES[list[2]].name + ' 观战'
-      });
-      clearTimeout(this.t.flow);
-      this.t.flow = setTimeout(() => this.goMatch(0), 5000);
+      state.firstX = list[0]; state.firstY = list[1]; state.firstZ = list[2];
+      state.order = [[list[0], list[1]]];
+      this.setData({ arenaMeta: ROLES[list[0]].name + ' 与 ' + ROLES[list[1]].name + ' 首轮对战，' + ROLES[list[2]].name + ' 观战' });
+      this._later(() => this.goMatch(0), 5000);
     }, 900);
   },
-
-  ensureMatchOrder: function (mi) {
-    const st = this.st;
-    if (st.order[mi]) return;
+  ensureMatchOrder(mi) {
+    if (state.order[mi]) return;
     if (mi === 1) {
-      const f0 = st.fightHistory[0];
-      const high = f0.xhp >= f0.yhp ? f0.x : f0.y;
-      st.order[1] = [high, st.firstZ];
+      const f = state.fightHistory[0];
+      const high = (f.xhp >= f.yhp) ? f.x : f.y;
+      state.order[1] = [high, state.firstZ];
     } else if (mi === 2) {
-      const f0 = st.fightHistory[0];
-      const s1Low = f0.xhp >= f0.yhp ? st.firstY : st.firstX;
-      st.order[2] = [st.firstZ, s1Low];
+      const s1Low = (state.fightHistory[0].xhp >= state.fightHistory[0].yhp) ? state.firstY : state.firstX;
+      state.order[2] = [state.firstZ, s1Low];
     }
   },
-
-  goMatch: function (mi) {
+  goMatch(mi) {
     this.ensureMatchOrder(mi);
-    const pair = this.st.order[mi];
-    const hasPlayer = pair.some((k) => ROLES[k].isPlayer);
-    if (hasPlayer) this.openSwapB(mi);
-    else this.startWatch(mi);
+    const pair = state.order[mi];
+    const hasPlayer = pair.some(k => ROLES[k].isPlayer);
+    if (hasPlayer) { this.openSwapB(mi); } else { this.startWatch(mi); }
   },
 
-  /* ===================== 界面B：组内交换 ===================== */
-
-  openSwapB: function (mi) {
-    const st = this.st;
-    st.pendingMatch = mi;
-    st.swapSel = null;
+  /* ---------- 界面B：组内交换 ---------- */
+  openSwapB(matchIndex) {
+    state.pendingMatch = matchIndex;
+    state.swapSel = null;
+    this.setData({ swapTitle: '第 ' + (matchIndex + 1) + ' 场 · 组内交换', dicePhase: false, fightShown: false });
     this.renderSwapB();
-    this.setData({
-      view: 'pickb',
-      swapTitle: '第 ' + (mi + 1) + ' 场 · 组内交换'
-    });
-    clearInterval(this.t.swap);
+    this.showView('pickb');
+    if (this._swapT) clearInterval(this._swapT);
     let t = 20;
-    this.setData({ swapTime: t });
-    this.t.swap = setInterval(() => {
-      t -= 1;
-      this.setData({ swapTime: Math.max(0, t) });
-      if (t <= 0) {
-        clearInterval(this.t.swap);
-        this.beginMatch(st.order[st.pendingMatch]);
-      }
+    this.setData({ swapRing: t, swapDanger: false });
+    this._swapT = setInterval(() => {
+      t--;
+      this.setData({ swapRing: Math.max(0, t), swapDanger: t <= 5 });
+      if (t <= 0) { clearInterval(this._swapT); this.beginMatch(state.order[matchIndex]); }
     }, 1000);
   },
-
-  renderSwapB: function () {
-    const st = this.st;
-    const swapGroups = {};
-    GROUPS.forEach((g) => {
-      const arr = [];
+  renderSwapB() {
+    const swapDeck = {};
+    ['attack', 'defense', 'magic', 'reserve'].forEach(g => {
+      swapDeck[g] = [];
       for (let i = 0; i < 3; i++) {
-        const c = st.deck[g][i];
-        const sel = st.swapSel && st.swapSel.group === g && st.swapSel.index === i;
-        arr.push(c ? cardVM(c, sel) : null);
+        const sel = state.swapSel && state.swapSel.group === g && state.swapSel.index === i;
+        swapDeck[g].push(state.deck[g][i] ? this.renderCard(state.deck[g][i], sel) : this.emptySlot('swap-' + g + i));
       }
-      swapGroups[g] = arr;
     });
-    this.setData({ swapGroups: swapGroups });
+    this.setData({ swapDeck });
   },
-
-  onSwapTap: function (e) {
-    const st = this.st;
-    const g = e.currentTarget.dataset.group;
-    const idx = Number(e.currentTarget.dataset.index);
+  onSwapTap(e) {
+    const g = e.currentTarget.dataset.g;
+    const idx = e.currentTarget.dataset.i;
     const key = { group: g, index: idx };
-    if (!st.swapSel) {
-      if (st.deck[g][idx]) { st.swapSel = key; this.renderSwapB(); }
-      return;
-    }
-    const a = st.swapSel, b = key;
-    if (a.group === b.group && a.index === b.index) { st.swapSel = null; this.renderSwapB(); return; }
+    if (!state.swapSel) { if (state.deck[g][idx]) { state.swapSel = key; this.renderSwapB(); } return; }
+    const a = state.swapSel, b = key;
+    if (a.group === b.group && a.index === b.index) { state.swapSel = null; this.renderSwapB(); return; }
     this.doSwap(a, b);
   },
-
-  doSwap: function (a, b) {
-    const st = this.st;
-    const ca = st.deck[a.group][a.index];
-    const cb = st.deck[b.group][b.index];
-    if (ca && !canPlace(ca, b.group)) { this.toast('不能放入目标组'); st.swapSel = null; this.renderSwapB(); return; }
-    if (cb && !canPlace(cb, a.group)) { this.toast('目标卡不能放入此组'); st.swapSel = null; this.renderSwapB(); return; }
-    st.deck[a.group][a.index] = cb;
-    st.deck[b.group][b.index] = ca;
-    st.swapSel = null;
+  doSwap(a, b) {
+    const ca = state.deck[a.group][a.index], cb = state.deck[b.group][b.index];
+    if (ca && !canPlace(ca, b.group)) { this.toast('不能放入目标组'); state.swapSel = null; this.renderSwapB(); return; }
+    if (cb && !canPlace(cb, a.group)) { this.toast('目标卡不能放入此组'); state.swapSel = null; this.renderSwapB(); return; }
+    let afterTong = tongCount()
+      - (ca && ca.type === 'tongue' ? 1 : 0) - (cb && cb.type === 'tongue' ? 1 : 0)
+      + (ca && canPlace(ca, b.group) ? (ca.type === 'tongue' ? 1 : 0) : 0)
+      + (cb && canPlace(cb, a.group) ? (cb.type === 'tongue' ? 1 : 0) : 0);
+    if (afterTong > 2) { this.toast('通卡最多携带 2 张'); state.swapSel = null; this.renderSwapB(); return; }
+    state.deck[a.group][a.index] = cb;
+    state.deck[b.group][b.index] = ca;
+    state.swapSel = null;
     this.renderSwapB();
   },
 
-  startBattleFromSwap: function () {
-    clearInterval(this.t.swap);
-    this.beginMatch(this.st.order[this.st.pendingMatch]);
+  /* ---------- 战斗 ---------- */
+  beginMatchFromSwap() {
+    if (this._swapT) clearInterval(this._swapT);
+    this.beginMatch(state.order[state.pendingMatch]);
   },
-
-  /* ===================== 战斗 ===================== */
-
-  beginMatch: function (pair) {
-    const st = this.st;
-    st.fight = {
-      x: pair[0], y: pair[1], xhp: MAX_HP, yhp: MAX_HP,
+  fightDeck(roleKey) {
+    if (ROLES[roleKey].isPlayer) {
+      return clone({ attack: state.deck.attack, defense: state.deck.defense, magic: state.deck.magic });
+    }
+    const d = aiDeck();
+    return clone({ attack: d.attack, defense: d.defense, magic: d.magic });
+  },
+  availablePool(deck, phase) { return phase === 'top' ? deck.attack.concat(deck.defense) : deck.magic; },
+  removeFromDeck(deck, cardId) {
+    ['attack', 'defense', 'magic'].forEach(g => {
+      const i = deck[g].findIndex(c => c.id === cardId);
+      if (i >= 0) deck[g].splice(i, 1);
+    });
+  },
+  beginMatch(pair) {
+    state.fight = {
+      x: pair[0], y: pair[1], xhp: 10, yhp: 10,
       xDeck: this.fightDeck(pair[0]), yDeck: this.fightDeck(pair[1]),
-      round: 1, phase: 'top',
-      xSel: null, ySel: null, xLocked: false, yLocked: false,
-      xTongue: null, yTongue: null,
-      history: [], over: false
+      round: 1, phase: 'top', xSel: null, ySel: null, xLocked: false, yLocked: false,
+      xTongue: null, yTongue: null, history: [], over: false
     };
-    st.stage = 'fight';
-    st.log = [];
-    st.isWatch = !pair.some((k) => ROLES[k].isPlayer);
-    st.msg = st.isWatch ? 'AI 对战自动进行，你可在场边观看' : '请出牌，双方同时亮牌结算';
+    this.showView('battle');
     this.setData({
-      view: 'battle',
-      stage: 'fight',
-      arenaTitle: '对局 · 第 ' + (st.matchIndex + 1) + ' 场',
-      arenaMeta: st.isWatch
-        ? '观战中：' + ROLES[pair[0]].name + ' vs ' + ROLES[pair[1]].name
-        : ROLES[pair[0]].name + ' vs ' + ROLES[pair[1]].name,
-      log: [],
-      msg: st.msg,
-      reveal: null
+      dicePhase: false, fightShown: true, reveal: false, spectator: null,
+      arenaTitle: '对局 · 第 ' + (state.matchIndex + 1) + ' 场',
+      arenaMeta: ROLES[pair[0]].name + ' vs ' + ROLES[pair[1]].name,
+      cornerBtns: true, statusShown: false, chatShown: false, battleLogs: [],
+      battleMsg: ''
     });
     this.renderFight();
     this.startPhase();
   },
-
-  startWatch: function (mi) {
-    this.st.pendingMatch = mi;
-    this.beginMatch(this.st.order[mi]);
+  startWatch(mi) {
+    state.pendingMatch = mi;
+    this.beginMatch(state.order[mi]);
+    this.setData({
+      spectator: this.buildSpectator(), handShown: false,
+      statusShown: true, cornerBtns: false, chatShown: true,
+      arenaMeta: '观战中：' + ROLES[state.fight.x].name + ' vs ' + ROLES[state.fight.y].name
+    });
   },
-
-  startPhase: function () {
-    const st = this.st, f = st.fight;
-    if (!f || f.over) return;
+  buildSpectator() {
+    const pair = state.order[state.matchIndex];
+    if (!pair) return null;
+    const key = ['A', 'B', 'C'].find(k => pair.indexOf(k) < 0);
+    if (!key) return null;
+    return { key, name: ROLES[key].name, hp: state.totals[key] || 0 };
+  },
+  renderFight() {
+    const f = state.fight;
+    const playerKey = ROLES[f.x].isPlayer ? f.x : f.y;
+    const oppKey = playerKey === f.x ? f.y : f.x;
+    const oppDeck = oppKey === f.x ? f.xDeck : f.yDeck;
+    const playerDeck = playerKey === f.x ? f.xDeck : f.yDeck;
+    const oppHp = oppKey === f.x ? f.xhp : f.yhp;
+    const meHp = playerKey === f.x ? f.xhp : f.yhp;
+    this.setData({
+      opp: { key: oppKey, name: ROLES[oppKey].name, hp: oppHp, hpPct: oppHp * 10, deck: '攻' + oppDeck.attack.length + ' 防' + oppDeck.defense.length + ' 法' + oppDeck.magic.length },
+      me: { key: playerKey, name: ROLES[playerKey].name, hp: meHp, hpPct: meHp * 10, deck: '攻' + playerDeck.attack.length + ' 防' + playerDeck.defense.length + ' 法' + playerDeck.magic.length },
+      roundTag: '回合 ' + f.round + ' / 6 · 【' + phaseName(f.phase) + '】'
+    });
+    this.renderHand();
+    this.renderSpectator();
+  },
+  renderSpectator() {
+    if (!state.fight || !state.order[state.matchIndex]) return;
+    const sp = this.buildSpectator();
+    if (sp) this.setData({ spectator: sp });
+  },
+  startPhase() {
+    const f = state.fight; if (f.over) return;
     f.xSel = null; f.ySel = null; f.xLocked = false; f.yLocked = false;
-    const ps = playerSlotOf(f);
-    if (ps) {
-      const deck = ps === 'x' ? f.xDeck : f.yDeck;
-      if (availablePool(deck, f.phase).length === 0 || (f.phase === 'bottom' && f[ps + 'Tongue'])) {
-        f[ps + 'Locked'] = true;
-      }
-    }
     this.renderFight();
+    const playerSlot = ROLES[f.x].isPlayer ? 'x' : (ROLES[f.y].isPlayer ? 'y' : null);
+    if (playerSlot) {
+      const deck = playerSlot === 'x' ? f.xDeck : f.yDeck;
+      if (this.availablePool(deck, f.phase).length === 0 || (f.phase === 'bottom' && f[playerSlot + 'Tongue'])) f[playerSlot + 'Locked'] = true;
+    }
     this.renderPlayZone();
-    clearInterval(this.t.fight);
+    if (this._fightT) clearInterval(this._fightT);
     let t = 30;
-    this.setData({ fightTime: t });
-    this.t.fight = setInterval(() => {
-      t -= 1;
-      this.setData({ fightTime: Math.max(0, t) });
+    this.setData({ timerRing: t, timerDanger: false });
+    this._fightT = setInterval(() => {
+      t--;
+      this.setData({ timerRing: Math.max(0, t), timerDanger: t <= 5 });
       if (t <= 0) {
-        clearInterval(this.t.fight);
-        ['x', 'y'].forEach((slot) => {
+        clearInterval(this._fightT);
+        ['x', 'y'].forEach(slot => {
           if (!f[slot + 'Locked']) {
             const deck = slot === 'x' ? f.xDeck : f.yDeck;
-            const pool = availablePool(deck, f.phase);
-            if (pool.length === 0) f[slot + 'Sel'] = null;
-            else f[slot + 'Sel'] = pool[Math.floor(Math.random() * pool.length)];
+            const pool = this.availablePool(deck, f.phase);
+            if (pool.length > 0) f[slot + 'Sel'] = pool[Math.floor(Math.random() * pool.length)];
             f[slot + 'Locked'] = true;
           }
         });
@@ -539,332 +392,229 @@ Page({
     }, 1000);
     this.scheduleAI();
   },
-
-  scheduleAI: function () {
-    clearTimeout(this.t.ai);
-    this.t.ai = setTimeout(() => {
-      const f = this.st.fight;
-      if (!f || f.over) return;
-      ['x', 'y'].forEach((slot) => {
+  renderPlayZone() {
+    const f = state.fight;
+    const playerSlot = ROLES[f.x].isPlayer ? 'x' : (ROLES[f.y].isPlayer ? 'y' : null);
+    if (!playerSlot) { this.setData({ handShown: false }); return; }
+    this.setData({ handShown: true });
+    const deck = playerSlot === 'x' ? f.xDeck : f.yDeck;
+    const pool = this.availablePool(deck, f.phase);
+    this.setData({ playTitle: '待选手牌 · 【' + phaseName(f.phase) + '】' + (f.phase === 'top' ? '攻防通卡' : '法术') + '牌组' });
+    const tongue = f[playerSlot + 'Tongue'];
+    if (f.phase === 'bottom' && tongue) {
+      this.setData({ handEmpty: true, handEmptyMsg: '通卡【' + tongue.name + '】的法术能力生效，本半场免出牌，法术直接触发', handPool: [] });
+      f[playerSlot + 'Locked'] = true;
+      return;
+    }
+    if (pool.length === 0) {
+      this.setData({ handEmpty: true, handEmptyMsg: '本半场无牌可出，自动跳过', handPool: [] });
+      f[playerSlot + 'Locked'] = true;
+      return;
+    }
+    this.setData({ handEmpty: false, handPool: pool.map(c => this.renderCard(c, false)) });
+    this.setData({ battleMsg: '请点选一张卡牌' });
+  },
+  onSelectHand(e) {
+    const f = state.fight; if (!f || f.over) return;
+    const ps = ROLES[f.x].isPlayer ? 'x' : (ROLES[f.y].isPlayer ? 'y' : null);
+    if (!ps || f[ps + 'Locked']) return;
+    const i = e.currentTarget.dataset.i;
+    const deck = ps === 'x' ? f.xDeck : f.yDeck;
+    const pool = this.availablePool(deck, f.phase);
+    const c = pool[i];
+    if (f[ps + 'Sel'] && f[ps + 'Sel'].id === c.id) {
+      f[ps + 'Sel'] = null;
+      this.setData({ handPool: pool.map(cd => this.renderCard(cd, false)), battleMsg: '已取消选择，请点选一张卡牌' });
+    } else {
+      f[ps + 'Sel'] = c;
+      this.setData({ handPool: pool.map(cd => this.renderCard(cd, cd.id === c.id)), battleMsg: '已选 ' + c.name + '，点「确认出牌」结算' });
+    }
+  },
+  onConfirm() {
+    const f = state.fight; if (!f || f.over) return;
+    const ps = ROLES[f.x].isPlayer ? 'x' : (ROLES[f.y].isPlayer ? 'y' : null);
+    if (!ps || f[ps + 'Locked']) return;
+    if (!f[ps + 'Sel']) { this.toast('请先选择一张牌'); return; }
+    f[ps + 'Locked'] = true;
+    this.maybeResolve();
+  },
+  scheduleAI() {
+    if (this._aiT) clearTimeout(this._aiT);
+    this._aiT = setTimeout(() => {
+      const f = state.fight; if (f.over) return;
+      ['x', 'y'].forEach(slot => {
         const key = f[slot];
         if (ROLES[key].isPlayer || f[slot + 'Locked']) return;
         if (f.phase === 'bottom' && f[slot + 'Tongue']) { f[slot + 'Locked'] = true; return; }
         const deck = slot === 'x' ? f.xDeck : f.yDeck;
-        const pool = availablePool(deck, f.phase);
-        if (pool.length === 0) f[slot + 'Locked'] = true;
+        const pool = this.availablePool(deck, f.phase);
+        if (pool.length === 0) { f[slot + 'Locked'] = true; }
         else { f[slot + 'Sel'] = pool[Math.floor(Math.random() * pool.length)]; f[slot + 'Locked'] = true; }
       });
       this.maybeResolve();
     }, 900);
   },
-
-  maybeResolve: function () {
-    const f = this.st.fight;
-    if (!f || f.over) return;
-    if (!(f.xLocked && f.yLocked)) return;
-    clearInterval(this.t.fight);
-    clearTimeout(this.t.ai);
+  maybeResolve() {
+    const f = state.fight;
+    if (f.over || !(f.xLocked && f.yLocked)) return;
+    if (this._fightT) clearInterval(this._fightT);
+    if (this._aiT) clearTimeout(this._aiT);
     this.showReveal();
   },
-
-  showReveal: function () {
-    const f = this.st.fight;
+  showReveal() {
+    const f = state.fight;
     const xc = f.xSel, yc = f.ySel;
     const xTongue = (f.phase === 'bottom' && f.xTongue && !xc) ? f.xTongue : null;
     const yTongue = (f.phase === 'bottom' && f.yTongue && !yc) ? f.yTongue : null;
-    f.history.forEach((h) => { h.current = false; });
-    f.history.push({
-      phase: f.phase,
-      xCard: xc ? clone(xc) : null, yCard: yc ? clone(yc) : null,
-      current: true,
-      xTongue: xTongue ? clone(xTongue) : null, yTongue: yTongue ? clone(yTongue) : null
-    });
+    f.history.forEach(h => h.current = false);
+    f.history.push({ phase: f.phase, xCard: xc ? clone(xc) : null, yCard: yc ? clone(yc) : null, current: true, xTongue: xTongue ? clone(xTongue) : null, yTongue: yTongue ? clone(yTongue) : null });
     const xShow = xc || xTongue, yShow = yc || yTongue;
     this.setData({
-      reveal: {
-        phaseName: phaseName(f.phase),
-        xCard: xShow ? cardVM(xShow) : null,
-        yCard: yShow ? cardVM(yShow) : null,
-        xName: ROLES[f.x].name,
-        yName: ROLES[f.y].name
-      },
-      msg: '亮牌！' + ROLES[f.x].name + '【' + skillName(xShow) + '】 vs ' + ROLES[f.y].name + '【' + skillName(yShow) + '】'
+      reveal: true,
+      revealTitle: '亮牌 · ' + phaseName(f.phase),
+      revealX: { card: xShow ? this.renderCard(xShow) : null, who: ROLES[f.x].name },
+      revealY: { card: yShow ? this.renderCard(yShow) : null, who: ROLES[f.y].name },
+      battleMsg: '亮牌！ ' + ROLES[f.x].name + '【' + this.skillName(xc || xTongue) + '】 vs ' + ROLES[f.y].name + '【' + this.skillName(yc || yTongue) + '】'
     });
-    clearTimeout(this.t.reveal);
-    this.t.reveal = setTimeout(() => this.closeReveal(), 2000);
+    this._later(() => this.closeReveal(), 2000);
   },
-
-  closeReveal: function () {
-    this.setData({ reveal: null });
-    this.renderTable();
-    clearTimeout(this.t.reveal);
-    this.t.reveal = setTimeout(() => this.resolveRound(), 600);
+  skillName(card) {
+    if (!card) return '不出牌';
+    if (card.type === 'tongue') return card.name + '·' + (card.kind === 'atk' ? '攻' : '防') + '·法';
+    return card.name + '·' + ({ attack: '攻', defense: '防', magic: '法' }[card.type]);
   },
-
-  resolveRound: function () {
-    const st = this.st, f = st.fight;
-    if (!f || f.over) return;
+  closeReveal() {
+    this.setData({ reveal: false });
+    this.renderHand();
+    this._later(() => this.resolveRound(), 600);
+  },
+  renderHand() {
+    const f = state.fight;
+    if (!f) return;
+    const playerKey = ROLES[f.x].isPlayer ? f.x : f.y;
+    const oppKey = playerKey === f.x ? f.y : f.x;
+    const cardFor = (key, h) => h[key === f.x ? 'xCard' : 'yCard'];
+    const tongueFor = (key, h) => h[key === f.x ? 'xTongue' : 'yTongue'];
+    if (!f.history.length) { this.setData({ tableOpp: [], tableMe: [] }); return; }
+    const buildRow = (key) => f.history.map(h => {
+      const cur = h.current;
+      const c = cardFor(key, h), t = tongueFor(key, h);
+      if (t && !c) return { card: null, pass: '通·法', revealed: cur };
+      return c ? { card: this.renderCard(c), pass: '', revealed: cur } : { card: null, pass: '不出', revealed: cur };
+    });
+    this.setData({ tableOpp: buildRow(oppKey), tableMe: buildRow(playerKey) });
+  },
+  resolveRound() {
+    const f = state.fight;
     const xc = f.xSel, yc = f.ySel;
-    this.setData({ reveal: null });
-
-    f.xhp += (xc ? xc.heal : 0);
-    f.yhp += (yc ? yc.heal : 0);
-
+    f.xhp += (xc ? xc.heal : 0); f.yhp += (yc ? yc.heal : 0);
     let xOut = 0, yOut = 0;
-    if (f.phase === 'top') {
-      xOut = xc ? xc.out : 0;
-      yOut = yc ? yc.out : 0;
-    } else {
-      xOut = xc ? xc.out : (f.xTongue ? f.xTongue.mana : 0);
-      yOut = yc ? yc.out : (f.yTongue ? f.yTongue.mana : 0);
-    }
+    if (f.phase === 'top') { xOut = xc ? xc.out : 0; yOut = yc ? yc.out : 0; }
+    else { xOut = xc ? xc.out : (f.xTongue ? f.xTongue.mana : 0); yOut = yc ? yc.out : (f.yTongue ? f.yTongue.mana : 0); }
     const xGuard = (xc && (xc.type === 'defense' || (xc.type === 'tongue' && xc.kind === 'def'))) ? xc.guard : 0;
     const yGuard = (yc && (yc.type === 'defense' || (yc.type === 'tongue' && yc.kind === 'def'))) ? yc.guard : 0;
     const dmgToY = Math.max(0, xOut - yGuard);
     const dmgToX = Math.max(0, yOut - xGuard);
     f.yhp = Math.max(0, f.yhp - dmgToY);
     f.xhp = Math.max(0, f.xhp - dmgToX);
-
-    if (f.phase === 'top') {
-      f.xTongue = (xc && xc.type === 'tongue') ? xc : null;
-      f.yTongue = (yc && yc.type === 'tongue') ? yc : null;
-    } else {
-      f.xTongue = null; f.yTongue = null;
-    }
-
-    if (xc) removeFromDeck(f.xDeck, xc.id);
-    if (yc) removeFromDeck(f.yDeck, yc.id);
-
-    const note = '回合' + f.round + '·' + phaseName(f.phase) + '：' + ROLES[f.x].name + '造成 ' + dmgToY + ' · ' + ROLES[f.y].name + '造成 ' + dmgToX;
-    st.log.push(note);
-    st.msg = ROLES[f.x].name + '【' + (xc ? xc.name : '不出牌') + '】 vs ' + ROLES[f.y].name + '【' + (yc ? yc.name : '不出牌') + '】 · 伤害 ' + dmgToY + ' / ' + dmgToX;
-    this.setData({ log: st.log.slice(-30), msg: st.msg });
-
-    this.renderFight();
+    if (f.phase === 'top') { f.xTongue = (xc && xc.type === 'tongue') ? xc : null; f.yTongue = (yc && yc.type === 'tongue') ? yc : null; }
+    else { f.xTongue = null; f.yTongue = null; }
+    if (xc) this.removeFromDeck(f.xDeck, xc.id);
+    if (yc) this.removeFromDeck(f.yDeck, yc.id);
+    const note = '回合' + f.round + '·' + phaseName(f.phase) + '：' + ROLES[f.x].name + ' 造成' + dmgToY + ' · ' + ROLES[f.y].name + ' 造成' + dmgToX;
+    this.setData({ battleLogs: (this.data.battleLogs || []).concat([note]), battleMsg: ROLES[f.x].name + '【' + (xc ? xc.name : '不出牌') + '】 vs ' + ROLES[f.y].name + '【' + (yc ? yc.name : '不出牌') + '】' });
     f.xSel = null; f.ySel = null;
-
-    clearTimeout(this.t.flow);
     if (f.xhp <= 0 || f.yhp <= 0) {
-      this.t.flow = setTimeout(() => this.endMatch(), 900);
+      this._later(() => this.endMatch(), 900);
     } else if (f.phase === 'top') {
-      f.phase = 'bottom';
-      this.t.flow = setTimeout(() => this.startPhase(), 900);
+      f.phase = 'bottom'; this._later(() => this.startPhase(), 900);
     } else {
       f.phase = 'top';
-      if (f.round >= 6) this.t.flow = setTimeout(() => this.endMatch(), 900);
-      else { f.round += 1; this.t.flow = setTimeout(() => this.startPhase(), 900); }
+      if (f.round >= 6) { this._later(() => this.endMatch(), 900); }
+      else { f.round++; this._later(() => this.startPhase(), 900); }
     }
   },
-
-  endMatch: function () {
-    const st = this.st, f = st.fight;
-    if (!f || f.over) return;
-    f.over = true;
-    st.totals[f.x] += f.xhp;
-    st.totals[f.y] += f.yhp;
-    st.fightHistory.push({ x: f.x, y: f.y, xhp: f.xhp, yhp: f.yhp });
+  endMatch() {
+    const f = state.fight; f.over = true;
+    state.totals[f.x] += f.xhp;
+    state.totals[f.y] += f.yhp;
+    state.fightHistory.push({ x: f.x, y: f.y, xhp: f.xhp, yhp: f.yhp });
     const winner = f.xhp >= f.yhp ? f.x : f.y;
-    this.setData({ msg: '本场结束：' + ROLES[winner].name + ' 血量更高' });
-    const next = st.matchIndex + 1;
-    st.matchIndex = next;
-    clearTimeout(this.t.flow);
+    this.setData({ battleMsg: '本场结束：' + ROLES[winner].name + ' 血量更高' });
+    const next = state.matchIndex + 1;
+    state.matchIndex = next;
     if (next < 3) {
       this.setData({ arenaMeta: '进入第 ' + (next + 1) + ' 场' });
-      this.t.flow = setTimeout(() => this.goMatch(next), 1200);
+      this._later(() => this.goMatch(next), 1200);
     } else {
-      this.t.flow = setTimeout(() => this.showResult(), 1200);
+      this._later(() => this.showResult(), 1200);
     }
   },
 
-  skipSpectate: function () {
-    const f = this.st.fight;
-    if (!f || f.over) return;
-    this.toast('已跳过观战');
-    this.endMatch();
-  },
-
-  /* ---------- 战斗渲染 ---------- */
-
-  renderFight: function () {
-    const st = this.st, f = st.fight;
-    if (!f) return;
-    const playerKey = ROLES[f.x].isPlayer ? f.x : f.y;
-    const oppKey = playerKey === f.x ? f.y : f.x;
-    const oppDeck = oppKey === f.x ? f.xDeck : f.yDeck;
-    const playerDeck = playerKey === f.x ? f.xDeck : f.yDeck;
-    const opp = {
-      key: oppKey, name: ROLES[oppKey].name,
-      hp: oppKey === f.x ? f.xhp : f.yhp,
-      bar: Math.min(100, (oppKey === f.x ? f.xhp : f.yhp) * 10),
-      deckText: '攻' + oppDeck.attack.length + ' 防' + oppDeck.defense.length + ' 法' + oppDeck.magic.length
-    };
-    const me = {
-      key: playerKey, name: ROLES[playerKey].name + (ROLES[playerKey].isPlayer ? '（我）' : ''),
-      hp: playerKey === f.x ? f.xhp : f.yhp,
-      bar: Math.min(100, (playerKey === f.x ? f.xhp : f.yhp) * 10),
-      deckText: '攻' + playerDeck.attack.length + ' 防' + playerDeck.defense.length + ' 法' + playerDeck.magic.length
-    };
-    let spectator = null;
-    const pair = st.order[st.matchIndex] || [f.x, f.y];
-    const sKey = ['A', 'B', 'C'].filter((k) => pair.indexOf(k) < 0)[0];
-    if (sKey) {
-      spectator = { key: sKey, name: ROLES[sKey].name, total: st.totals[sKey] || 0 };
-    }
-    this.setData({
-      opp: opp,
-      me: me,
-      spectator: spectator,
-      roundTag: '回合 ' + f.round + ' / 6 · 【' + phaseName(f.phase) + '】'
-    });
-    this.renderPlayZone();
-    this.renderTable();
-  },
-
-  renderPlayZone: function () {
-    const st = this.st, f = st.fight;
-    if (!f) return;
-    const ps = playerSlotOf(f);
-    if (!ps) {
-      this.setData({ showHand: false, hand: [], playTitle: '观战中', playHint: 'AI 对战自动进行，你可在场边观看' });
-      return;
-    }
-    const deck = ps === 'x' ? f.xDeck : f.yDeck;
-    const pool = availablePool(deck, f.phase);
-    const title = '待选手牌 · 【' + phaseName(f.phase) + '】' + (f.phase === 'top' ? '攻防通卡牌组' : '法术牌组');
-    const tongue = f[ps + 'Tongue'];
-    if (f.phase === 'bottom' && tongue) {
-      f[ps + 'Locked'] = true;
-      this.setData({ showHand: false, hand: [], playTitle: title, playHint: '通卡【' + tongue.name + '】的法术能力生效，本半场免出牌，法术直接触发' });
-      return;
-    }
-    if (pool.length === 0) {
-      f[ps + 'Locked'] = true;
-      this.setData({ showHand: false, hand: [], playTitle: title, playHint: '本半场无牌可出，自动跳过' });
-      return;
-    }
-    const selId = f[ps + 'Sel'] ? f[ps + 'Sel'].id : null;
-    const hand = pool.map((c) => cardVM(c, c.id === selId));
-    this.setData({
-      showHand: true,
-      hand: hand,
-      playTitle: title,
-      playHint: '点选一张卡牌，双方同时亮牌结算'
-    });
-  },
-
-  onHandTap: function (e) {
-    const f = this.st.fight;
-    if (!f || f.over) return;
-    const ps = playerSlotOf(f);
-    if (!ps || f[ps + 'Locked']) return;
-    const id = e.currentTarget.dataset.id;
-    const deck = ps === 'x' ? f.xDeck : f.yDeck;
-    const pool = availablePool(deck, f.phase);
-    const card = pool.filter((c) => c.id === id)[0];
-    if (!card) return;
-    if (f[ps + 'Sel'] && f[ps + 'Sel'].id === card.id) {
-      f[ps + 'Sel'] = null;
-      this.setData({ msg: '已取消选择，请点选一张卡牌' });
-    } else {
-      f[ps + 'Sel'] = card;
-      this.setData({ msg: '已选 ' + card.name + '，点「确认出牌」结算' });
-    }
-    this.renderPlayZone();
-  },
-
-  confirmPlay: function () {
-    const f = this.st.fight;
-    if (!f || f.over) return;
-    const ps = playerSlotOf(f);
-    if (!ps || f[ps + 'Locked']) return;
-    if (!f[ps + 'Sel']) { this.toast('请先选择一张牌'); return; }
-    f[ps + 'Locked'] = true;
-    this.maybeResolve();
-  },
-
-  renderTable: function () {
-    const f = this.st.fight;
-    if (!f) return;
-    const playerKey = ROLES[f.x].isPlayer ? f.x : f.y;
-    const oppKey = playerKey === f.x ? f.y : f.x;
-    if (!f.history.length) { this.setData({ table: { has: false } }); return; }
-    const cellOf = (key, h) => {
-      const c = key === f.x ? h.xCard : h.yCard;
-      const t = key === f.x ? h.xTongue : h.yTongue;
-      if (t && !c) return { text: '通·法', card: null, current: !!h.current };
-      if (c) return { text: '', card: cardVM(c), current: !!h.current };
-      return { text: '不出', card: null, current: !!h.current };
-    };
-    const oppRow = f.history.map((h) => cellOf(oppKey, h));
-    const meRow = f.history.map((h) => cellOf(playerKey, h));
-    this.setData({
-      table: {
-        has: true,
-        oppName: ROLES[oppKey].name,
-        meName: ROLES[playerKey].name,
-        oppRow: oppRow,
-        meRow: meRow
-      }
-    });
-  },
-
-  /* ===================== 结算 ===================== */
-
-  showResult: function () {
-    const st = this.st;
-    const entries = ['A', 'B', 'C'].map((k) => ({ key: k, total: st.totals[k] || 0 }))
-      .sort((a, b) => b.total - a.total);
+  /* ---------- 结算 ---------- */
+  showResult() {
+    this.showView('result');
+    const entries = ['A', 'B', 'C'].map(k => ({ key: k, total: state.totals[k] || 0 })).sort((a, b) => b.total - a.total);
     const champ = entries[0].key;
-    const ranks = entries.map((e) => ({
-      key: e.key,
-      name: ROLES[e.key].name,
-      isMe: ROLES[e.key].isPlayer,
-      total: e.total
+    const rankRows = entries.map((e, i) => ({
+      no: i + 1, first: i === 0,
+      nm: ROLES[e.key].name + (ROLES[e.key].isPlayer ? '（我）' : ''),
+      hp: e.total + ' 血'
     }));
+    const trophySvg = champ === 'A'
+      ? '<svg viewBox="0 0 48 48"><path d="M12 6h24v9a12 12 0 0 1-24 0z" fill="#f6e6b0"/><rect x="20" y="27" width="8" height="7" fill="#b89b58"/><rect x="15" y="33" width="18" height="3" fill="#b89b58"/><rect x="22" y="36" width="4" height="6" fill="#b89b58"/></svg>'
+      : '<svg viewBox="0 0 48 48"><path d="M12 6h24v9a12 12 0 0 1-24 0z" fill="#8a6a2f"/><rect x="20" y="27" width="8" height="7" fill="#b89b58"/><rect x="15" y="33" width="18" height="3" fill="#b89b58"/><rect x="22" y="36" width="4" height="6" fill="#b89b58"/></svg>';
     const isWin = champ === 'A';
-    const prev = st.score;
-    const nextScore = isWin ? prev + WIN_GAIN : Math.max(0, prev - LOSE_LOSS);
-    st.score = nextScore;
-    wx.setStorageSync('shanhai_score', nextScore);
+    const prev = state.score, nextScore = isWin ? prev + WIN_GAIN : Math.max(0, prev - LOSE_LOSS);
+    state.score = nextScore;
     const pr = rankOf(prev), nr = rankOf(nextScore);
-    const pi = RANKS.map((r) => r.n).indexOf(pr.n);
-    const ni = RANKS.map((r) => r.n).indexOf(nr.n);
+    const pi = RANKS.findIndex(r => r.n === pr.n), ni = RANKS.findIndex(r => r.n === nr.n);
     const delta = ni > pi ? 'up' : (ni < pi ? 'down' : 'same');
-    const changeText = isWin
+    const rankChange = isWin
       ? (delta === 'up' ? '积分达标，段位晋升！' : '积分增加')
       : (delta === 'down' ? '积分不足门槛，段位下降' : '积分扣除');
     this.setData({
-      view: 'result',
-      result: {
-        title: champ === 'A' ? '胜利！冠军是你' : '本局冠军：' + ROLES[champ].name,
-        sub: '三人累计血量排行，最高者获胜',
-        ranks: ranks,
-        resultText: isWin ? '胜利 +' + WIN_GAIN : '失败 -' + LOSE_LOSS,
-        scoreFrom: prev,
-        scoreTo: nextScore,
-        rankFrom: pr.n,
-        rankTo: nr.n,
-        changeText: changeText,
-        trophy: BEAST_URI['b-trophy']
-      }
+      trophy: 'data:image/svg+xml,' + encodeURIComponent(trophySvg),
+      resultTitle: champ === 'A' ? '胜利！冠军是你' : '本局冠军：' + ROLES[champ].name,
+      resultSub: '三人两场累计剩余血量，最高者获胜',
+      rankRows,
+      scoreLines: [
+        { k: '本局结果', v: (isWin ? '胜利 +' + WIN_GAIN : '失败 -' + LOSE_LOSS) },
+        { k: '我的积分', v: prev + ' → ' + nextScore },
+        { k: '段位', v: pr.n + ' → ' + nr.n }
+      ],
+      rankChange: rankChange,
+      rankCls: delta === 'down' ? 'down' : 'up'
     });
   },
+  backHome() {
+    wx.setStorageSync('shanhai_score', state.score);
+    this.toast('已返回首页主菜单');
+    state.totals = { A: 0, B: 0, C: 0 };
+    state.order = []; state.matchIndex = 0; state.pendingMatch = null;
+    state.fightHistory = []; state.pickSel = null; state.swapSel = null;
+    this.clearTimers();
+    this.initPickA();
+    this.showView('picka');
+    this.startPickACountdown();
+  },
 
-  backHome: function () {
-    const st = this.st;
-    st.totals = { A: 0, B: 0, C: 0 };
-    st.order = [];
-    st.matchIndex = 0;
-    st.pendingMatch = null;
-    st.fightHistory = [];
-    st.fight = null;
-    st.swapSel = null;
-    st.dice = null;
-    st.isWatch = false;
-    st.msg = '';
-    st.log = [];
-    this.setData({ reveal: null, log: [], msg: '', result: null });
-    this.resetToPickA();
-    this.toast('已返回首页');
+  /* ---------- 右下角按钮 / 聊天 ---------- */
+  toggleChat() {
+    this.setData({ chatShown: !this.data.chatShown });
+  },
+  toggleStatus() {
+    this.setData({ statusShown: !this.data.statusShown });
+  },
+  onChatInput(e) { this.setData({ chatInput: e.detail.value }); },
+  sendChat() {
+    const txt = (this.data.chatInput || '').trim();
+    if (!txt) return;
+    const logs = this.data.chatLogs.slice();
+    logs.push({ who: '我', txt, sys: false });
+    this.setData({ chatLogs: logs, chatInput: '' });
+  },
+  addEmoji(e) {
+    this.setData({ chatInput: (this.data.chatInput || '') + e.currentTarget.dataset.emoji });
   }
 });
