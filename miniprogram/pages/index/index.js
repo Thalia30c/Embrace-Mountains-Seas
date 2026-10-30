@@ -170,7 +170,7 @@ Page({
     statusShown: false, battleLogs: [],
     chatShown: false, chatLogs: [], chatInput: '', emojis: CHAT_ICONS,
     cornerBtns: false,
-    safeTop: 24, safeBottom: 28,
+    safeTop: 24, safeBottom: 28, viewH: 1334,
     loading: false, cardSource: '',
     reveal: false, revealTitle: '', revealX: { card: null, who: '' }, revealY: { card: null, who: '' },
     trophy: '', resultTitle: '', resultSub: '', rankRows: [], scoreLines: [], rankChange: '', rankCls: '',
@@ -187,7 +187,9 @@ Page({
       const safeBottom = sys.screenHeight && sys.safeArea
         ? Math.round((sys.screenHeight - sys.safeArea.bottom) * 750 / w) + 28
         : 28;
-      this.setData({ safeTop: safeTop, safeBottom: safeBottom });
+      /* 页面高度用真实可用窗口高度（rpx），避免 100vh 与状态栏/安全区叠加导致整页能滑动 */
+      const viewH = Math.round((sys.windowHeight || 667) * 750 / w);
+      this.setData({ safeTop: safeTop, safeBottom: safeBottom, viewH: viewH });
     } catch (e) { }
     const saved = wx.getStorageSync('shanhai_score');
     state.score = (typeof saved === 'number' && saved >= 0) ? saved : 100;
@@ -746,11 +748,14 @@ Page({
   },
 
   /* ---------- 右下角按钮 / 聊天 ---------- */
+  /* 两个面板互斥：同时展开会超出一屏被裁掉 */
   toggleChat() {
-    this.setData({ chatShown: !this.data.chatShown });
+    const on = !this.data.chatShown;
+    this.setData({ chatShown: on, statusShown: false });
   },
   toggleStatus() {
-    this.setData({ statusShown: !this.data.statusShown });
+    const on = !this.data.statusShown;
+    this.setData({ statusShown: on, chatShown: false });
   },
   onChatInput(e) { this.setData({ chatInput: e.detail.value }); },
   sendChat() {

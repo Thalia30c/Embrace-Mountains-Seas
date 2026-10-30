@@ -1,7 +1,7 @@
 /* ===== 山海异兽·战略博弈战斗 · 页面样式（黑金国风） ===== */
 page { background: #121216; }
 .view { display: none; }
-.view.active { display: flex; flex-direction: column; height: 100vh; overflow: hidden; box-sizing: border-box; padding: 20rpx 22rpx 28rpx; }
+.view.active { display: flex; flex-direction: column; height: 100%; overflow: hidden; box-sizing: border-box; padding: 20rpx 22rpx 28rpx; }
 .view-box {
   position: relative;
   border-radius: 28rpx;
@@ -74,8 +74,12 @@ page { background: #121216; }
 .card.c-slot { border-style: dashed; background: rgba(40,35,50,.3); }
 
 /* ===== 仓库 ===== */
-.storage { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16rpx; margin: 20rpx 0 6rpx; }
-.groups4 { display: grid; grid-template-columns: 1fr 1fr; gap: 20rpx; margin-top: 20rpx; }
+/* 仓库区独占剩余高度并在内部滚动，页面本身不滚动 */
+.storage-panel { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; margin: 8rpx 0; padding: 18rpx 20rpx; }
+.storage-scroll { flex: 1 1 auto; min-height: 0; }
+.storage { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12rpx; margin: 0 0 6rpx; }
+.constraint { flex: none; }
+.groups4 { display: grid; grid-template-columns: 1fr 1fr; gap: 20rpx; margin-top: 20rpx; flex: none; }
 .group-col { background: rgba(20,17,26,.6); border: 2rpx solid rgba(212,184,120,.3); border-radius: 20rpx; padding: 18rpx; }
 .group-col .gl { display: flex; align-items: center; gap: 10rpx; font-size: 24rpx; color: #d4b878; margin-bottom: 14rpx; }
 .group-col .gl .tag { font-size: 18rpx; color: #f5e7c1; background: rgba(212,184,120,.15); border: 2rpx solid #b89b58; border-radius: 10rpx; padding: 2rpx 10rpx; }
@@ -201,11 +205,11 @@ page { background: #121216; }
 .corner-btn { font-size: 26rpx; color: #f6e6b0; background: rgba(18,18,22,.88); border: 2rpx solid #b89b58; border-radius: 40rpx; padding: 14rpx 32rpx; box-shadow: 0 8rpx 24rpx rgba(0,0,0,.5); }
 /* 状态提示面板 */
 .battle-status { background: rgba(18,18,22,.55); border: 2rpx solid rgba(212,184,120,.25); border-radius: 20rpx; padding: 14rpx 20rpx; margin-top: 16rpx; }
-.battle-log { max-height: 220rpx; overflow-y: auto; font-size: 24rpx; color: #a89a7c; line-height: 1.8; margin-top: 16rpx; border-top: 2rpx dashed rgba(212,184,120,.3); padding-top: 14rpx; }
+.battle-log { max-height: 180rpx; overflow-y: auto; font-size: 24rpx; color: #a89a7c; line-height: 1.8; margin-top: 12rpx; border-top: 2rpx dashed rgba(212,184,120,.3); padding-top: 12rpx; }
 .battle-log .msg { margin: 4rpx 0; }
 /* 聊天 */
-.chat-box { margin-top: 24rpx; background: rgba(18,18,22,.5); border: 2rpx solid rgba(212,184,120,.25); border-radius: 22rpx; padding: 14rpx 20rpx; }
-.chat-log { max-height: 170rpx; overflow-y: auto; font-size: 24rpx; color: #a89a7c; line-height: 1.7; margin-bottom: 12rpx; }
+.chat-box { margin-top: 16rpx; background: rgba(18,18,22,.5); border: 2rpx solid rgba(212,184,120,.25); border-radius: 22rpx; padding: 12rpx 18rpx; }
+.chat-log { max-height: 140rpx; overflow-y: auto; font-size: 24rpx; color: #a89a7c; line-height: 1.7; margin-bottom: 10rpx; }
 .chat-log .msg .who { color: #d4b878; }
 .chat-log .sys { color: #8a8aa0; font-style: italic; }
 .chat-input { display: flex; gap: 12rpx; align-items: center; }
@@ -254,12 +258,14 @@ page {
   font-family: "STKaiti", "KaiTi", serif;
   font-size: 28rpx;
   height: 100%;
+  overflow: hidden;   /* 整页禁止滑动，各视图内部自己消化内容 */
 }
 .container {
   width: 100%;
-  min-height: 100vh;
+  height: 100%;
   box-sizing: border-box;
-  padding: 0 32rpx 60rpx;
+  padding: 0;
+  overflow: hidden;
   position: relative;
 }
 .container::before {

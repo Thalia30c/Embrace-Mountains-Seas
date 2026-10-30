@@ -1,7 +1,7 @@
-<view class="container">
+<view class="container" style="height:{{viewH}}rpx">
 
   <!-- ===== 视图：战前配卡（界面A） ===== -->
-  <view class="view view-box {{view=='picka'?'active':''}}" style="padding-top:{{safeTop}}rpx;padding-bottom:{{safeBottom}}rpx">
+  <view class="view view-box {{view=='picka'?'active':''}}" style="height:{{viewH}}rpx;padding-top:{{safeTop}}rpx;padding-bottom:{{safeBottom}}rpx">
     <image class="view-bg" src="/assets/bg-picka.jpg" mode="aspectFill"></image>
     <view class="view-inner">
     <view class="pick-a-title">
@@ -16,8 +16,9 @@
     
     </view>
 
-    <view class="panel">
+    <view class="panel storage-panel">
       <view class="section-title">我的卡牌仓库</view>
+      <scroll-view scroll-y class="storage-scroll">
       <view class="storage">
         <block wx:for="{{pool}}" wx:key="id">
           <view class="card {{item.type}} {{item.selected?'selected':''}}" data-id="{{item.id}}" bindtap="onPoolTap">
@@ -27,7 +28,8 @@
             <view class="c-stat"><text wx:for="{{item.stat}}" wx:for-item="st" wx:key="k"><text>{{st.k}}</text><text><text class="num">{{st.v}}</text></text></text></view>
           </view>
         </block>
-      </view>
+        </view>
+      </scroll-view>
     </view>
 
     <view class="constraint">规则：攻组只放攻击/攻法通卡 · 防组只放防御/防法通卡 · 法组只放法术卡 · 通卡最多 2 张</view>
@@ -103,7 +105,7 @@
   </view>
 
   <!-- ===== 视图：组内交换（界面B） ===== -->
-  <view class="view view-box {{view=='pickb'?'active':''}}" style="padding-top:{{safeTop}}rpx;padding-bottom:{{safeBottom}}rpx">
+  <view class="view view-box {{view=='pickb'?'active':''}}" style="height:{{viewH}}rpx;padding-top:{{safeTop}}rpx;padding-bottom:{{safeBottom}}rpx">
     <image class="view-bg" src="/assets/bg-pickb.jpg" mode="aspectFill"></image>
     <view class="view-inner">
     <view class="swap-bar">
@@ -180,7 +182,7 @@
   </view>
 
   <!-- ===== 视图：战斗 ===== -->
-  <view class="view view-box battle {{view=='battle'?'active':''}}" style="padding-top:{{safeTop}}rpx;padding-bottom:{{safeBottom}}rpx">
+  <view class="view view-box battle {{view=='battle'?'active':''}}" style="height:{{viewH}}rpx;padding-top:{{safeTop}}rpx;padding-bottom:{{safeBottom}}rpx">
     <image class="view-bg" src="/assets/bg-battle.jpg" mode="aspectFill"></image>
     <view class="view-inner">
     <view class="arena-stage">
@@ -314,7 +316,7 @@
   </view>
 
   <!-- ===== 视图：结算 ===== -->
-  <view class="view view-box {{view=='result'?'active':''}}" style="padding-top:{{safeTop}}rpx;padding-bottom:{{safeBottom}}rpx">
+  <view class="view view-box {{view=='result'?'active':''}}" style="height:{{viewH}}rpx;padding-top:{{safeTop}}rpx;padding-bottom:{{safeBottom}}rpx">
     <image class="view-bg" src="/assets/bg-result.jpg" mode="aspectFill"></image>
     <view class="view-inner">
     <view class="panel result-wrap">
