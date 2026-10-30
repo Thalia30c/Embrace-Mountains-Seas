@@ -158,6 +158,9 @@ page { background: #121216; }
 /* 战斗桌面 */
 .fight-zone { background: linear-gradient(180deg, rgba(10,9,13,.5), rgba(10,9,13,.75)); border-radius: 22rpx; border: 2rpx solid #b89b58; padding: 14rpx 18rpx; }
 .oppbar, .player { display: flex; align-items: center; gap: 16rpx; justify-content: center; }
+.fight-zone .player { margin-top: 8rpx; }
+.fight-zone .player .ava { border-color: #f6e6b0; box-shadow: 0 0 22rpx rgba(246,230,176,.45); }
+.fight-zone .player .pnm { color: #f6e6b0; }
 .player-bottom { display: flex; align-items: center; gap: 16rpx; justify-content: center; margin-top: 6rpx; }
 .ava { width: 62rpx; height: 62rpx; border-radius: 50%; border: 4rpx solid #b89b58;
   background: radial-gradient(circle at 35% 30%, #3a3340, #1a1720);

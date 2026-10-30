@@ -268,6 +268,15 @@
           </block>
         </view>
       </view>
+      <view class="player">
+        <view class="ava">{{me.key}}</view>
+        <view class="pinfo">
+          <view class="pnm">{{me.name}} · 我</view>
+          <view class="hp-txt">{{me.hp}}/10</view>
+          <view class="hpbar"><view style="width:{{me.hpPct}}%" class="{{me.hp<=3?'low':''}}"></view></view>
+          <view class="pdeck">{{me.deck}}</view>
+        </view>
+      </view>
       <view class="battle-msg">{{battleMsg}}</view>
 
       <!-- 手牌区 -->
