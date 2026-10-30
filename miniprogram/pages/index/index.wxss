@@ -84,6 +84,25 @@ page { background: #121216; }
 .storage { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12rpx; margin: 0 0 6rpx; }
 .constraint { flex: none; }
 .groups4 { display: grid; grid-template-columns: 1fr 1fr; gap: 20rpx; margin-top: 20rpx; flex: none; }
+
+/* ===== 组内交换（界面B）：备用置顶大面板 + 攻/防/法三行横排 ===== */
+.swap-stack { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; gap: 12rpx; margin-top: 10rpx; overflow: hidden; }
+.swap-stack .reserve-panel { flex: none; padding: 12rpx 16rpx; }
+.swap-stack .reserve-panel .gl { margin-bottom: 10rpx; }
+.swap-stack .reserve-panel .slots { display: flex; justify-content: center; gap: 18rpx; }
+.swap-stack .reserve-panel .slots .card { width: 124rpx; flex: 0 0 auto; }
+.swap-stack .reserve-panel .slots .c-slot { min-height: 262rpx; }
+.group-row { flex: none; display: flex; align-items: center; gap: 12rpx;
+  background: rgba(20,17,26,.6); border: 2rpx solid rgba(212,184,120,.3); border-radius: 18rpx; padding: 10rpx 14rpx; }
+.group-row .side-label { width: 72rpx; display: flex; flex-direction: column; align-items: center; gap: 6rpx;
+  font-size: 20rpx; color: #d4b878; letter-spacing: 2rpx; }
+.group-row .slots { flex: 1; display: flex; justify-content: center; gap: 12rpx; }
+.group-row .slots .card { width: 106rpx; flex: 0 0 auto; }
+.group-row .slots .card .c-top { display: none; }  /* 小卡隐藏徽章行，靠顶部色条区分类型 */
+.group-row .slots .card .c-beast { margin: 4rpx 6rpx 2rpx; }
+.group-row .slots .card .c-name { font-size: 16rpx; }
+.group-row .slots .card .c-stat { font-size: 12rpx; margin-top: 2rpx; }
+.group-row .slots .c-slot { min-height: 196rpx; }
 .group-col { background: rgba(20,17,26,.6); border: 2rpx solid rgba(212,184,120,.3); border-radius: 20rpx; padding: 18rpx; }
 .group-col .gl { display: flex; align-items: center; gap: 10rpx; font-size: 24rpx; color: #d4b878; margin-bottom: 14rpx; }
 .group-col .gl .tag { font-size: 18rpx; color: #f5e7c1; background: rgba(212,184,120,.15); border: 2rpx solid #b89b58; border-radius: 10rpx; padding: 2rpx 10rpx; }

@@ -113,54 +113,9 @@
       <view class="timer-tip"><view class="ring {{swapDanger?'danger':''}}">{{swapRing}}</view><text>选牌</text></view>
     
     </view>
-    <view class="sub" style="margin-bottom:24rpx">只能在自己四组卡牌之间交换调整，不能从仓库新增 · 20 秒倒计时</view>
-    <view class="groups4">
-      <view class="group-col">
-        <view class="gl"><text class="tag">攻</text><text>进攻卡组</text></view>
-        <view class="slots">
-          <block wx:for="{{swapDeck.attack}}" wx:key="id">
-            <view class="card {{item.type}} {{item.selected?'selected':''}} {{item.isEmpty?'c-slot':''}}" data-g="attack" data-i="{{index}}" bindtap="onSwapTap">
-              <block wx:if="{{!item.isEmpty}}">
-                <view class="c-top"><text class="c-badge">{{item.badge}}</text><text wx:if="{{item.sub}}" class="c-type">{{item.sub}}</text></view>
-                <view class="c-beast"><view wx:if="{{item.img}}" class="c-imgbox"><image class="c-img" src="{{item.img}}" mode="aspectFit"></image></view><text wx:else class="b-char">{{item.beastChar}}</text></view>
-                <view class="c-name">{{item.name}}</view>
-                <view class="c-stat"><text wx:for="{{item.stat}}" wx:for-item="st" wx:key="k"><text>{{st.k}}</text><text><text class="num">{{st.v}}</text></text></text></view>
-              </block>
-            </view>
-          </block>
-        </view>
-      </view>
-      <view class="group-col">
-        <view class="gl"><text class="tag">防</text><text>防御卡组</text></view>
-        <view class="slots">
-          <block wx:for="{{swapDeck.defense}}" wx:key="id">
-            <view class="card {{item.type}} {{item.selected?'selected':''}} {{item.isEmpty?'c-slot':''}}" data-g="defense" data-i="{{index}}" bindtap="onSwapTap">
-              <block wx:if="{{!item.isEmpty}}">
-                <view class="c-top"><text class="c-badge">{{item.badge}}</text><text wx:if="{{item.sub}}" class="c-type">{{item.sub}}</text></view>
-                <view class="c-beast"><view wx:if="{{item.img}}" class="c-imgbox"><image class="c-img" src="{{item.img}}" mode="aspectFit"></image></view><text wx:else class="b-char">{{item.beastChar}}</text></view>
-                <view class="c-name">{{item.name}}</view>
-                <view class="c-stat"><text wx:for="{{item.stat}}" wx:for-item="st" wx:key="k"><text>{{st.k}}</text><text><text class="num">{{st.v}}</text></text></text></view>
-              </block>
-            </view>
-          </block>
-        </view>
-      </view>
-      <view class="group-col">
-        <view class="gl"><text class="tag">法</text><text>法术卡组</text></view>
-        <view class="slots">
-          <block wx:for="{{swapDeck.magic}}" wx:key="id">
-            <view class="card {{item.type}} {{item.selected?'selected':''}} {{item.isEmpty?'c-slot':''}}" data-g="magic" data-i="{{index}}" bindtap="onSwapTap">
-              <block wx:if="{{!item.isEmpty}}">
-                <view class="c-top"><text class="c-badge">{{item.badge}}</text><text wx:if="{{item.sub}}" class="c-type">{{item.sub}}</text></view>
-                <view class="c-beast"><view wx:if="{{item.img}}" class="c-imgbox"><image class="c-img" src="{{item.img}}" mode="aspectFit"></image></view><text wx:else class="b-char">{{item.beastChar}}</text></view>
-                <view class="c-name">{{item.name}}</view>
-                <view class="c-stat"><text wx:for="{{item.stat}}" wx:for-item="st" wx:key="k"><text>{{st.k}}</text><text><text class="num">{{st.v}}</text></text></text></view>
-              </block>
-            </view>
-          </block>
-        </view>
-      </view>
-      <view class="group-col">
+    <view class="sub" style="margin-bottom:4rpx">只能在自己四组卡牌之间交换 · 通卡最多 2 张 · 20 秒倒计时</view>
+    <view class="swap-stack">
+      <view class="group-col reserve-panel">
         <view class="gl"><text class="tag">备</text><text>备用卡组</text></view>
         <view class="slots">
           <block wx:for="{{swapDeck.reserve}}" wx:key="id">
@@ -175,8 +130,52 @@
           </block>
         </view>
       </view>
+      <view class="group-row">
+        <view class="side-label"><text class="tag">攻</text><text class="side-name">进攻</text></view>
+        <view class="slots">
+          <block wx:for="{{swapDeck.attack}}" wx:key="id">
+            <view class="card {{item.type}} {{item.selected?'selected':''}} {{item.isEmpty?'c-slot':''}}" data-g="attack" data-i="{{index}}" bindtap="onSwapTap">
+              <block wx:if="{{!item.isEmpty}}">
+                <view class="c-top"><text class="c-badge">{{item.badge}}</text><text wx:if="{{item.sub}}" class="c-type">{{item.sub}}</text></view>
+                <view class="c-beast"><view wx:if="{{item.img}}" class="c-imgbox"><image class="c-img" src="{{item.img}}" mode="aspectFit"></image></view><text wx:else class="b-char">{{item.beastChar}}</text></view>
+                <view class="c-name">{{item.name}}</view>
+                <view class="c-stat"><text wx:for="{{item.stat}}" wx:for-item="st" wx:key="k"><text>{{st.k}}</text><text><text class="num">{{st.v}}</text></text></text></view>
+              </block>
+            </view>
+          </block>
+        </view>
+      </view>
+      <view class="group-row">
+        <view class="side-label"><text class="tag">防</text><text class="side-name">防御</text></view>
+        <view class="slots">
+          <block wx:for="{{swapDeck.defense}}" wx:key="id">
+            <view class="card {{item.type}} {{item.selected?'selected':''}} {{item.isEmpty?'c-slot':''}}" data-g="defense" data-i="{{index}}" bindtap="onSwapTap">
+              <block wx:if="{{!item.isEmpty}}">
+                <view class="c-top"><text class="c-badge">{{item.badge}}</text><text wx:if="{{item.sub}}" class="c-type">{{item.sub}}</text></view>
+                <view class="c-beast"><view wx:if="{{item.img}}" class="c-imgbox"><image class="c-img" src="{{item.img}}" mode="aspectFit"></image></view><text wx:else class="b-char">{{item.beastChar}}</text></view>
+                <view class="c-name">{{item.name}}</view>
+                <view class="c-stat"><text wx:for="{{item.stat}}" wx:for-item="st" wx:key="k"><text>{{st.k}}</text><text><text class="num">{{st.v}}</text></text></text></view>
+              </block>
+            </view>
+          </block>
+        </view>
+      </view>
+      <view class="group-row">
+        <view class="side-label"><text class="tag">法</text><text class="side-name">法术</text></view>
+        <view class="slots">
+          <block wx:for="{{swapDeck.magic}}" wx:key="id">
+            <view class="card {{item.type}} {{item.selected?'selected':''}} {{item.isEmpty?'c-slot':''}}" data-g="magic" data-i="{{index}}" bindtap="onSwapTap">
+              <block wx:if="{{!item.isEmpty}}">
+                <view class="c-top"><text class="c-badge">{{item.badge}}</text><text wx:if="{{item.sub}}" class="c-type">{{item.sub}}</text></view>
+                <view class="c-beast"><view wx:if="{{item.img}}" class="c-imgbox"><image class="c-img" src="{{item.img}}" mode="aspectFit"></image></view><text wx:else class="b-char">{{item.beastChar}}</text></view>
+                <view class="c-name">{{item.name}}</view>
+                <view class="c-stat"><text wx:for="{{item.stat}}" wx:for-item="st" wx:key="k"><text>{{st.k}}</text><text><text class="num">{{st.v}}</text></text></text></view>
+              </block>
+            </view>
+          </block>
+        </view>
+      </view>
     </view>
-    <view class="constraint" id="constraint-b">通卡最多 2 张 · 攻/防/法组只能放对应类型</view>
     <view class="operate"><view class="btn primary" bindtap="beginMatchFromSwap">开始战斗</view></view>
     </view>
   </view>
