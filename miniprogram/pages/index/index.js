@@ -233,6 +233,10 @@ Page({
       .catch(() => { })
       .then(() => {
         this.setData({ loading: false });
+        /* 便于验证：控制台输出卡牌来源与前几张卡 */
+        console.log('[山海战斗] 卡源 =', cardFromDb ? '数据库' : '本地兜底',
+          '| 数量 =', CARD_DB.length,
+          '| 示例 =', CARD_DB.slice(0, 6).map(c => c.name + '/' + c.type).join('、'));
         if (!cardFromDb) { this.toast('未读到数据库卡牌，已使用本地卡组'); }
         this.initPickA();
         this.startPickACountdown();
