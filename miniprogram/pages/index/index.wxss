@@ -68,7 +68,8 @@ page { background: #121216; }
   background: radial-gradient(circle at 50% 40%, rgba(212,184,120,.22), rgba(18,18,22,.6));
   border: 2rpx solid rgba(212,184,120,.25);
 }
-.card .c-imgbox { position: relative; width: 100%; padding-top: 140%; background: #17141c; }
+/* 真卡图比例约 0.845（高≈宽x1.18），比例盒随图调整 */
+.card .c-imgbox { position: relative; width: 100%; padding-top: 118%; background: #17141c; }
 .card .c-img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: block; }
 .card .c-beast .b-char { font-size: 28rpx; color: #f6e6b0; text-shadow: 0 0 20rpx rgba(212,184,120,.7); font-weight: 700; }
 .card .c-name { text-align: center; font-size: 18rpx; color: #f6e6b0; letter-spacing: 2rpx; text-shadow: 0 2rpx 4rpx #000; }
@@ -222,7 +223,7 @@ page { background: #121216; }
 .reveal-pop .rp-side .card { padding-bottom: 5rpx; }
 .reveal-pop .rp-side .rp-who { font-size: 24rpx; font-weight: 700; color: #f6e6b0; letter-spacing: 4rpx; margin-top: 10rpx; text-shadow: 0 1px 3px #000; }
 .reveal-pop .rp-vs { font-size: 34rpx; font-weight: 800; color: #f6e6b0; text-shadow: 0 0 24rpx rgba(212,184,120,.65); }
-.reveal-pop .rp-nocard { width: 170rpx; height: 240rpx; display: flex; align-items: center; justify-content: center; border: 2rpx dashed rgba(212,184,120,.4); border-radius: 16rpx; color: #a89a7c; font-size: 22rpx; }
+.reveal-pop .rp-nocard { width: 170rpx; height: 200rpx; display: flex; align-items: center; justify-content: center; border: 2rpx dashed rgba(212,184,120,.4); border-radius: 16rpx; color: #a89a7c; font-size: 22rpx; }
 
 /* 手牌区吸底：整体下移，停在右下角按钮上方 */
 .view-inner .hand-zone { margin-top: auto; margin-bottom: 148rpx; }
