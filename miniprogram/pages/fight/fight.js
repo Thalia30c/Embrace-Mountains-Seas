@@ -657,8 +657,8 @@ Page({
     const cardFor = (key, h) => h[key === f.x ? 'xCard' : 'yCard'];
     const tongueFor = (key, h) => h[key === f.x ? 'xTongue' : 'yTongue'];
     if (!f.history.length) { this.setData({ tableOpp: [], tableMe: [] }); return; }
-    /* 桌面只展示最近 4 回合（太多会把每张卡挤压成细条），完整历史看战斗记录 */
-    const buildRow = (key) => f.history.slice(-4).map(h => {
+    /* 桌面展示最近 6 回合（行内可横向滑动，不会被挤压），完整历史看战斗记录 */
+    const buildRow = (key) => f.history.slice(-6).map(h => {
       const cur = h.current;
       const c = cardFor(key, h), t = tongueFor(key, h);
       if (t && !c) return { card: null, pass: '通·法', revealed: cur };

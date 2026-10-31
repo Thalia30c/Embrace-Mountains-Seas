@@ -236,35 +236,43 @@
         <view class="hand-label">本场已打出 · 落桌</view>
         <view class="table-row">
           <view class="row-tag">{{opp.name}}</view>
-          <block wx:for="{{tableOpp}}" wx:key="index">
-            <view class="mini {{item.revealed?'revealed':''}}">
-              <block wx:if="{{item.card}}">
-                <view class="m-card card {{item.card.type}}">
-                  <view class="c-top"><text class="c-badge">{{item.card.badge}}</text></view>
-                  <view class="c-beast"><view wx:if="{{item.card.img}}" class="c-imgbox"><image class="c-img" src="{{item.card.img}}" mode="aspectFill"></image></view><text wx:else class="b-char">{{item.card.beastChar}}</text></view>
-                  <view class="c-name">{{item.card.name}}</view>
-                  <view class="c-stat"><text wx:for="{{item.card.stat}}" wx:for-item="st" wx:key="k"><text>{{st.k}}</text><text><text class="num">{{st.v}}</text></text></text></view>
+          <scroll-view scroll-x class="row-scroll" show-scrollbar="{{false}}">
+            <view class="row-cards">
+              <block wx:for="{{tableOpp}}" wx:key="index">
+                <view class="mini {{item.revealed?'revealed':''}}">
+                  <block wx:if="{{item.card}}">
+                    <view class="m-card card {{item.card.type}}">
+                      <view class="c-top"><text class="c-badge">{{item.card.badge}}</text></view>
+                      <view class="c-beast"><view wx:if="{{item.card.img}}" class="c-imgbox"><image class="c-img" src="{{item.card.img}}" mode="aspectFill"></image></view><text wx:else class="b-char">{{item.card.beastChar}}</text></view>
+                      <view class="c-name">{{item.card.name}}</view>
+                      <view class="c-stat"><text wx:for="{{item.card.stat}}" wx:for-item="st" wx:key="k"><text>{{st.k}}</text><text><text class="num">{{st.v}}</text></text></text></view>
+                    </view>
+                  </block>
+                  <view wx:else class="pass">{{item.pass}}</view>
                 </view>
               </block>
-              <view wx:else class="pass">{{item.pass}}</view>
             </view>
-          </block>
+          </scroll-view>
         </view>
         <view class="table-row">
           <view class="row-tag">{{me.name}}</view>
-          <block wx:for="{{tableMe}}" wx:key="index">
-            <view class="mini {{item.revealed?'revealed':''}}">
-              <block wx:if="{{item.card}}">
-                <view class="m-card card {{item.card.type}}">
-                  <view class="c-top"><text class="c-badge">{{item.card.badge}}</text></view>
-                  <view class="c-beast"><view wx:if="{{item.card.img}}" class="c-imgbox"><image class="c-img" src="{{item.card.img}}" mode="aspectFill"></image></view><text wx:else class="b-char">{{item.card.beastChar}}</text></view>
-                  <view class="c-name">{{item.card.name}}</view>
-                  <view class="c-stat"><text wx:for="{{item.card.stat}}" wx:for-item="st" wx:key="k"><text>{{st.k}}</text><text><text class="num">{{st.v}}</text></text></text></view>
+          <scroll-view scroll-x class="row-scroll" show-scrollbar="{{false}}">
+            <view class="row-cards">
+              <block wx:for="{{tableMe}}" wx:key="index">
+                <view class="mini {{item.revealed?'revealed':''}}">
+                  <block wx:if="{{item.card}}">
+                    <view class="m-card card {{item.card.type}}">
+                      <view class="c-top"><text class="c-badge">{{item.card.badge}}</text></view>
+                      <view class="c-beast"><view wx:if="{{item.card.img}}" class="c-imgbox"><image class="c-img" src="{{item.card.img}}" mode="aspectFill"></image></view><text wx:else class="b-char">{{item.card.beastChar}}</text></view>
+                      <view class="c-name">{{item.card.name}}</view>
+                      <view class="c-stat"><text wx:for="{{item.card.stat}}" wx:for-item="st" wx:key="k"><text>{{st.k}}</text><text><text class="num">{{st.v}}</text></text></text></view>
+                    </view>
+                  </block>
+                  <view wx:else class="pass">{{item.pass}}</view>
                 </view>
               </block>
-              <view wx:else class="pass">{{item.pass}}</view>
             </view>
-          </block>
+          </scroll-view>
         </view>
       </view>
       <view class="player">
