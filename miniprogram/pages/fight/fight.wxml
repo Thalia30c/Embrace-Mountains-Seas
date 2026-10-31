@@ -358,7 +358,7 @@
     </view>
 
     <!-- 右下角收起按钮 -->
-    <view wx:if="{{cornerBtns}}" class="corner-btns">
+    <view wx:if="{{cornerBtns}}" class="corner-btns {{handShown?(handEmpty?'lift-mid':'lift-high'):''}}">
       <view class="corner-btn" bindtap="toggleChat">聊天</view>
       <view class="corner-btn" bindtap="toggleStatus">状态</view>
     </view>
