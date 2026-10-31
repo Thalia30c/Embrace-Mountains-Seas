@@ -2,7 +2,7 @@
 <view class="page">
 
   <!-- 背景：古风画卷，完整显示 -->
-  <image class="bg" src="../../个人中心通用背景.jpg" mode="aspectFill"></image>
+  <image class="bg" src="../../个人中心通用背景.png" mode="aspectFill"></image>
   <view class="bg-scrim"></view>
 
   <view class="content">

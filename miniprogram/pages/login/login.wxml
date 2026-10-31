@@ -3,7 +3,7 @@
 
   <!-- 背景图：常态即为浅红棕色，输入非法字符时进一步加深以示警示 -->
   <view class="bg-container">
-    <image class="bg-image" src="../../bg.jpg" mode="aspectFill"></image>
+    <image class="bg-image" src="../../bg.png" mode="aspectFill"></image>
     <view class="bg-overlay"></view>
     <view class="bg-error-layer"></view>
   </view>
