@@ -30,13 +30,14 @@ page { background: #121216; }
 .picka-bar { margin-top: 16rpx; font-size: 24rpx; color: #b89b58; }
 .timer-row { display: flex; justify-content: center; align-items: center; gap: 12rpx; margin-top: 10rpx; }
 .ring {
-  width: 64rpx; height: 64rpx; border-radius: 50%;
+  width: 76rpx; height: 76rpx; border-radius: 50%;
   border: 4rpx solid #b89b58;
   display: flex; align-items: center; justify-content: center;
-  font-size: 30rpx; color: #f6e6b0; font-weight: 700;
+  font-size: 36rpx; color: #f6e6b0; font-weight: 800;
   box-sizing: border-box;
 }
-.ring.danger { border-color: #c0392b; color: #e67e22; }
+.ring.danger { border-color: #c0392b; color: #ff8f5a; animation: ringPulse 1s infinite; }
+@keyframes ringPulse { 0%,100% { transform: scale(1); box-shadow: 0 0 0 rgba(192,57,43,0); } 50% { transform: scale(1.12); box-shadow: 0 0 18rpx rgba(192,57,43,.7); } }
 
 /* ===== 卡牌 ===== */
 .card {
@@ -56,8 +57,8 @@ page { background: #121216; }
 .card.selected { border-color: #f6e6b0; box-shadow: 0 0 0 4rpx #f6e6b0, 0 0 40rpx rgba(246,230,176,.5); }
 .card.disabled { opacity: .5; }
 .card .c-top { position: absolute; top: 0; left: 0; right: 0; z-index: 3; display: flex; justify-content: space-between; align-items: center; padding: 8rpx 14rpx 0; }
-.card .c-badge { font-size: 20rpx; color: #241a08; background: #f6e6b0; border-radius: 10rpx; padding: 2rpx 14rpx; }
-.card .c-type { font-size: 20rpx; color: #e9dbb0; text-shadow: 0 2rpx 6rpx #000; }
+.card .c-badge { font-size: 26rpx; font-weight: 800; color: #241a08; background: #f6e6b0; border-radius: 10rpx; padding: 4rpx 16rpx; box-shadow: 0 2rpx 8rpx rgba(0,0,0,.5); }
+.card .c-type { font-size: 24rpx; color: #e9dbb0; text-shadow: 0 2rpx 6rpx #000; }
 /* 卡图铺满整张卡面：底部渐变压暗保证名字/数值可读；无图卡回退兽字居中 */
 .card .c-beast {
   position: absolute; top: 0; left: 0; right: 0; bottom: 0;
@@ -70,9 +71,9 @@ page { background: #121216; }
 .card::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 42%;
   background: linear-gradient(180deg, rgba(10,8,14,0), rgba(10,8,14,.82)); z-index: 1; pointer-events: none; }
 .card .c-beast .b-char { font-size: 28rpx; color: #f6e6b0; text-shadow: 0 0 20rpx rgba(212,184,120,.7); font-weight: 700; }
-.card .c-name { position: absolute; left: 6rpx; right: 6rpx; bottom: 36rpx; z-index: 3; text-align: center; font-size: 18rpx; color: #f6e6b0; letter-spacing: 2rpx; text-shadow: 0 2rpx 4rpx #000; }
-.card .c-stat { position: absolute; left: 6rpx; right: 6rpx; bottom: 10rpx; z-index: 3; display: flex; justify-content: space-around; font-size: 14rpx; color: #d9c9a0; }
-.card .c-stat .num { color: #d4b878; font-weight: 700; }
+.card .c-name { position: absolute; left: 6rpx; right: 6rpx; bottom: 46rpx; z-index: 3; text-align: center; font-size: 24rpx; font-weight: 700; color: #f6e6b0; letter-spacing: 2rpx; text-shadow: 0 2rpx 6rpx #000, 0 0 10rpx rgba(0,0,0,.8); }
+.card .c-stat { position: absolute; left: 6rpx; right: 6rpx; bottom: 12rpx; z-index: 3; display: flex; justify-content: space-around; font-size: 22rpx; font-weight: 700; color: #e9dbb0; text-shadow: 0 2rpx 6rpx #000; }
+.card .c-stat .num { color: #ffd97a; font-weight: 800; font-size: 26rpx; }
 .card.c-slot { border-style: dashed; border-color: rgba(212,184,120,.28); background: rgba(30,27,40,.22); }
 
 /* ===== 仓库 ===== */
@@ -97,8 +98,9 @@ page { background: #121216; }
 .group-row .slots .card { width: 118rpx; flex: 0 0 auto; }
 .group-row .slots .card .c-top { display: none; }  /* 小卡隐藏徽章行，靠顶部色条区分类型 */
 .group-row .slots .card .c-beast { margin: 0; }
-.group-row .slots .card .c-name { font-size: 16rpx; }
-.group-row .slots .card .c-stat { font-size: 12rpx; margin-top: 2rpx; }
+.group-row .slots .card .c-name { font-size: 20rpx; }
+.group-row .slots .card .c-stat { font-size: 18rpx; margin-top: 2rpx; }
+.group-row .slots .card .c-stat .num { font-size: 22rpx; }
 /* 空槽与有卡槽统一由 .card 的比例 padding 决定高度 */
 .group-col { padding: 4rpx 8rpx; }
 .group-col .gl { display: flex; align-items: center; gap: 10rpx; font-size: 24rpx; color: #d4b878; margin-bottom: 14rpx; }
@@ -110,7 +112,7 @@ page { background: #121216; }
 /* ===== 交换界面（界面B） ===== */
 .swap-bar { display: flex; justify-content: space-between; align-items: center; margin: 20rpx 0 24rpx; }
 .swap-bar .st { font-size: 30rpx; color: #f6e6b0; letter-spacing: 4rpx; font-weight: 700; }
-.timer-tip { font-size: 24rpx; color: #f6e6b0; display: flex; align-items: center; gap: 12rpx; }
+.timer-tip { font-size: 30rpx; color: #f6e6b0; display: flex; align-items: center; gap: 12rpx; }
 
 /* ===== 战斗界面 ===== */
 .arena-stage { text-align: center; padding: 14rpx 18rpx; margin-bottom: 10rpx; border-radius: 24rpx; }
@@ -179,7 +181,7 @@ page { background: #121216; }
 .sp-hp { font-size: 30rpx; font-weight: 700; color: #f0e2b6; margin-left: 8rpx; }
 /* 回合条 */
 .roundbar { display: flex; justify-content: space-between; align-items: center; margin: 10rpx 0; }
-.round-tag { font-size: 26rpx; color: #f6e6b0; font-weight: 700; text-shadow: 0 0 8rpx rgba(0,0,0,.9); }
+.round-tag { font-size: 32rpx; color: #f6e6b0; font-weight: 800; text-shadow: 0 0 10rpx rgba(0,0,0,.95); }
 /* 落桌 */
 .table-area { height: 420rpx; }   /* 固定高度：落牌增减都不会推挤手牌区（不挪动） */
 .table-inner .row-label { text-align: center; color: #f6e6b0; font-size: 22rpx; letter-spacing: 4rpx; margin: 4rpx 0; }
@@ -192,22 +194,27 @@ page { background: #121216; }
 .table-inner .mini { width: 132rpx; flex: 0 0 auto; text-align: center; }
 .table-inner .mini .m-card { width: 132rpx; transform: rotateX(24deg); box-shadow: 0 16rpx 24rpx rgba(0,0,0,.5); border-width: 2rpx; }
 .table-inner .mini .m-card .c-top { padding: 4rpx 6rpx 0; }
-.table-inner .mini .m-card .c-badge { font-size: 16rpx; padding: 2rpx 10rpx; }
+.table-inner .mini .m-card .c-badge { font-size: 20rpx; padding: 2rpx 12rpx; }
 .table-inner .mini .m-card .c-beast { min-height: 0; margin: 0; border-radius: 0; }
 .table-inner .mini .m-card .c-beast .b-char { font-size: 24rpx; }
-.table-inner .mini .m-card .c-name { font-size: 16rpx; letter-spacing: 1rpx; }
-.table-inner .mini .m-card .c-stat { font-size: 14rpx; margin-top: 2rpx; }
+.table-inner .mini .m-card .c-name { font-size: 20rpx; letter-spacing: 1rpx; }
+.table-inner .mini .m-card .c-stat { font-size: 18rpx; margin-top: 2rpx; }
+.table-inner .mini .m-card .c-stat .num { font-size: 22rpx; }
 .table-inner .mini .mini-who { font-size: 22rpx; color: #f6e6b0; margin-bottom: 4rpx; }
 .table-inner .mini.pass { width: 132rpx; height: 40rpx; display: flex; align-items: center; justify-content: center; border: 2rpx dashed rgba(212,184,120,.35); border-radius: 10rpx; color: #a89a7c; font-size: 18rpx; background: rgba(18,18,22,.4); }
 .table-inner .mini.revealed .m-card { box-shadow: 0 16rpx 24rpx rgba(0,0,0,.5), 0 0 30rpx rgba(212,184,120,.6); }
 /* 战斗信息 */
-.battle-msg { min-height: 48rpx; text-align: center; font-size: 24rpx; color: #f5e7c1; padding: 10rpx; line-height: 1.5; }
+.battle-msg { min-height: 56rpx; text-align: center; font-size: 32rpx; color: #f5e7c1; padding: 10rpx; line-height: 1.5; text-shadow: 0 0 10rpx rgba(0,0,0,.95); }
+/* 亮牌时刻：整句金色高亮加粗，让双方出牌一眼看清 */
+.battle-msg.hl { color: #ffd97a; font-weight: 800; text-shadow: 0 0 16rpx rgba(255,217,122,.55), 0 2rpx 6rpx #000; }
 .battle-msg .hit { color: #f5a07a; font-weight: 700; }
 .battle-msg .skill { color: #7dce9a; font-weight: 700; }
 /* 手牌区 */
 .hand-zone { margin-top: 8rpx; border-radius: 20rpx; padding: 14rpx 18rpx; }
 .hand-head { display: flex; align-items: baseline; gap: 16rpx; margin-bottom: 8rpx; }
 .hand-head .play-title { font-size: 26rpx; color: #f6e6b0; font-weight: 700; }
+/* 免出牌 / 无牌可出提示：玩家需要看懂为什么不能出牌 */
+.hand-tip { font-size: 28rpx; color: #f6e6b0; text-align: center; padding: 14rpx 10rpx; line-height: 1.5; text-shadow: 0 0 10rpx rgba(0,0,0,.9); }
 .hand-head .play-hint { font-size: 20rpx; color: #b9ac8e; }
 /* 手牌改为横向滑动：每张固定 160rpx 大卡，放不下就左右滑（不再被压缩成小条） */
 .hand-scroll { width: 100%; white-space: nowrap; }
@@ -216,7 +223,7 @@ page { background: #121216; }
 .hand-row .card.selected { transform: translateY(-18rpx) scale(1.06); }
 .hand-row .card .c-beast { min-height: 0; font-size: 30rpx; }
 .hand-row .card .c-beast .b-char { font-size: 30rpx; }
-.hand-row .card .c-name { font-size: 20rpx; }
+.hand-row .card .c-name { font-size: 24rpx; }
 .confirm-row { margin-top: 6rpx; }
 .confirm-btn { width: 100%; text-align: center; font-size: 28rpx; padding: 16rpx 0; border-radius: 18rpx; border: 2rpx solid #b89b58; background: linear-gradient(180deg, #eedda2, #c9a86a); color: #241a08; font-weight: 700; letter-spacing: 4rpx; box-shadow: 0 8rpx 20rpx rgba(0,0,0,.45); }
 .confirm-btn.ghost { background: rgba(42,38,51,.85); color: #d4b878; box-shadow: none; }

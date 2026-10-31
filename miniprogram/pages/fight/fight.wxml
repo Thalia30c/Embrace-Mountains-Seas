@@ -286,12 +286,12 @@
         <!-- 出牌倒计时：钉在"我"血条行右端 -->
         <view class="timer-tip timer-me"><view class="ring {{timerDanger?'danger':''}}">{{timerRing}}</view><text>出牌</text></view>
       </view>
-      <view class="battle-msg">{{battleMsg}}</view>
+      <view class="battle-msg {{battleMsg.indexOf('亮牌')===0?'hl':''}}">{{battleMsg}}</view>
 
       <!-- 手牌区 -->
       <view wx:if="{{handShown}}" class="hand-zone">
         <view class="hand-head"><text class="play-title">{{playTitle}}</text></view>
-        <view wx:if="{{handEmpty}}" class="sub">{{handEmptyMsg}}</view>
+        <view wx:if="{{handEmpty}}" class="sub hand-tip">{{handEmptyMsg}}</view>
         <scroll-view wx:else scroll-x enable-flex class="hand-scroll" show-scrollbar="{{false}}">
           <view class="hand-row">
             <block wx:for="{{handPool}}" wx:for-item="c" wx:for-index="i" wx:key="id">
