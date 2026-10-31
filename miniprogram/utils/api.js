@@ -10,6 +10,8 @@ module.exports = {
   wxLogin: (code, nickname, avatar) => post('/user/wxLogin', { code, nickname, avatar }),
   userInfo: (silent) => get('/user/info', {}, silent),
   updateProfile: (nickname, avatar) => post('/user/profile', null, { nickname, avatar }),
+  // 上报对局积分变化：delta 为正加分、为负扣分；返回变动前后积分/段位与升段进度
+  scoreReport: (uid, delta) => post('/user/score', { uid, delta }, true),
   ranking: (limit = 20) => get('/user/ranking', { limit }),
 
   // ---------------- 卡牌 ----------------

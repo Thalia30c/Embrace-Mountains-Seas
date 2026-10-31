@@ -357,11 +357,37 @@
       <view class="score-box">
         <view class="line" wx:for="{{scoreLines}}" wx:key="k"><text>{{item.k}}</text><text class="num">{{item.v}}</text></view>
       </view>
+      <!-- 段位进度条：当前段位 → 下一级门槛 -->
+      <view wx:if="{{rankInfo}}" class="rank-progress">
+        <view class="rp-head">
+          <text class="rp-rank">{{rankInfo.rank}}</text>
+          <text wx:if="{{rankInfo.nextRank}}" class="rp-next">距 {{rankInfo.nextRank}} 还差 {{rankInfo.toNext}} 分</text>
+          <text wx:else class="rp-next">已至山海之巅</text>
+        </view>
+        <view class="rp-bar">
+          <view class="rp-fill {{rankInfo.full?'full':''}}" style="width:{{rankInfo.progress}}%"></view>
+        </view>
+        <view wx:if="{{rankSync}}" class="rp-sync">{{rankSync}}</view>
+      </view>
       <view class="rank-change {{rankCls}}">{{rankChange}}</view>
       <view class="operate"><view class="btn primary" bindtap="backHome">确定 · 返回首页</view></view>
     
     </view>
 </view>
+  </view>
+
+  <!-- 升段 / 降段全屏特效 -->
+  <view wx:if="{{rankFx}}" class="rank-fx {{rankFx.cls}}" bindtap="hideRankFx">
+    <view class="fx-mask"></view>
+    <view class="fx-glow"></view>
+    <view class="fx-box">
+      <image class="fx-badge" src="{{rankFx.badge}}" mode="aspectFit"></image>
+      <view class="fx-title">{{rankFx.title}}</view>
+      <view class="fx-sub">{{rankFx.sub}}</view>
+    </view>
+    <view class="fx-particles">
+      <view class="fx-dot" wx:for="{{[1,2,3,4,5,6,7,8,9,10,11,12]}}" wx:key="*this"></view>
+    </view>
   </view>
 
   <!-- 亮牌弹窗 -->

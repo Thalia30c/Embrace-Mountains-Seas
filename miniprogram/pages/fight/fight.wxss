@@ -221,6 +221,54 @@ page { background: #121216; }
 .confirm-btn { width: 100%; text-align: center; font-size: 28rpx; padding: 16rpx 0; border-radius: 18rpx; border: 2rpx solid #b89b58; background: linear-gradient(180deg, #eedda2, #c9a86a); color: #241a08; font-weight: 700; letter-spacing: 4rpx; box-shadow: 0 8rpx 20rpx rgba(0,0,0,.45); }
 .confirm-btn.ghost { background: rgba(42,38,51,.85); color: #d4b878; box-shadow: none; }
 
+/* ===== 段位进度条（结算面板） ===== */
+.rank-progress { margin: 14rpx 4rpx 4rpx; }
+.rank-progress .rp-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8rpx; }
+.rank-progress .rp-rank { font-size: 24rpx; color: #f6e6b0; font-weight: 700; letter-spacing: 2rpx; }
+.rank-progress .rp-next { font-size: 20rpx; color: #a89a7c; }
+.rank-progress .rp-bar { height: 16rpx; border-radius: 999rpx; background: rgba(10,9,13,.6);
+  border: 2rpx solid rgba(212,184,120,.35); overflow: hidden; }
+.rank-progress .rp-fill { height: 100%; width: 0; border-radius: 999rpx;
+  background: linear-gradient(90deg, #8a6a2f, #eedda2); transition: width 1s cubic-bezier(.2,.7,.3,1); }
+.rank-progress .rp-fill.full { background: linear-gradient(90deg, #c9a86a, #fff3c4); animation: rpShine 1.2s ease-in-out infinite; }
+.rank-progress .rp-sync { margin-top: 6rpx; font-size: 18rpx; color: #7f7a6a; text-align: right; }
+@keyframes rpShine { 0% { filter: brightness(1); } 50% { filter: brightness(1.5); } 100% { filter: brightness(1); } }
+
+/* ===== 升段 / 降段全屏特效 ===== */
+.rank-fx { position: fixed; top: 0; right: 0; bottom: 0; left: 0; z-index: 120;
+  display: flex; align-items: center; justify-content: center; }
+.rank-fx .fx-mask { position: absolute; top: 0; right: 0; bottom: 0; left: 0; background: rgba(6,5,9,.72); }
+.rank-fx .fx-glow { position: absolute; top: 0; right: 0; bottom: 0; left: 0;
+  background: radial-gradient(circle at 50% 44%, rgba(246,230,176,.34), rgba(246,230,176,0) 58%);
+  animation: fxPulse 1.6s ease-in-out infinite; }
+.rank-fx.down .fx-glow { background: radial-gradient(circle at 50% 44%, rgba(140,140,150,.2), rgba(140,140,150,0) 58%); animation: none; }
+.rank-fx .fx-box { position: relative; text-align: center; animation: fxPop .5s cubic-bezier(.2,1.4,.4,1); }
+.rank-fx .fx-badge { width: 132rpx; height: 132rpx; }
+.rank-fx .fx-title { margin-top: 12rpx; font-size: 40rpx; font-weight: 800; letter-spacing: 8rpx;
+  color: #f6e6b0; text-shadow: 0 0 24rpx rgba(246,230,176,.75); }
+.rank-fx.down .fx-title { color: #9aa0a6; text-shadow: none; }
+.rank-fx .fx-sub { margin-top: 10rpx; font-size: 24rpx; color: #d4b878; }
+.rank-fx.down .fx-sub { color: #8b8f95; }
+.rank-fx .fx-particles { position: absolute; top: 0; right: 0; bottom: 0; left: 0; }
+.rank-fx.down .fx-particles { display: none; }
+.rank-fx .fx-dot { position: absolute; top: 52%; left: 50%; width: 10rpx; height: 10rpx; border-radius: 50%;
+  background: #f6e6b0; opacity: 0; animation: fxBurst 1.6s ease-out infinite; }
+.rank-fx .fx-dot:nth-child(1) { left: 18%; animation-delay: 0s; }
+.rank-fx .fx-dot:nth-child(2) { left: 26%; animation-delay: .14s; }
+.rank-fx .fx-dot:nth-child(3) { left: 34%; animation-delay: .28s; }
+.rank-fx .fx-dot:nth-child(4) { left: 42%; animation-delay: .42s; }
+.rank-fx .fx-dot:nth-child(5) { left: 50%; animation-delay: .1s; }
+.rank-fx .fx-dot:nth-child(6) { left: 58%; animation-delay: .24s; }
+.rank-fx .fx-dot:nth-child(7) { left: 66%; animation-delay: .38s; }
+.rank-fx .fx-dot:nth-child(8) { left: 74%; animation-delay: .52s; }
+.rank-fx .fx-dot:nth-child(9) { left: 30%; animation-delay: .66s; }
+.rank-fx .fx-dot:nth-child(10) { left: 46%; animation-delay: .58s; }
+.rank-fx .fx-dot:nth-child(11) { left: 62%; animation-delay: .2s; }
+.rank-fx .fx-dot:nth-child(12) { left: 78%; animation-delay: .46s; }
+@keyframes fxPop { 0% { transform: scale(.5); opacity: 0; } 60% { transform: scale(1.08); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
+@keyframes fxPulse { 0% { opacity: .55; } 50% { opacity: 1; } 100% { opacity: .55; } }
+@keyframes fxBurst { 0% { opacity: 0; transform: translateY(0) scale(.5); } 25% { opacity: 1; } 100% { opacity: 0; transform: translateY(-200rpx) scale(1.1); } }
+
 /* ===== 亮牌弹窗 ===== */
 .reveal-mask { position: fixed; top: 0; right: 0; bottom: 0; left: 0; background: rgba(8,7,11,.72); z-index: 90; display: flex; align-items: center; justify-content: center; }
 .reveal-pop { background: linear-gradient(160deg, #2c2734, #141119); border: 2rpx solid #b89b58; border-radius: 28rpx; padding: 26rpx 30rpx; box-shadow: 0 0 80rpx rgba(212,184,120,.4); text-align: center; width: 82%; }

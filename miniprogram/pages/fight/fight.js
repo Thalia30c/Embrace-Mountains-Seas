@@ -35,9 +35,15 @@ const FALLBACK_CARDS = [
 let CARD_DB = FALLBACK_CARDS.slice();
 let cardFromDb = false;
 
+/* 段位表：与数据库 game_rank 表一致（rank_id → need_total_score） */
 const RANKS = [
-  { n: '青铜', min: 0 }, { n: '白银', min: 100 }, { n: '黄金', min: 200 },
-  { n: '铂金', min: 300 }, { n: '钻石', min: 400 }, { n: '王者', min: 500 }
+  { id: 1, n: '山稚三段', min: 0 }, { id: 2, n: '山稚二段', min: 100 }, { id: 3, n: '山稚一段', min: 200 },
+  { id: 4, n: '山精三段', min: 350 }, { id: 5, n: '山精二段', min: 500 }, { id: 6, n: '山精一段', min: 650 },
+  { id: 7, n: '山巫三段', min: 850 }, { id: 8, n: '山巫二段', min: 1050 }, { id: 9, n: '山巫一段', min: 1250 },
+  { id: 10, n: '灵狩三段', min: 1500 }, { id: 11, n: '灵狩二段', min: 1750 }, { id: 12, n: '灵狩一段', min: 2000 },
+  { id: 13, n: '荒伯三段', min: 2300 }, { id: 14, n: '荒伯二段', min: 2600 }, { id: 15, n: '荒伯一段', min: 2900 },
+  { id: 16, n: '山君三段', min: 3250 }, { id: 17, n: '山君二段', min: 3600 }, { id: 18, n: '山君一段', min: 3950 },
+  { id: 19, n: '山海尊一段', min: 4500 }
 ];
 const WIN_GAIN = 30, LOSE_LOSS = 20;
 
@@ -60,7 +66,7 @@ const state = {
   order: [], matchIndex: 0, pendingMatch: null,
   totals: { A: 0, B: 0, C: 0 },
   firstX: null, firstY: null, firstZ: null,
-  fight: null, fightHistory: [], score: 100
+  fight: null, fightHistory: [], score: 100, uid: null
 };
 
 function clone(o) { return JSON.parse(JSON.stringify(o)); }
@@ -174,6 +180,7 @@ Page({
     loading: false, cardSource: '',
     reveal: false, revealTitle: '', revealX: { card: null, who: '' }, revealY: { card: null, who: '' },
     trophy: '', resultTitle: '', resultSub: '', rankRows: [], scoreLines: [], rankChange: '', rankCls: '',
+    rankInfo: null, rankFx: null, rankSync: '',
     toastMsg: ''
   },
 
@@ -196,8 +203,12 @@ Page({
         '| 状态栏=' + sys.statusBarHeight,
         '| 底部安全区=' + (sys.safeArea && sys.screenHeight ? (sys.screenHeight - sys.safeArea.bottom) : 'n/a'));
     } catch (e) { }
+    /* 积分基数：优先用登录后从数据库拿到的积分，其次本地缓存，都没有才兜底 100 */
+    const ui = (getApp() && getApp().globalData.userInfo) || {};
+    state.uid = ui.userId || ui.uid || null;
+    const dbScore = (typeof ui.score === 'number' && ui.score >= 0) ? ui.score : null;
     const saved = wx.getStorageSync('shanhai_score');
-    state.score = (typeof saved === 'number' && saved >= 0) ? saved : 100;
+    state.score = dbScore !== null ? dbScore : ((typeof saved === 'number' && saved >= 0) ? saved : 100);
     this.showView('picka');
     this.loadCards();
   },
@@ -735,8 +746,7 @@ Page({
     const prev = state.score, nextScore = isWin ? prev + WIN_GAIN : Math.max(0, prev - LOSE_LOSS);
     state.score = nextScore;
     const pr = rankOf(prev), nr = rankOf(nextScore);
-    const pi = RANKS.findIndex(r => r.n === pr.n), ni = RANKS.findIndex(r => r.n === nr.n);
-    const delta = ni > pi ? 'up' : (ni < pi ? 'down' : 'same');
+    const delta = nr.id > pr.id ? 'up' : (nr.id < pr.id ? 'down' : 'same');
     const rankChange = isWin
       ? (delta === 'up' ? '积分达标，段位晋升！' : '积分增加')
       : (delta === 'down' ? '积分不足门槛，段位下降' : '积分扣除');
@@ -751,8 +761,82 @@ Page({
         { k: '段位', v: pr.n + ' → ' + nr.n }
       ],
       rankChange: rankChange,
-      rankCls: delta === 'down' ? 'down' : 'up'
+      rankCls: delta === 'down' ? 'down' : 'up',
+      rankInfo: this.buildRankInfo(nextScore, pr, nr)
     });
+    /* 上报数据库：后端累加积分并回算段位，成功后用库里的真实数据刷新进度条 */
+    this.reportScore(isWin ? WIN_GAIN : -LOSE_LOSS, nextScore, delta);
+  },
+
+  /** 段位进度条数据：当前段位、下一级、还差多少分、段内进度百分比 */
+  buildRankInfo(score, prevRank, rank) {
+    const cur = rank || rankOf(score || 0);
+    const idx = RANKS.findIndex(r => r.id === cur.id);
+    const up = idx >= 0 && idx < RANKS.length - 1 ? RANKS[idx + 1] : null;
+    const base = cur.min || 0;
+    const target = up ? up.min : base;
+    let pct = up ? Math.round((score - base) * 100 / Math.max(1, target - base)) : 100;
+    pct = Math.max(0, Math.min(100, pct));
+    return {
+      rank: cur.n,
+      prevRank: prevRank ? prevRank.n : cur.n,
+      nextRank: up ? up.n : '',
+      toNext: up ? Math.max(0, target - score) : 0,
+      progress: pct,
+      full: !up || pct >= 100
+    };
+  },
+
+  /** 结算积分上报数据库（失败则回落为本地记录，不影响流程） */
+  reportScore(delta, nextScore, localDelta) {
+    if (!state.uid) {
+      this.setData({ rankSync: '未登录，积分仅本地记录' });
+      return;
+    }
+    this.setData({ rankSync: '同步中…' });
+    api.scoreReport(state.uid, delta).then(d => {
+      if (!d) return;
+      state.score = typeof d.score === 'number' ? d.score : nextScore;
+      const app = getApp();
+      if (app && app.globalData.userInfo) app.globalData.userInfo.score = state.score;
+      this.setData({
+        rankInfo: {
+          rank: d.rank || '',
+          prevRank: d.prevRank || d.rank || '',
+          nextRank: (d.nextRank && d.nextRank !== '已是最高段位') ? d.nextRank : '',
+          toNext: d.toNext || 0,
+          progress: d.progress || 0,
+          full: !d.nextRank || d.nextRank === '已是最高段位' || (d.progress >= 100)
+        },
+        rankSync: '已同步数据库',
+        scoreLines: [
+          { k: '本局结果', v: (delta > 0 ? '胜利 +' + delta : '失败 ' + delta) },
+          { k: '我的积分', v: (d.prevScore != null ? d.prevScore : '') + ' → ' + state.score },
+          { k: '段位', v: (d.prevRank || '') + ' → ' + (d.rank || '') }
+        ]
+      });
+      if (d.changed === 'up') this.playRankFx('段位晋升', d.prevRank, d.rank, true);
+      else if (d.changed === 'down') this.playRankFx('段位下降', d.prevRank, d.rank, false);
+    }).catch(() => {
+      /* 后端没连上：保留本地计算的结果 */
+      this.setData({ rankSync: '后端未连接，积分仅本地记录' });
+    });
+  },
+
+  /** 提前关闭段位特效 */
+  hideRankFx() { this.setData({ rankFx: null }); },
+
+  /** 升段 / 降段全屏特效：徽章弹出 + 金光扫过 + 粒子 */
+  playRankFx(title, prevRank, rank, up) {
+    const color = up ? '#f6e6b0' : '#9aa0a6';
+    const dark = up ? '#b89b58' : '#5b5f66';
+    const svg = '<svg viewBox="0 0 48 48">'
+      + '<path d="M12 6h24v9a12 12 0 0 1-24 0z" fill="' + color + '"/>'
+      + '<rect x="20" y="27" width="8" height="7" fill="' + dark + '"/>'
+      + '<rect x="15" y="33" width="18" height="3" fill="' + dark + '"/>'
+      + '<rect x="22" y="36" width="4" height="6" fill="' + dark + '"/></svg>';
+    this.setData({ rankFx: { cls: up ? 'up' : 'down', badge: 'data:image/svg+xml,' + encodeURIComponent(svg), title: title, sub: (prevRank || '—') + ' → ' + (rank || '—') } });
+    this._later(() => this.setData({ rankFx: null }), 2600);
   },
   backHome() {
     wx.setStorageSync('shanhai_score', state.score);
