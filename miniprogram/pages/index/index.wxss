@@ -46,7 +46,7 @@ page { background: #121216; }
   background: linear-gradient(180deg, #2a2433 0%, #191619 80%, #120f16 100%);
   border: 4rpx solid #b89b58;
   box-shadow: 0 12rpx 32rpx rgba(0,0,0,.55);
-  padding-bottom: 8rpx;
+  padding: 120% 0 0;   /* 卡面整体比例≈0.83：卡图铺满整张卡面，文字悬浮其上 */
 }
 .card.atk { border-top: 12rpx solid #c0392b; }
 .card.def { border-top: 12rpx solid #2e6f8e; }
@@ -54,26 +54,23 @@ page { background: #121216; }
 .card.tong { border-top: 12rpx solid #d98a3d; box-shadow: 0 0 32rpx rgba(217,138,61,.3); }
 .card.selected { border-color: #f6e6b0; box-shadow: 0 0 0 4rpx #f6e6b0, 0 0 40rpx rgba(246,230,176,.5); }
 .card.disabled { opacity: .5; }
-.card .c-top { display: flex; justify-content: space-between; align-items: center; padding: 8rpx 14rpx 0; }
+.card .c-top { position: absolute; top: 0; left: 0; right: 0; z-index: 3; display: flex; justify-content: space-between; align-items: center; padding: 8rpx 14rpx 0; }
 .card .c-badge { font-size: 20rpx; color: #241a08; background: #f6e6b0; border-radius: 10rpx; padding: 2rpx 14rpx; }
-.card .c-type { font-size: 20rpx; color: #a89a7c; }
-/* 兽形徽章 / 数据库卡牌图片（图片比例 180x252，即高=宽x1.4） */
+.card .c-type { font-size: 20rpx; color: #e9dbb0; text-shadow: 0 2rpx 6rpx #000; }
+/* 卡图铺满整张卡面：底部渐变压暗保证名字/数值可读；无图卡回退兽字居中 */
 .card .c-beast {
-  position: relative;
-  margin: 6rpx 12rpx 3rpx;
-  min-height: 56rpx;
-  border-radius: 12rpx;
-  overflow: hidden;
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  margin: 0; min-height: 0; border: none; border-radius: 0;
   display: flex; align-items: center; justify-content: center;
-  background: radial-gradient(circle at 50% 40%, rgba(212,184,120,.22), rgba(18,18,22,.6));
-  border: 2rpx solid rgba(212,184,120,.25);
+  background: #17141c;
 }
-/* 真卡图比例约 0.845（高≈宽x1.18），比例盒随图调整 */
-.card .c-imgbox { position: relative; width: 100%; padding-top: 118%; background: #17141c; }
+.card .c-imgbox { position: absolute; top: 0; left: 0; width: 100%; height: 100%; padding-top: 0; background: none; }
 .card .c-img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: block; }
+.card::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 42%;
+  background: linear-gradient(180deg, rgba(10,8,14,0), rgba(10,8,14,.82)); z-index: 1; pointer-events: none; }
 .card .c-beast .b-char { font-size: 28rpx; color: #f6e6b0; text-shadow: 0 0 20rpx rgba(212,184,120,.7); font-weight: 700; }
-.card .c-name { text-align: center; font-size: 18rpx; color: #f6e6b0; letter-spacing: 2rpx; text-shadow: 0 2rpx 4rpx #000; }
-.card .c-stat { display: flex; justify-content: space-around; margin-top: 3rpx; font-size: 14rpx; color: #a89a7c; }
+.card .c-name { position: absolute; left: 6rpx; right: 6rpx; bottom: 36rpx; z-index: 3; text-align: center; font-size: 18rpx; color: #f6e6b0; letter-spacing: 2rpx; text-shadow: 0 2rpx 4rpx #000; }
+.card .c-stat { position: absolute; left: 6rpx; right: 6rpx; bottom: 10rpx; z-index: 3; display: flex; justify-content: space-around; font-size: 14rpx; color: #d9c9a0; }
 .card .c-stat .num { color: #d4b878; font-weight: 700; }
 .card.c-slot { border-style: dashed; background: rgba(40,35,50,.3); }
 
@@ -91,7 +88,6 @@ page { background: #121216; }
 .swap-stack .reserve-panel .gl { margin-bottom: 10rpx; }
 .swap-stack .reserve-panel .slots { display: flex; justify-content: center; gap: 18rpx; }
 .swap-stack .reserve-panel .slots .card { width: 124rpx; flex: 0 0 auto; }
-.swap-stack .reserve-panel .slots .c-slot { min-height: 262rpx; }
 .group-row { flex: none; display: flex; align-items: center; gap: 12rpx;
   background: rgba(20,17,26,.6); border: 2rpx solid rgba(212,184,120,.3); border-radius: 18rpx; padding: 10rpx 14rpx; }
 .group-row .side-label { width: 72rpx; display: flex; flex-direction: column; align-items: center; gap: 6rpx;
@@ -99,10 +95,10 @@ page { background: #121216; }
 .group-row .slots { flex: 1; display: flex; justify-content: center; gap: 12rpx; }
 .group-row .slots .card { width: 106rpx; flex: 0 0 auto; }
 .group-row .slots .card .c-top { display: none; }  /* 小卡隐藏徽章行，靠顶部色条区分类型 */
-.group-row .slots .card .c-beast { margin: 4rpx 6rpx 2rpx; }
+.group-row .slots .card .c-beast { margin: 0; }
 .group-row .slots .card .c-name { font-size: 16rpx; }
 .group-row .slots .card .c-stat { font-size: 12rpx; margin-top: 2rpx; }
-.group-row .slots .c-slot { min-height: 196rpx; }
+/* 空槽与有卡槽统一由 .card 的比例 padding 决定高度 */
 .group-col { background: rgba(20,17,26,.6); border: 2rpx solid rgba(212,184,120,.3); border-radius: 20rpx; padding: 18rpx; }
 .group-col .gl { display: flex; align-items: center; gap: 10rpx; font-size: 24rpx; color: #d4b878; margin-bottom: 14rpx; }
 .group-col .gl .tag { font-size: 18rpx; color: #f5e7c1; background: rgba(212,184,120,.15); border: 2rpx solid #b89b58; border-radius: 10rpx; padding: 2rpx 10rpx; }
@@ -190,7 +186,7 @@ page { background: #121216; }
 .table-inner .mini .m-card { width: 96rpx; transform: rotateX(40deg); box-shadow: 0 16rpx 24rpx rgba(0,0,0,.5); border-width: 2rpx; }
 .table-inner .mini .m-card .c-top { padding: 4rpx 6rpx 0; }
 .table-inner .mini .m-card .c-badge { font-size: 12rpx; padding: 0 6rpx; }
-.table-inner .mini .m-card .c-beast { min-height: 48rpx; margin: 4rpx 8rpx; border-radius: 8rpx; }
+.table-inner .mini .m-card .c-beast { min-height: 0; margin: 0; border-radius: 0; }
 .table-inner .mini .m-card .c-beast .b-char { font-size: 24rpx; }
 .table-inner .mini .m-card .c-name { font-size: 12rpx; letter-spacing: 1rpx; }
 .table-inner .mini .m-card .c-stat { font-size: 11rpx; margin-top: 2rpx; }
@@ -208,7 +204,7 @@ page { background: #121216; }
 .hand-head .play-hint { font-size: 20rpx; color: #b9ac8e; }
 .your-cards { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8rpx; }
 .your-cards .card { padding-bottom: 4rpx; }
-.your-cards .card .c-beast { min-height: 64rpx; font-size: 30rpx; }
+.your-cards .card .c-beast { min-height: 0; font-size: 30rpx; }
 .your-cards .card .c-beast .b-char { font-size: 30rpx; }
 .your-cards .card .c-name { font-size: 20rpx; }
 .confirm-row { display: flex; justify-content: flex-end; margin-top: 10rpx; }
@@ -335,4 +331,4 @@ page {
 .operate .btn { flex: 1; }
 
 /* 中和项目全局 app.wxss 的白色 .card / 深色文字渗漏 */
-.card { margin: 0; padding: 0 0 8rpx; color: #f5e7c1; }
+.card { margin: 0; padding: 120% 0 0; color: #f5e7c1; }
