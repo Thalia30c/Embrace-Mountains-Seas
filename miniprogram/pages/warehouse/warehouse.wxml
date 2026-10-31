@@ -27,7 +27,7 @@
     <view class="wh-grid">
       <view class="wh-card" wx:for="{{filteredCards}}" wx:key="card">
         <view class="wh-inner">
-          <image class="wh-img" src="/photo/{{item.card}}.png" mode="aspectFill"></image>
+          <image class="wh-img" src="/photo/{{item.card}}.jpg" mode="aspectFill"></image>
           <view class="wh-badges">
             <text class="badge lv-{{item.lvClass}}">{{item.cLevel}}</text>
             <text class="badge kd-{{item.kind}}">{{kindName[item.kind]}}</text>
