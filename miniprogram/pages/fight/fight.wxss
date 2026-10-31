@@ -353,7 +353,8 @@ page { background: #121216; }
   padding: 14rpx 18rpx 16rpx; border-radius: 20rpx; border: 2rpx solid rgba(212,184,120,.28); background: rgba(18,18,22,.92);
   box-shadow: 0 10rpx 30rpx rgba(0,0,0,.55); }
 .spectate-dock .battle-status .drawer-head { margin-bottom: 6rpx; }
-.spectate-dock .battle-status .battle-log { height: 260rpx; padding-top: 8rpx; }
+/* flex:1(flex-basis 0%)会覆盖height——观战记录框必须flex:none定高，否则随内容长高 */
+.spectate-dock .battle-status .battle-log { flex: none; height: 260rpx; padding-top: 8rpx; }
 .spectate-dock .chat-box { margin-top: 0; background: rgba(18,18,22,.92); box-shadow: 0 10rpx 30rpx rgba(0,0,0,.55); }
 .spectate-dock .chat-box .chat-log { max-height: 180rpx; }
 
