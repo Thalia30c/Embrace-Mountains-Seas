@@ -329,9 +329,16 @@ page { background: #121216; }
 .chat-log .chat-icon { width: 34rpx; height: 34rpx; vertical-align: -6rpx; margin: 0 4rpx; }
 .chat-input input { flex: 1; background: #241f2e; border: 2rpx solid rgba(212,184,120,.3); border-radius: 16rpx; color: #f5e7c1; padding: 14rpx 20rpx; font-size: 26rpx; }
 .chat-input .send { font-size: 24rpx; padding: 12rpx 20rpx; border: 2rpx solid #b89b58; border-radius: 14rpx; background: #2a2633; color: #f6e6b0; }
-/* 观战模式：聊天框固定钉在屏幕最底部，日志向上扩展，不被状态框/内容挤动 */
-.chat-box.chat-pin { position: fixed; left: 20rpx; right: 20rpx; bottom: calc(16rpx + env(safe-area-inset-bottom)); margin-top: 0; z-index: 65; box-shadow: 0 10rpx 30rpx rgba(0,0,0,.55); }
-.chat-box.chat-pin .chat-log { max-height: 260rpx; }
+/* 观战：底部固定区 = 战斗记录(上) + 聊天框(钉底)，两者常驻、不可关闭、互不覆盖 */
+.spectate-dock { position: fixed; left: 20rpx; right: 20rpx; bottom: calc(16rpx + env(safe-area-inset-bottom)); z-index: 65; display: flex; flex-direction: column; gap: 12rpx; }
+/* 覆盖抽屉样式：这里改为固定区内的普通卡片 */
+.spectate-dock .battle-status { position: static; transform: none; pointer-events: auto; max-height: 220rpx;
+  padding: 14rpx 18rpx 16rpx; border-radius: 20rpx; border: 2rpx solid rgba(212,184,120,.28); background: rgba(18,18,22,.92);
+  box-shadow: 0 10rpx 30rpx rgba(0,0,0,.55); }
+.spectate-dock .battle-status .drawer-head { margin-bottom: 6rpx; }
+.spectate-dock .battle-status .battle-log { padding-top: 8rpx; }
+.spectate-dock .chat-box { margin-top: 0; background: rgba(18,18,22,.92); box-shadow: 0 10rpx 30rpx rgba(0,0,0,.55); }
+.spectate-dock .chat-box .chat-log { max-height: 180rpx; }
 
 /* ===== 结算界面：战报式（对齐设计稿） ===== */
 .result-wrap { text-align: center; padding: 6rpx 8rpx; }

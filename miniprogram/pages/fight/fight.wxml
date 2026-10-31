@@ -307,28 +307,48 @@
         <view class="confirm-row"><view class="confirm-btn" bindtap="onConfirm">确认出牌</view></view>
       </view>
 
-      <!-- 战斗记录：底部抽屉（覆盖显示，不再挤占版面） -->
-      <view wx:if="{{statusShown}}" class="drawer-mask" bindtap="toggleStatus"></view>
-      <view class="battle-status {{statusShown?'open':''}}">
-        <view class="drawer-head">
-          <text class="dt">战斗记录</text>
-          <text class="dx" bindtap="toggleStatus">收起</text>
+      <!-- 观战：底部固定区 = 战斗记录(上) + 聊天框(钉底)，两个都常驻、不可关闭 -->
+      <view wx:if="{{spectator}}" class="spectate-dock">
+        <view class="battle-status">
+          <view class="drawer-head"><text class="dt">战斗记录</text></view>
+          <view class="battle-log">
+            <view class="msg" wx:for="{{battleLogs}}" wx:key="index">{{item}}</view>
+          </view>
         </view>
-        <view class="battle-log">
-          <view class="msg" wx:for="{{battleLogs}}" wx:key="index">{{item}}</view>
-        </view>
-      </view>
-      <!-- 聊天（战斗时可收起） -->
-      <view wx:if="{{chatShown}}" class="chat-box {{spectator?'chat-pin':''}}">
-        <view class="chat-log">
-          <view class="msg {{item.sys?'sys':''}}" wx:for="{{chatLogs}}" wx:key="index"><text wx:if="{{!item.sys}}"><text class="who">{{item.who}}：</text></text><block wx:for="{{item.parts}}" wx:for-item="p" wx:key="index"><text wx:if="{{p.t=='text'}}">{{p.v}}</text><image wx:else class="chat-icon" src="{{p.src}}" mode="aspectFit"></image></block></view>
-        </view>
-        <view class="chat-input">
-          <view class="emoji-pick"><image wx:for="{{emojis}}" wx:key="key" class="emoji-ico" src="{{item.src}}" data-key="{{item.key}}" bindtap="addEmoji" mode="aspectFit"></image></view>
-          <input value="{{chatInput}}" bindinput="onChatInput" placeholder="说点什么…" />
-          <view class="send" bindtap="sendChat">发送</view>
+        <view class="chat-box">
+          <view class="chat-log">
+            <view class="msg {{item.sys?'sys':''}}" wx:for="{{chatLogs}}" wx:key="index"><text wx:if="{{!item.sys}}"><text class="who">{{item.who}}：</text></text><block wx:for="{{item.parts}}" wx:for-item="p" wx:key="index"><text wx:if="{{p.t=='text'}}">{{p.v}}</text><image wx:else class="chat-icon" src="{{p.src}}" mode="aspectFit"></image></block></view>
+          </view>
+          <view class="chat-input">
+            <view class="emoji-pick"><image wx:for="{{emojis}}" wx:key="key" class="emoji-ico" src="{{item.src}}" data-key="{{item.key}}" bindtap="addEmoji" mode="aspectFit"></image></view>
+            <input value="{{chatInput}}" bindinput="onChatInput" placeholder="说点什么…" />
+            <view class="send" bindtap="sendChat">发送</view>
+          </view>
         </view>
       </view>
+      <!-- 自己参战：战斗记录是底部抽屉（可收起），聊天框随按钮开关 -->
+      <block wx:else>
+        <view wx:if="{{statusShown}}" class="drawer-mask" bindtap="toggleStatus"></view>
+        <view class="battle-status {{statusShown?'open':''}}">
+          <view class="drawer-head">
+            <text class="dt">战斗记录</text>
+            <text class="dx" bindtap="toggleStatus">收起</text>
+          </view>
+          <view class="battle-log">
+            <view class="msg" wx:for="{{battleLogs}}" wx:key="index">{{item}}</view>
+          </view>
+        </view>
+        <view wx:if="{{chatShown}}" class="chat-box">
+          <view class="chat-log">
+            <view class="msg {{item.sys?'sys':''}}" wx:for="{{chatLogs}}" wx:key="index"><text wx:if="{{!item.sys}}"><text class="who">{{item.who}}：</text></text><block wx:for="{{item.parts}}" wx:for-item="p" wx:key="index"><text wx:if="{{p.t=='text'}}">{{p.v}}</text><image wx:else class="chat-icon" src="{{p.src}}" mode="aspectFit"></image></block></view>
+          </view>
+          <view class="chat-input">
+            <view class="emoji-pick"><image wx:for="{{emojis}}" wx:key="key" class="emoji-ico" src="{{item.src}}" data-key="{{item.key}}" bindtap="addEmoji" mode="aspectFit"></image></view>
+            <input value="{{chatInput}}" bindinput="onChatInput" placeholder="说点什么…" />
+            <view class="send" bindtap="sendChat">发送</view>
+          </view>
+        </view>
+      </block>
     </view>
 
     <!-- 右下角收起按钮 -->

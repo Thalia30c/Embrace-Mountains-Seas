@@ -502,8 +502,8 @@ Page({
     this.beginMatch(state.order[mi]);
     this.setData({
       spectator: this.buildSpectator(), handShown: false,
-      /* 观战默认展开战斗记录抽屉（与聊天互斥，聊天收起） */
-      statusShown: true, cornerBtns: false, chatShown: false,
+      /* 观战：战斗记录与聊天框常驻底部固定区，不显示「状态/聊天」按钮 → 都不可关闭 */
+      statusShown: true, cornerBtns: false, chatShown: true,
       arenaMeta: '观战中：' + ROLES[state.fight.x].name + ' vs ' + ROLES[state.fight.y].name
     });
   },
