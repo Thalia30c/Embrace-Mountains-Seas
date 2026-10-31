@@ -1,7 +1,8 @@
 // app.js
 // 小程序入口，全局状态放这里
 
-const { BASE_URL } = require('./utils/config');
+const config = require('./utils/config');
+const sync = require('./utils/sync');
 
 // 全局登录守卫：除登录页外，任意页面 onShow 时若发现未登录（无 userInfo），自动跳转登录页
 const _originPage = Page;
@@ -25,8 +26,10 @@ Page = function (options) {
 
 App({
   globalData: {
-    // 后端服务地址，与 utils/config.js 保持一致（request.js 实际用的是 config）
-    baseUrl: BASE_URL,
+    // 后端服务地址（运行时会被自动探测的结果替换）
+    baseUrl: config.getBaseUrl(),
+    // 后端是否连得上
+    backendUp: false,
     // 登录令牌
     token: '',
     // 当前登录用户信息
@@ -41,6 +44,13 @@ App({
       this.globalData.token = token;
       this.globalData.userInfo = userInfo || null;
     }
+    /* 启动即自动探测可用后端：模拟器 → 本机局域网 IP → 同伴 IP，
+       找到后记住，下次直接用；连上后顺便把上次没上报成功的积分补传掉 */
+    config.detectBackend().then((ok) => {
+      this.globalData.backendUp = ok;
+      this.globalData.baseUrl = config.getBaseUrl();
+      if (ok) sync.flushPending();
+    });
   },
 
   /** 全局脚本错误：屏幕上直接弹出（真机上没有控制台，先让错误可见） */

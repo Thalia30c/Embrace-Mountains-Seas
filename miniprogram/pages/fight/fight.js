@@ -1,5 +1,6 @@
 /* ============ 山海异兽·战略博弈战斗 · 逻辑 ============ */
 const api = require('../../utils/api');
+const sync = require('../../utils/sync');
 
 const ROLES = {
   A: { key: 'A', name: '甲', isPlayer: true },
@@ -899,9 +900,13 @@ Page({
       });
       if (d.changed === 'up') this.playRankFx('段位晋升', d.prevRank, d.rank, true);
       else if (d.changed === 'down') this.playRankFx('段位下降', d.prevRank, d.rank, false);
+      /* 顺手把之前没上报成功的旧账补传掉 */
+      this._later(function () { sync.flushPending(); }, 100);
     }).catch(() => {
-      /* 后端没连上：保留本地计算的结果 */
-      this.setData({ rankSync: '后端未连接，积分仅本地记录' });
+      /* 后端没连上：本地计算结果保留，本次加减分入队，后端恢复后自动补传 */
+      sync.enqueueScore(state.uid, delta);
+      const queued = sync.pendingCount();
+      this.setData({ rankSync: queued > 1 ? ('暂存本地 ' + queued + ' 局，联网后自动补传') : '暂存本地，联网后自动补传' });
     });
   },
 

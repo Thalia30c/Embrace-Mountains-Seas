@@ -6,7 +6,7 @@
 // 2. 后端统一返回 { code, msg, data }，这里判断 code 并解析
 // 3. 令牌失效（40002）时自动跳登录页
 
-const { BASE_URL } = require('./config');
+const config = require('./config');
 
 /**
  * 发起请求
@@ -20,7 +20,7 @@ function request(url, method = 'GET', data = {}, silent = false) {
   return new Promise((resolve, reject) => {
     const app = getApp();
     wx.request({
-      url: BASE_URL + url,
+      url: config.getBaseUrl() + url,
       method: method,
       data: data,
       header: {
@@ -97,4 +97,4 @@ function del(url, data = {}, silent = false) {
   return request(url, 'DELETE', data, silent);
 }
 
-module.exports = { request, get, post, del, BASE_URL };
+module.exports = { request, get, post, del, getBaseUrl: config.getBaseUrl };
