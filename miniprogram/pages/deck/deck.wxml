@@ -18,7 +18,7 @@
       <view wx:for="{{g.slots}}" wx:for-item="s" wx:for-index="si" wx:key="si"
             class="{{s === 0 ? 'slot-empty' : 'slot-card'}}"
             data-group="{{g.key}}" data-slot="{{si}}" bindtap="onTapSlot">
-        <image wx:if="{{s !== 0}}" class="slot-img" src="/photo/{{s}}.png" mode="aspectFill"></image>
+        <image wx:if="{{s !== 0}}" class="slot-img" src="/photo/{{s}}.jpg" mode="aspectFill"></image>
         <text wx:if="{{s !== 0}}" class="slot-num">No.{{s}}</text>
       </view>
     </view>
@@ -31,7 +31,7 @@
           wx:if="{{!p.placed}}"
           class="pool-card {{selected === pi ? 'selected' : ''}}"
           data-pidx="{{pi}}" bindtap="onSelectPool">
-      <image class="pool-img" src="/photo/{{p.card}}.png" mode="aspectFill"></image>
+      <image class="pool-img" src="/photo/{{p.card}}.jpg" mode="aspectFill"></image>
       <text class="pool-num">No.{{p.card}}</text>
     </view>
     <view class="pool-empty" wx:if="{{poolHint}}">{{poolHint}}</view>
