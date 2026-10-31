@@ -310,10 +310,8 @@ page { background: #121216; }
 .view-inner .hand-zone { margin-top: auto; margin-bottom: 118rpx; }
 
 /* ===== 右下角按钮 ===== */
-.corner-btns { position: fixed; right: 24rpx; bottom: 150rpx; z-index: 70; display: flex; gap: 16rpx; }
-/* 手牌区弹出时抬高浮动按钮，避免压住「确认出牌」 */
-.corner-btns.lift-mid { bottom: 380rpx; }   /* 无牌可出：手牌区较矮 */
-.corner-btns.lift-high { bottom: 500rpx; }  /* 有手牌：整个手牌区之上 */
+/* 参战时「聊天/状态」常驻右下角（确认出牌下方留白带），不与手牌区重叠 */
+.corner-btns { position: fixed; right: 24rpx; bottom: 36rpx; z-index: 70; display: flex; gap: 16rpx; }
 .corner-btn { font-size: 26rpx; color: #f6e6b0; background: rgba(18,18,22,.88); border: 2rpx solid #b89b58; border-radius: 40rpx; padding: 14rpx 32rpx; box-shadow: 0 8rpx 24rpx rgba(0,0,0,.5); }
 /* 战斗记录 = 底部抽屉：浮在桌面上方，不参与布局流 → 不会压缩落桌/手牌 */
 .drawer-mask { position: fixed; top: 0; right: 0; bottom: 0; left: 0; background: rgba(8,7,11,.5); z-index: 60; }
