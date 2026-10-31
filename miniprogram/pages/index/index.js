@@ -762,6 +762,27 @@ Page({
     const on = !this.data.statusShown;
     this.setData({ statusShown: on, chatShown: false });
   },
+  /* 调试探针：打印关键容器实际渲染的边框/圆角/阴影与几何信息（排查幻影边框用） */
+  dumpStyles() {
+    const sel = ['.container', '.view.active', '.view-box', '.view-bg', '.view-inner', '.arena-stage', '.fight-zone', '.hand-zone', '.corner-btns'];
+    const q = wx.createSelectorQuery();
+    sel.forEach(s => q.select(s).fields({
+      rect: true, size: true,
+      computedStyle: ['border-top-width', 'border-top-style', 'border-top-color', 'border-radius', 'box-shadow']
+    }));
+    q.exec(res => {
+      const lines = sel.map((s, i) => {
+        const r = res[i];
+        if (!r) return s + ' => 未渲染';
+        return s + ' => rect[' + Math.round(r.left) + ',' + Math.round(r.top) + ' ' + Math.round(r.width) + 'x' + Math.round(r.height) + ']'
+          + ' border[' + r['border-top-width'] + ' ' + r['border-top-style'] + ' ' + r['border-top-color'] + ']'
+          + ' radius[' + r['border-radius'] + ']'
+          + ' shadow[' + String(r['box-shadow']).slice(0, 60) + ']';
+      });
+      console.log('[山海战斗][样式探针]\n' + lines.join('\n'));
+      wx.setStorageSync('style_dump', lines.join('\n'));
+    });
+  },
   onChatInput(e) { this.setData({ chatInput: e.detail.value }); },
   sendChat() {
     const txt = (this.data.chatInput || '').trim();
