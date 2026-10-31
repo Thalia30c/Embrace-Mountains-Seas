@@ -46,8 +46,9 @@ page { background: #121216; }
   background: linear-gradient(180deg, #2a2433 0%, #191619 80%, #120f16 100%);
   border: 4rpx solid #b89b58;
   box-shadow: 0 12rpx 32rpx rgba(0,0,0,.55);
-  padding: 120% 0 0;   /* 卡面整体比例≈0.83：卡图铺满整张卡面，文字悬浮其上 */
 }
+/* 卡面比例盒：挂在 ::before 上，百分比按卡片自身宽度计算（父容器宽度会导致卡片被拉长） */
+.card::before { content: ""; display: block; padding-top: 120%; }
 .card.atk { border-top: 12rpx solid #c0392b; }
 .card.def { border-top: 12rpx solid #2e6f8e; }
 .card.mag { border-top: 12rpx solid #7a5bc8; }
@@ -331,4 +332,4 @@ page {
 .operate .btn { flex: 1; }
 
 /* 中和项目全局 app.wxss 的白色 .card / 深色文字渗漏 */
-.card { margin: 0; padding: 120% 0 0; color: #f5e7c1; }
+.card { margin: 0; padding: 0; color: #f5e7c1; }
