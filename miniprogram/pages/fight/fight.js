@@ -532,6 +532,12 @@ Page({
   },
   renderSpectator() {
     if (!state.fight || !state.order[state.matchIndex]) return;
+    /* 我在对局中时绝不渲染观战停靠区（否则参战画面会被钉底聊天框覆盖） */
+    const playerKey = ['A', 'B', 'C'].find(k => ROLES[k].isPlayer);
+    if (playerKey && state.order[state.matchIndex].indexOf(playerKey) >= 0) {
+      if (this.data.spectator) this.setData({ spectator: null });
+      return;
+    }
     const sp = this.buildSpectator();
     if (sp) this.setData({ spectator: sp });
   },
