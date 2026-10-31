@@ -181,10 +181,10 @@ page { background: #121216; }
 .table-area { min-height: 330rpx; }
 .table-inner .row-label { text-align: center; color: #f6e6b0; font-size: 22rpx; letter-spacing: 4rpx; margin: 4rpx 0; }
 .table-inner .hand-label { text-align: center; color: #f0e2b0; font-size: 20rpx; letter-spacing: 4rpx; margin-bottom: 8rpx; }
-.table-row { display: flex; gap: 12rpx; justify-content: center; align-items: flex-end; }
+.table-row { display: flex; flex-wrap: wrap; row-gap: 8rpx; gap: 10rpx; justify-content: center; align-items: flex-end; }
 .table-row .row-tag { width: 44rpx; align-self: center; font-size: 18rpx; color: #f6e6b0; letter-spacing: 2rpx; text-align: center; }
-.table-inner .mini { width: 150rpx; text-align: center; }
-.table-inner .mini .m-card { width: 150rpx; transform: rotateX(24deg); box-shadow: 0 16rpx 24rpx rgba(0,0,0,.5); border-width: 2rpx; }
+.table-inner .mini { width: 145rpx; flex: 0 0 auto; text-align: center; }
+.table-inner .mini .m-card { width: 145rpx; transform: rotateX(24deg); box-shadow: 0 16rpx 24rpx rgba(0,0,0,.5); border-width: 2rpx; }
 .table-inner .mini .m-card .c-top { padding: 4rpx 6rpx 0; }
 .table-inner .mini .m-card .c-badge { font-size: 16rpx; padding: 2rpx 10rpx; }
 .table-inner .mini .m-card .c-beast { min-height: 0; margin: 0; border-radius: 0; }
@@ -192,7 +192,7 @@ page { background: #121216; }
 .table-inner .mini .m-card .c-name { font-size: 17rpx; letter-spacing: 1rpx; }
 .table-inner .mini .m-card .c-stat { font-size: 15rpx; margin-top: 2rpx; }
 .table-inner .mini .mini-who { font-size: 22rpx; color: #f6e6b0; margin-bottom: 4rpx; }
-.table-inner .mini.pass { width: 150rpx; height: 40rpx; display: flex; align-items: center; justify-content: center; border: 2rpx dashed rgba(212,184,120,.35); border-radius: 10rpx; color: #a89a7c; font-size: 18rpx; background: rgba(18,18,22,.4); }
+.table-inner .mini.pass { width: 145rpx; height: 40rpx; display: flex; align-items: center; justify-content: center; border: 2rpx dashed rgba(212,184,120,.35); border-radius: 10rpx; color: #a89a7c; font-size: 18rpx; background: rgba(18,18,22,.4); }
 .table-inner .mini.revealed .m-card { box-shadow: 0 16rpx 24rpx rgba(0,0,0,.5), 0 0 30rpx rgba(212,184,120,.6); }
 /* 战斗信息 */
 .battle-msg { min-height: 48rpx; text-align: center; font-size: 24rpx; color: #f5e7c1; padding: 10rpx; line-height: 1.5; }
