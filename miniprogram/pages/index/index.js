@@ -750,7 +750,8 @@ Page({
     this.clearTimers();
     this.initPickA();
     this.showView('picka');
-    this.startPickACountdown();
+    /* 回到功能展示页（整局结束），用 reLaunch 让战斗页状态彻底重置 */
+    setTimeout(() => wx.reLaunch({ url: '/pages/home/home' }), 600);
   },
 
   /* ---------- 右下角按钮 / 聊天 ---------- */
