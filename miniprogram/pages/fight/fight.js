@@ -156,7 +156,8 @@ function defaultDeck() {
   const used = {};
   [].concat(atk, def, mag, tongs).forEach(c => { used[c.id] = 1; });
   const res = tongs.slice(0, 2);
-  topOf(CARD_DB.filter(c => !used[c.id]), 3 - res.length, 'reserve').forEach(c => res.push(c));
+  /* 通卡上限 2 张已被备用占满——补位必须排除通卡，否则会出现第 3 张通卡违反规则 */
+  topOf(CARD_DB.filter(c => !used[c.id] && c.type !== 'tongue'), 3 - res.length, 'reserve').forEach(c => res.push(c));
   return { attack: atk, defense: def, magic: mag, reserve: res };
 }
 /** AI 卡组：从当前卡库里随机抽 攻3/防3/法3 */
