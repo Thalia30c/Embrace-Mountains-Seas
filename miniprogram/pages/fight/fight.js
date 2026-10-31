@@ -770,13 +770,13 @@ Page({
     this.reportScore(isWin ? WIN_GAIN : -LOSE_LOSS, nextScore, delta);
   },
 
-  /** 段位卡底注：还差多少分 / 晋级提示（胜负语气不同） */
+  /** 段位卡底注：还差多少分 / 晋级提示（精简一行，胜负语气不同） */
   buildRankNote(isWin, info) {
     if (!info) return '';
     if (!info.nextRank) return '已至山海之巅 · 保持连胜';
     return isWin
-      ? ('距 ' + info.nextRank + ' 还差 ' + info.toNext + ' 分 · 连胜可加速晋级')
-      : ('还差 ' + info.toNext + ' 分晋级 · 稳住心态，下一局夺回冠军');
+      ? ('距 ' + info.nextRank + ' 还差 ' + info.toNext + ' 分 · 连胜加速晋级')
+      : ('还差 ' + info.toNext + ' 分晋级 · 稳住心态再战');
   },
 
   /**

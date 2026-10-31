@@ -402,7 +402,8 @@
             </view>
           </view>
         </view>
-        <view class="rs-sub">{{rankNote}}{{rankSync?' · '+rankSync:''}}</view>
+        <view class="rs-sub">{{rankNote}}</view>
+        <view wx:if="{{rankSync}}" class="rs-sync">{{rankSync}}</view>
       </view>
 
       <view class="operate"><view class="btn primary" bindtap="backHome">确定 · 返回首页</view></view>
