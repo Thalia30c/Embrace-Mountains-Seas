@@ -233,7 +233,7 @@
         <view class="round-tag">{{roundTag}}</view>
         <view class="timer-tip"><view class="ring {{timerDanger?'danger':''}}">{{timerRing}}</view><text>出牌</text></view>
       </view>
-      <view class="table-area">
+      <view class="table-area table-inner">
         <view class="hand-label">本场已打出 · 落桌</view>
         <view class="table-row">
           <view class="row-tag">{{opp.name}}</view>
