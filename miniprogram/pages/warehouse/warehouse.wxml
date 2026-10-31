@@ -22,10 +22,11 @@
     </view>
   </view>
 
-  <!-- 卡牌网格：每四张一排，整体可滑动 -->
-  <scroll-view class="wh-scroll" scroll-y="true">
+  <!-- 上方：卡牌库（可滑动，限定高度），点击选中 -->
+  <scroll-view class="wh-library" scroll-y="true">
     <view class="wh-grid">
-      <view class="wh-card" wx:for="{{filteredCards}}" wx:key="card">
+      <view class="wh-card {{selectedCard && selectedCard.card === item.card ? 'selected' : ''}}"
+            wx:for="{{filteredCards}}" wx:key="card" data-index="{{index}}" bindtap="onSelectCard">
         <view class="wh-inner">
           <image class="wh-img" src="/photo/{{item.card}}.jpg" mode="aspectFill"></image>
           <view class="wh-badges">
@@ -39,4 +40,42 @@
     </view>
     <view wx:if="{{!loading && filteredCards.length===0}}" class="wh-empty">暂无符合条件的卡牌</view>
   </scroll-view>
+
+  <!-- 下方：展示区 -->
+  <view class="wh-stage">
+    <!-- 未选择 -->
+    <view class="stage-hint" wx:if="{{!selectedCard}}">请选择上方卡牌查看详情</view>
+
+    <!-- 有视频：全屏播放动画（隐藏进度条/控件），播完回到展示区展示卡牌 -->
+    <video wx:elif="{{hasVideo && !videoEnded}}" id="whVideo" class="wh-video"
+           src="{{videoSrc}}" autoplay="{{true}}" controls="{{false}}"
+           show-center-play-btn="{{false}}" show-progress="{{false}}" show-play-btn="{{false}}"
+           bindloadedmetadata="onVideoMeta"
+           bindended="onVideoEnded" binderror="onVideoError"></video>
+
+    <!-- 无视频 或 动画播完：放大卡牌 + 两侧属性/能力 -->
+    <view wx:else class="stage-detail">
+      <view class="detail-side detail-left">
+        <view class="side-title">属性</view>
+        <view class="attr-row"><text class="attr-k">等级</text><text class="attr-v">{{selectedCard.cLevel}}</text></view>
+        <view class="attr-row"><text class="attr-k">类型</text><text class="attr-v">{{kindName[selectedCard.kind]}}</text></view>
+        <view class="attr-row"><text class="attr-k">生命</text><text class="attr-v">{{selectedCard.hp}}</text></view>
+        <view class="attr-row"><text class="attr-k">攻防</text><text class="attr-v">{{selectedCard.damageOrShield}}</text></view>
+        <view class="attr-row" wx:if="{{selectedCard.compound}}"><text class="attr-k">复合</text><text class="attr-v">是</text></view>
+      </view>
+
+      <view class="detail-center">
+        <image class="detail-img" src="/photo/{{selectedCard.card}}.jpg" mode="aspectFill"></image>
+        <view class="detail-name">{{selectedCard.cName}}</view>
+        <view wx:if="{{hasVideo}}" class="replay-btn" bindtap="onReplay">▶ 重播动画</view>
+        <view wx:if="{{videoError}}" class="err-note">（该卡牌暂无动画视频）</view>
+      </view>
+
+      <view class="detail-side detail-right">
+        <view class="side-title">能力</view>
+        <view class="skill-name">{{selectedCard.skillName}}</view>
+        <view class="skill-desc">技能效果以实战为准</view>
+      </view>
+    </view>
+  </view>
 </view>
