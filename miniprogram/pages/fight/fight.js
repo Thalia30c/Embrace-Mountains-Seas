@@ -165,7 +165,7 @@ Page({
     dicePhase: false, diceSpinning: false, diceResult: null, rollDone: false, diceTransform: '',
     fightShown: false, spectator: null,
     opp: {}, me: {}, roundTag: '', timerRing: 30, timerDanger: false,
-    tableOpp: [], tableMe: [], battleMsg: '',
+    tableOpp: [], tableMe: [], tableScroll: 0, battleMsg: '',
     handShown: false, handEmpty: false, handEmptyMsg: '', handPool: [], playTitle: '',
     statusShown: false, battleLogs: [],
     chatShown: false, chatLogs: [], chatInput: '', emojis: CHAT_ICONS,
@@ -664,7 +664,12 @@ Page({
       if (t && !c) return { card: null, pass: '通·法', revealed: cur };
       return c ? { card: this.renderCard(c), pass: '', revealed: cur } : { card: null, pass: '不出', revealed: cur };
     });
-    this.setData({ tableOpp: buildRow(oppKey), tableMe: buildRow(playerKey) });
+    const rows = [buildRow(oppKey), buildRow(playerKey)];
+    /* 默认停在最新一张（行尾）：给一个会被裁剪到最大值的滚动位置，数值随张数变化以触发滚动 */
+    this.setData({
+      tableOpp: rows[0], tableMe: rows[1],
+      tableScroll: 9000 + rows[0].length
+    });
   },
   resolveRound() {
     const f = state.fight;

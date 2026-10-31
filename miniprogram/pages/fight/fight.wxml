@@ -236,7 +236,7 @@
         <view class="hand-label">本场已打出 · 落桌</view>
         <view class="table-row">
           <view class="row-tag">{{opp.name}}</view>
-          <scroll-view scroll-x class="row-scroll" show-scrollbar="{{false}}">
+          <scroll-view scroll-x scroll-left="{{tableScroll}}" class="row-scroll" show-scrollbar="{{false}}">
             <view class="row-cards">
               <block wx:for="{{tableOpp}}" wx:key="index">
                 <view class="mini {{item.revealed?'revealed':''}}">
@@ -256,7 +256,7 @@
         </view>
         <view class="table-row">
           <view class="row-tag">{{me.name}}</view>
-          <scroll-view scroll-x class="row-scroll" show-scrollbar="{{false}}">
+          <scroll-view scroll-x scroll-left="{{tableScroll}}" class="row-scroll" show-scrollbar="{{false}}">
             <view class="row-cards">
               <block wx:for="{{tableMe}}" wx:key="index">
                 <view class="mini {{item.revealed?'revealed':''}}">
