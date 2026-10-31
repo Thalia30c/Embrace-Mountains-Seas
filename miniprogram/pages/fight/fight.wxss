@@ -120,8 +120,9 @@ page { background: #121216; }
 /* 骰子 */
 .dice-zone { text-align: center; margin: 18rpx auto 0; }
 .dice-stage { width: 176rpx; height: 176rpx; margin: 0 auto 8rpx; perspective: 520rpx; display: flex; align-items: center; justify-content: center; }
-.dice-cube { width: 128rpx; height: 128rpx; position: relative; transform-style: preserve-3d; }
-.dice-cube.spinning { animation: diceSpin 3.2s ease-in-out infinite; }
+.dice-cube { width: 128rpx; height: 128rpx; position: relative; transform-style: preserve-3d;
+  transition: transform 1.2s cubic-bezier(.15,.65,.25,1); }
+/* 旋转完全由 JS 累计角度 + transition 驱动（保证停在「我」的点数面），不用 keyframes 以免覆盖 inline transform */
 .dice-cube .face { position: absolute; width: 128rpx; height: 128rpx;
   background: linear-gradient(145deg, rgba(255,255,255,.32), rgba(212,184,120,.2) 45%, rgba(255,255,255,.12));
   border: 2rpx solid rgba(246,230,176,.72); border-radius: 16rpx;

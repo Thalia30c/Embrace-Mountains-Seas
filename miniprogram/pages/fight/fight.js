@@ -162,7 +162,7 @@ Page({
     pickaRing: 120, pickaDanger: false,
     swapTitle: '', swapRing: 20, swapDanger: false, swapDeck: { attack: [], defense: [], magic: [], reserve: [] },
     arenaTitle: '', arenaMeta: '',
-    dicePhase: false, diceSpinning: false, diceResult: null, rollDone: false,
+    dicePhase: false, diceSpinning: false, diceResult: null, rollDone: false, diceTransform: '',
     fightShown: false, spectator: null,
     opp: {}, me: {}, roundTag: '', timerRing: 30, timerDanger: false,
     tableOpp: [], tableMe: [], battleMsg: '',
@@ -361,7 +361,15 @@ Page({
   rollDice() {
     const dice = {};
     ['A', 'B', 'C'].forEach(k => dice[k] = Math.floor(Math.random() * 6) + 1);
-    this.setData({ diceSpinning: true });
+    /* 累计圈数让骰子每次都向前多转两圈，最终正面停在「我」的点数
+       面分布：前3/后2/右5/左1/上6/下4 → 各点数的基础朝向角 */
+    this._diceTurns = (this._diceTurns || 0) + 1;
+    const base = { 1: [0, 90], 2: [0, 180], 3: [0, 0], 4: [90, 0], 5: [0, -90], 6: [-90, 0] }[dice.A];
+    const extra = 720 * this._diceTurns;
+    this.setData({
+      diceSpinning: true,
+      diceTransform: 'rotateX(' + (base[0] + extra) + 'deg) rotateY(' + (base[1] + extra) + 'deg)'
+    });
     this._later(() => {
       this.setData({ diceSpinning: false, diceResult: dice, rollDone: true });
       const list = ['A', 'B', 'C'].sort((a, b) => dice[b] - dice[a]);
@@ -369,7 +377,7 @@ Page({
       state.order = [[list[0], list[1]]];
       this.setData({ arenaMeta: ROLES[list[0]].name + ' 与 ' + ROLES[list[1]].name + ' 首轮对战，' + ROLES[list[2]].name + ' 观战' });
       this._later(() => this.goMatch(0), 5000);
-    }, 900);
+    }, 1250);
   },
   ensureMatchOrder(mi) {
     if (state.order[mi]) return;

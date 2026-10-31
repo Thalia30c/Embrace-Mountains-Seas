@@ -193,7 +193,7 @@
     <!-- 掷骰 -->
     <view wx:if="{{dicePhase}}" class="dice-zone">
       <view class="dice-stage">
-        <view class="dice-cube {{diceSpinning?'spinning':''}}">
+        <view class="dice-cube {{diceSpinning?'spinning':''}}" style="transform:{{diceTransform}}">
           <view class="face f-f"><view class="p p-tl"></view><view class="p p-c"></view><view class="p p-br"></view></view>
           <view class="face f-b"><view class="p p-tl"></view><view class="p p-br"></view></view>
           <view class="face f-r"><view class="p p-tl"></view><view class="p p-tr"></view><view class="p p-c"></view><view class="p p-bl"></view><view class="p p-br"></view></view>
