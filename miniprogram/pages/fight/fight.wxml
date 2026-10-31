@@ -311,9 +311,9 @@
       <view wx:if="{{spectator}}" class="spectate-dock">
         <view class="battle-status">
           <view class="drawer-head"><text class="dt">战斗记录</text></view>
-          <view class="battle-log">
+          <scroll-view scroll-y class="battle-log" scroll-top="{{battleScroll}}" show-scrollbar="{{false}}">
             <view class="msg" wx:for="{{battleLogs}}" wx:key="index">{{item}}</view>
-          </view>
+          </scroll-view>
         </view>
         <view class="chat-box">
           <view class="chat-log">

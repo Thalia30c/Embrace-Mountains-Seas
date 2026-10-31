@@ -173,7 +173,7 @@ Page({
     opp: {}, me: {}, roundTag: '', timerRing: 30, timerDanger: false,
     tableOpp: [], tableMe: [], tableScroll: 0, battleMsg: '',
     handShown: false, handEmpty: false, handEmptyMsg: '', handPool: [], playTitle: '',
-    statusShown: false, battleLogs: [],
+    statusShown: false, battleLogs: [], battleScroll: 0,
     chatShown: false, chatLogs: [], chatInput: '', emojis: CHAT_ICONS,
     cornerBtns: false,
     safeTop: 24, safeBottom: 28, viewH: 1334,
@@ -491,7 +491,7 @@ Page({
       dicePhase: false, fightShown: true, reveal: false, spectator: null,
       arenaTitle: '对局 · 第 ' + (state.matchIndex + 1) + ' 场',
       arenaMeta: ROLES[pair[0]].name + ' vs ' + ROLES[pair[1]].name,
-      cornerBtns: true, statusShown: false, chatShown: false, battleLogs: [],
+      cornerBtns: true, statusShown: false, chatShown: false, battleLogs: [], battleScroll: 0,
       battleMsg: ''
     });
     this.renderFight();
@@ -708,7 +708,9 @@ Page({
     if (xc) this.removeFromDeck(f.xDeck, xc.id);
     if (yc) this.removeFromDeck(f.yDeck, yc.id);
     const note = '回合' + f.round + '·' + phaseName(f.phase) + '：' + ROLES[f.x].name + ' 造成' + dmgToY + ' · ' + ROLES[f.y].name + ' 造成' + dmgToX;
-    this.setData({ battleLogs: (this.data.battleLogs || []).concat([note]), battleMsg: ROLES[f.x].name + '【' + (xc ? xc.name : '不出牌') + '】 vs ' + ROLES[f.y].name + '【' + (yc ? yc.name : '不出牌') + '】' });
+    /* 观战记录框固定高度：追加后把 scroll-top 推到新值，自动滚到最新一行 */
+    const nextLen = (this.data.battleLogs || []).length + 1;
+    this.setData({ battleLogs: (this.data.battleLogs || []).concat([note]), battleScroll: nextLen * 200, battleMsg: ROLES[f.x].name + '【' + (xc ? xc.name : '不出牌') + '】 vs ' + ROLES[f.y].name + '【' + (yc ? yc.name : '不出牌') + '】' });
     f.xSel = null; f.ySel = null;
     if (f.xhp <= 0 || f.yhp <= 0) {
       this._later(() => this.endMatch(), 900);
