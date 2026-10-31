@@ -502,7 +502,8 @@ Page({
     this.beginMatch(state.order[mi]);
     this.setData({
       spectator: this.buildSpectator(), handShown: false,
-      statusShown: false, cornerBtns: false, chatShown: true,
+      /* 观战默认展开战斗记录抽屉（与聊天互斥，聊天收起） */
+      statusShown: true, cornerBtns: false, chatShown: false,
       arenaMeta: '观战中：' + ROLES[state.fight.x].name + ' vs ' + ROLES[state.fight.y].name
     });
   },
