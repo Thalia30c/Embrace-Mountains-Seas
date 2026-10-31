@@ -762,28 +762,47 @@ Page({
       ],
       rankChange: rankChange,
       rankCls: delta === 'down' ? 'down' : 'up',
-      rankInfo: this.buildRankInfo(nextScore, pr, nr)
+      rankInfo: this.buildRankInfo(nextScore, prev)
     });
     /* 上报数据库：后端累加积分并回算段位，成功后用库里的真实数据刷新进度条 */
     this.reportScore(isWin ? WIN_GAIN : -LOSE_LOSS, nextScore, delta);
   },
 
-  /** 段位进度条数据：当前段位、下一级、还差多少分、段内进度百分比 */
-  buildRankInfo(score, prevRank, rank) {
-    const cur = rank || rankOf(score || 0);
+  /**
+   * 段位进度条数据：当前段位、下一级、还差多少分、段内进度百分比，
+   * 以及本次积分变动对应的【增量区间】（旧进度 % → 新进度 %），用于高亮 + 飘字。
+   */
+  buildRankInfo(score, prevScore) {
+    const cur = rankOf(score || 0);
     const idx = RANKS.findIndex(r => r.id === cur.id);
     const up = idx >= 0 && idx < RANKS.length - 1 ? RANKS[idx + 1] : null;
     const base = cur.min || 0;
     const target = up ? up.min : base;
-    let pct = up ? Math.round((score - base) * 100 / Math.max(1, target - base)) : 100;
-    pct = Math.max(0, Math.min(100, pct));
+    const pct = (s) => {
+      let p = up ? Math.round((s - base) * 100 / Math.max(1, target - base)) : 100;
+      return Math.max(0, Math.min(100, p));
+    };
+    const hasPrev = typeof prevScore === 'number';
+    const prevRank = hasPrev ? rankOf(prevScore) : cur;
+    const gain = hasPrev ? (score - prevScore) : 0;
+    let progress = pct(score);
+    let prevProgress = hasPrev ? pct(prevScore) : progress;
+    /* 跨段时基数换了：升段 → 新段内的整条都算本次增量；降段 → 不标注增量 */
+    if (prevRank.id !== cur.id) {
+      prevProgress = gain > 0 ? 0 : progress;
+    }
     return {
       rank: cur.n,
-      prevRank: prevRank ? prevRank.n : cur.n,
+      prevRank: prevRank.n,
       nextRank: up ? up.n : '',
       toNext: up ? Math.max(0, target - score) : 0,
-      progress: pct,
-      full: !up || pct >= 100
+      progress: progress,
+      prevProgress: prevProgress,
+      gainWidth: Math.max(0, progress - prevProgress),
+      gainText: gain > 0 ? ('+' + gain) : (gain < 0 ? String(gain) : ''),
+      gainCls: gain > 0 ? 'up' : 'down',
+      floatLeft: Math.max(6, Math.min(92, Math.max(progress, prevProgress))),
+      full: !up || progress >= 100
     };
   },
 
@@ -799,15 +818,21 @@ Page({
       state.score = typeof d.score === 'number' ? d.score : nextScore;
       const app = getApp();
       if (app && app.globalData.userInfo) app.globalData.userInfo.score = state.score;
+      /* 用后端回传的真实积分/段位重算进度条（含本次增量区间，供高亮与飘字） */
+      const serverScore = typeof d.score === 'number' ? d.score : state.score;
+      const info = this.buildRankInfo(serverScore, typeof d.prevScore === 'number' ? d.prevScore : null);
+      if (typeof d.progress === 'number') {
+        info.progress = Math.max(0, Math.min(100, d.progress));
+        info.gainWidth = Math.max(0, info.progress - info.prevProgress);
+        info.floatLeft = Math.max(6, Math.min(92, Math.max(info.progress, info.prevProgress)));
+      }
+      if (d.rank) info.rank = d.rank;
+      if (d.prevRank) info.prevRank = d.prevRank;
+      info.nextRank = (d.nextRank && d.nextRank !== '已是最高段位') ? d.nextRank : '';
+      if (typeof d.toNext === 'number') info.toNext = d.toNext;
+      info.full = !info.nextRank || info.progress >= 100;
       this.setData({
-        rankInfo: {
-          rank: d.rank || '',
-          prevRank: d.prevRank || d.rank || '',
-          nextRank: (d.nextRank && d.nextRank !== '已是最高段位') ? d.nextRank : '',
-          toNext: d.toNext || 0,
-          progress: d.progress || 0,
-          full: !d.nextRank || d.nextRank === '已是最高段位' || (d.progress >= 100)
-        },
+        rankInfo: info,
         rankSync: '已同步数据库',
         scoreLines: [
           { k: '本局结果', v: (delta > 0 ? '胜利 +' + delta : '失败 ' + delta) },

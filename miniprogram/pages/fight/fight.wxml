@@ -364,8 +364,14 @@
           <text wx:if="{{rankInfo.nextRank}}" class="rp-next">距 {{rankInfo.nextRank}} 还差 {{rankInfo.toNext}} 分</text>
           <text wx:else class="rp-next">已至山海之巅</text>
         </view>
-        <view class="rp-bar">
-          <view class="rp-fill {{rankInfo.full?'full':''}}" style="width:{{rankInfo.progress}}%"></view>
+        <view class="rp-bar-wrap">
+          <!-- 本次积分增减飘字：+30 金色 / -20 灰色，向上飘后淡出 -->
+          <view wx:if="{{rankInfo.gainText}}" class="rp-float {{rankInfo.gainCls}}" style="left:{{rankInfo.floatLeft}}%">{{rankInfo.gainText}}</view>
+          <view class="rp-bar">
+            <view class="rp-fill {{rankInfo.full?'full':''}}" style="width:{{rankInfo.progress}}%"></view>
+            <!-- 增量段：旧进度 → 新进度之间持续发光，一眼看出这次涨了哪段 -->
+            <view wx:if="{{rankInfo.gainWidth>0}}" class="rp-gain {{rankInfo.gainCls}}" style="left:{{rankInfo.prevProgress}}%;width:{{rankInfo.gainWidth}}%"></view>
+          </view>
         </view>
         <view wx:if="{{rankSync}}" class="rp-sync">{{rankSync}}</view>
       </view>
