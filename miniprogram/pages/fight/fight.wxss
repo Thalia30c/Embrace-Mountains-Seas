@@ -154,6 +154,9 @@ page { background: #121216; }
 /* 战斗桌面 */
 .fight-zone { border-radius: 22rpx; padding: 14rpx 18rpx; }
 .oppbar, .player { display: flex; align-items: center; gap: 16rpx; justify-content: center; }
+.player { position: relative; }
+/* 出牌倒计时钉在"我"血条行右端 */
+.timer-me { position: absolute; right: 4rpx; top: 50%; transform: translateY(-50%); }
 .fight-zone .player { margin-top: 8rpx; }
 .fight-zone .player .ava { border-color: #f6e6b0; box-shadow: 0 0 22rpx rgba(246,230,176,.45); }
 .fight-zone .player .pnm { color: #f6e6b0; }
