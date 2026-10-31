@@ -142,7 +142,6 @@ page { background: #121216; }
 .dice-cube .f-l { transform: rotateY(-90deg) translateZ(64rpx); }
 .dice-cube .f-u { transform: rotateX(90deg) translateZ(64rpx); }
 .dice-cube .f-d { transform: rotateX(-90deg) translateZ(64rpx); }
-@keyframes diceSpin { 0%{transform:rotateX(0deg) rotateY(0deg)} 100%{transform:rotateX(360deg) rotateY(360deg)} }
 .dice-result .dice-title { font-size: 24rpx; color: #d4b878; letter-spacing: 8rpx; margin-bottom: 16rpx; }
 .dice-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16rpx; }
 .dice-cell { border: 2rpx solid rgba(212,184,120,.3); border-radius: 18rpx; padding: 16rpx 8rpx; background: rgba(20,17,26,.55); }
