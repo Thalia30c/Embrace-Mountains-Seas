@@ -238,9 +238,18 @@ page { background: #121216; }
 /* ===== 右下角按钮 ===== */
 .corner-btns { position: fixed; right: 24rpx; bottom: 150rpx; z-index: 70; display: flex; gap: 16rpx; }
 .corner-btn { font-size: 26rpx; color: #f6e6b0; background: rgba(18,18,22,.88); border: 2rpx solid #b89b58; border-radius: 40rpx; padding: 14rpx 32rpx; box-shadow: 0 8rpx 24rpx rgba(0,0,0,.5); }
-/* 状态提示面板 */
-.battle-status { background: rgba(18,18,22,.55); border: 2rpx solid rgba(212,184,120,.25); border-radius: 20rpx; padding: 14rpx 20rpx; margin-top: 16rpx; }
-.battle-log { max-height: 180rpx; overflow-y: auto; font-size: 24rpx; color: #a89a7c; line-height: 1.8; margin-top: 12rpx; border-top: 2rpx dashed rgba(212,184,120,.3); padding-top: 12rpx; }
+/* 战斗记录 = 底部抽屉：浮在桌面上方，不参与布局流 → 不会压缩落桌/手牌 */
+.drawer-mask { position: fixed; top: 0; right: 0; bottom: 0; left: 0; background: rgba(8,7,11,.5); z-index: 60; }
+.battle-status { position: fixed; left: 0; right: 0; bottom: 0; z-index: 61; max-height: 58vh; display: flex; flex-direction: column;
+  padding: 20rpx 24rpx calc(24rpx + env(safe-area-inset-bottom));
+  background: rgba(18,18,22,.95); border-top: 2rpx solid rgba(212,184,120,.4); border-radius: 28rpx 28rpx 0 0;
+  box-shadow: 0 -10rpx 40rpx rgba(0,0,0,.6);
+  transform: translateY(115%); transition: transform .28s ease; pointer-events: none; }
+.battle-status.open { transform: translateY(0); pointer-events: auto; }
+.drawer-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10rpx; }
+.drawer-head .dt { font-size: 26rpx; color: #f6e6b0; font-weight: 700; letter-spacing: 4rpx; }
+.drawer-head .dx { font-size: 24rpx; color: #d4b878; padding: 6rpx 20rpx; border: 2rpx solid rgba(212,184,120,.45); border-radius: 24rpx; }
+.battle-log { flex: 1; min-height: 0; overflow-y: auto; font-size: 24rpx; color: #a89a7c; line-height: 1.8; border-top: 2rpx dashed rgba(212,184,120,.3); padding-top: 12rpx; }
 .battle-log .msg { margin: 4rpx 0; }
 /* 聊天 */
 .chat-box { margin-top: 16rpx; background: rgba(18,18,22,.5); border: 2rpx solid rgba(212,184,120,.25); border-radius: 22rpx; padding: 12rpx 18rpx; }

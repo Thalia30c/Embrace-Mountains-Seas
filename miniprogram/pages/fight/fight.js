@@ -490,7 +490,7 @@ Page({
     this.beginMatch(state.order[mi]);
     this.setData({
       spectator: this.buildSpectator(), handShown: false,
-      statusShown: true, cornerBtns: false, chatShown: true,
+      statusShown: false, cornerBtns: false, chatShown: true,
       arenaMeta: '观战中：' + ROLES[state.fight.x].name + ' vs ' + ROLES[state.fight.y].name
     });
   },

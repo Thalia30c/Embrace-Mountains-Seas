@@ -307,8 +307,13 @@
         <view class="confirm-row"><view class="confirm-btn" bindtap="onConfirm">确认出牌</view></view>
       </view>
 
-      <!-- 状态提示（战斗时可收起） -->
-      <view wx:if="{{statusShown}}" class="battle-status">
+      <!-- 战斗记录：底部抽屉（覆盖显示，不再挤占版面） -->
+      <view wx:if="{{statusShown}}" class="drawer-mask" bindtap="toggleStatus"></view>
+      <view class="battle-status {{statusShown?'open':''}}">
+        <view class="drawer-head">
+          <text class="dt">战斗记录</text>
+          <text class="dx" bindtap="toggleStatus">收起</text>
+        </view>
         <view class="battle-log">
           <view class="msg" wx:for="{{battleLogs}}" wx:key="index">{{item}}</view>
         </view>
