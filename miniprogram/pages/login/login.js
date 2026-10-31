@@ -100,9 +100,18 @@ Page({
     this.setData({ isRegister: !this.data.isRegister, inputError: false });
   },
 
-  /** 账号密码登录 */
+  /** 登录/注册按钮统一入口 */
   async onLogin() {
-    const { userAccount, userPwd, isRegister, nickname } = this.data;
+    if (this.data.isRegister) {
+      await this.handleRegister();
+      return;
+    }
+    await this.handleLogin();
+  },
+
+  /** 账号注册：成功后提示两秒，清空输入框，留在当前页等待点“已有账号”返回登录 */
+  async handleRegister() {
+    const { userAccount, userPwd, nickname } = this.data;
     if (!userAccount || !userPwd) {
       wx.showToast({ title: '请填写账号和密码', icon: 'none' });
       return;
@@ -112,14 +121,36 @@ Page({
       return;
     }
     try {
-      let data;
-      if (isRegister) {
-        data = await api.register(userAccount, userPwd, nickname);
-      } else {
-        data = await api.login(userAccount, userPwd);
-      }
+      await api.register(userAccount, userPwd, nickname);
+      // 注册成功提示 2 秒；不自动登录、不跳转，便于点“已有账号”直接登录新账号
+      wx.showToast({ title: '注册成功', icon: 'success', duration: 2000 });
+      this.setData({
+        userAccount: '',
+        userPwd: '',
+        nickname: '',
+        showPwd: false,
+        inputError: false
+      });
+    } catch (e) {
+      // 错误提示已在 request.js 统一处理
+    }
+  },
+
+  /** 账号密码登录 */
+  async handleLogin() {
+    const { userAccount, userPwd } = this.data;
+    if (!userAccount || !userPwd) {
+      wx.showToast({ title: '请填写账号和密码', icon: 'none' });
+      return;
+    }
+    if (userPwd.length < MIN_PWD_LEN) {
+      wx.showToast({ title: `密码至少 ${MIN_PWD_LEN} 位`, icon: 'none' });
+      return;
+    }
+    try {
+      const data = await api.login(userAccount, userPwd);
       getAppInstance().setLogin(this.buildToken(data), this.buildUserInfo(data));
-      wx.showToast({ title: isRegister ? '注册成功' : '登录成功', icon: 'success' });
+      wx.showToast({ title: '登录成功', icon: 'success' });
       setTimeout(() => wx.reLaunch({ url: '/pages/index/index' }), 800);
     } catch (e) {
       // 错误提示已在 request.js 统一处理
