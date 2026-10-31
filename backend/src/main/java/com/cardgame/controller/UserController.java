@@ -4,9 +4,14 @@ import com.cardgame.common.JwtUtil;
 import com.cardgame.common.Result;
 import com.cardgame.dao.GameRankDao;
 import com.cardgame.dao.UserDao;
+import com.cardgame.dao.WarehouseDao;
+import com.cardgame.dto.RegisterDTO;
 import com.cardgame.entity.GameRank;
 import com.cardgame.entity.User;
+import com.cardgame.entity.Warehouse;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,11 +35,14 @@ public class UserController {
 
     private final UserDao userDao;
     private final GameRankDao gameRankDao;
+    private final WarehouseDao warehouseDao;
     private final JwtUtil jwtUtil;
 
-    public UserController(UserDao userDao, GameRankDao gameRankDao, JwtUtil jwtUtil) {
+    public UserController(UserDao userDao, GameRankDao gameRankDao,
+                          WarehouseDao warehouseDao, JwtUtil jwtUtil) {
         this.userDao = userDao;
         this.gameRankDao = gameRankDao;
+        this.warehouseDao = warehouseDao;
         this.jwtUtil = jwtUtil;
     }
 
@@ -85,6 +93,82 @@ public class UserController {
         data.put("rank", rankName);
         data.put("warehouseId", user.getWarehouseId());
         return Result.ok(data);
+    }
+
+    /**
+     * 注册新账号。
+     *
+     * <p>先建一个专属仓库（user.warehouse_id 有外键约束），再写 user 记录，
+     * 初始段位 level = 1、积分 0。返回新用户的 uid / 账号 / 昵称 / 段位。</p>
+     *
+     * <p>请求体：{"username":"账号","password":"密码","nickname":"昵称（可空）"}</p>
+     */
+    @PostMapping("/register")
+    public Result<Map<String, Object>> register(@RequestBody RegisterDTO dto) {
+        String account = dto.getUsername() == null ? null : dto.getUsername().trim();
+        String pwd = dto.getPassword() == null ? null : dto.getPassword().trim();
+        String nickname = dto.getNickname() == null ? null : dto.getNickname().trim();
+
+        if (account == null || account.isEmpty() || pwd == null || pwd.isEmpty()) {
+            return Result.fail(Result.PARAM_ERROR, "账号和密码不能为空");
+        }
+        if (!account.matches("[A-Za-z0-9_]{1,32}")) {
+            return Result.fail(Result.PARAM_ERROR, "账号只能为 1-32 位字母 / 数字 / 下划线");
+        }
+        if (!pwd.matches("[A-Za-z0-9]{6,64}")) {
+            return Result.fail(Result.PARAM_ERROR, "密码只能为 6-64 位字母 / 数字");
+        }
+        if (nickname == null || nickname.isEmpty()) {
+            nickname = account;
+        }
+
+        try {
+            if (userDao.findByAccount(account) != null) {
+                return Result.fail(Result.PARAM_ERROR, "账号已存在");
+            }
+            // user.warehouse_id 外键指向 warehouse，注册时先建一个空仓库
+            Warehouse warehouse = new Warehouse();
+            warehouseDao.insert(warehouse);
+            Integer warehouseId = warehouse.getWarehouseId();
+            if (warehouseId == null) {
+                return Result.fail(Result.SERVER_ERROR, "仓库创建失败");
+            }
+
+            User user = new User();
+            user.setUsername(nickname);
+            user.setUserAccount(account);
+            user.setUserPwd(pwd);
+            user.setGameLevel(1);
+            user.setScore(0);
+            user.setWarehouseId(warehouseId);
+            userDao.insert(user);
+            if (user.getUid() == null) {
+                return Result.fail(Result.SERVER_ERROR, "账号创建失败");
+            }
+
+            Map<String, Object> data = new LinkedHashMap<>();
+            data.put("userId", user.getUid());
+            data.put("userAccount", user.getUserAccount());
+            data.put("nickname", user.getUsername());
+            data.put("coins", 0);
+            data.put("score", 0);
+            data.put("gameLevel", user.getGameLevel());
+            data.put("rank", findRankName(user.getGameLevel()));
+            data.put("warehouseId", warehouseId);
+            return Result.ok("注册成功", data);
+        } catch (Exception e) {
+            return Result.fail(Result.SERVER_ERROR, "注册失败：" + e.getMessage());
+        }
+    }
+
+    /** 查段位全称，查不到或异常返回 null */
+    private String findRankName(Integer gameLevel) {
+        try {
+            GameRank rank = gameRankDao.selectById(gameLevel);
+            return rank == null ? null : rank.getFullName();
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     /** 从 Authorization 头解析 token 并取出 uid，失败返回 null */
