@@ -26,7 +26,7 @@ Page({
   onLoad() {
     // 已经登录过（本地有 token），直接进入首页，跳过登录页
     if (getAppInstance().globalData.token) {
-      wx.reLaunch({ url: '/pages/home/home' });
+      wx.reLaunch({ url: '/pages/index/index' });
     }
   },
 
@@ -120,7 +120,7 @@ Page({
       }
       getAppInstance().setLogin(this.buildToken(data), this.buildUserInfo(data));
       wx.showToast({ title: isRegister ? '注册成功' : '登录成功', icon: 'success' });
-      setTimeout(() => wx.reLaunch({ url: '/pages/home/home' }), 800);
+      setTimeout(() => wx.reLaunch({ url: '/pages/index/index' }), 800);
     } catch (e) {
       // 错误提示已在 request.js 统一处理
     }
@@ -138,7 +138,7 @@ Page({
       const data = await api.wxLogin(loginRes.code);
       getAppInstance().setLogin(this.buildToken(data), this.buildUserInfo(data));
       wx.showToast({ title: '登录成功', icon: 'success' });
-      setTimeout(() => wx.reLaunch({ url: '/pages/home/home' }), 800);
+      setTimeout(() => wx.reLaunch({ url: '/pages/index/index' }), 800);
     } catch (e) {
       // 错误提示已在 request.js 统一处理
     }

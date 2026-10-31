@@ -1,0 +1,395 @@
+<view class="container">
+
+  <!-- ===== 视图：战前配卡（界面A） ===== -->
+  <view class="view view-box {{view=='picka'?'active':''}}" style="padding-top:{{safeTop}}rpx;padding-bottom:{{safeBottom}}rpx">
+    <image class="view-bg" src="/assets/bg-picka.jpg" mode="aspectFill"></image>
+    <view class="view-inner">
+    <view class="pick-a-title">
+      <view class="h2">战前选牌 · 仓库配卡</view>
+      <view class="tip">从仓库挑选卡牌填入四组；攻/防/法各 3 张，备用 3 张</view>
+      <view wx:if="{{cardSource}}" class="tip src">卡源：{{cardSource}}</view>
+      <view class="picka-bar">
+        <view class="timer-row">
+          <view class="ring {{pickaDanger?'danger':''}}">{{pickaRing}}</view><text class="sub">选牌</text>
+        </view>
+      </view>
+    
+    </view>
+
+    <view class="panel storage-panel">
+      <view class="section-title">我的卡牌仓库</view>
+      <scroll-view scroll-y class="storage-scroll">
+      <view class="storage">
+        <block wx:for="{{pool}}" wx:key="id">
+          <view class="card {{item.type}} {{item.selected?'selected':''}}" data-id="{{item.id}}" bindtap="onPoolTap">
+            <view class="c-top"><text class="c-badge">{{item.badge}}</text><text wx:if="{{item.sub}}" class="c-type">{{item.sub}}</text></view>
+            <view class="c-beast"><view wx:if="{{item.img}}" class="c-imgbox"><image class="c-img" src="{{item.img}}" mode="aspectFill"></image></view><text wx:else class="b-char">{{item.beastChar}}</text></view>
+            <view class="c-name">{{item.name}}</view>
+            <view class="c-stat"><text wx:for="{{item.stat}}" wx:for-item="st" wx:key="k"><text>{{st.k}}</text><text><text class="num">{{st.v}}</text></text></text></view>
+          </view>
+        </block>
+        </view>
+      </scroll-view>
+    </view>
+
+    <view class="constraint">规则：攻组只放攻击/攻法通卡 · 防组只放防御/防法通卡 · 法组只放法术卡 · 通卡最多 2 张</view>
+
+    <view class="groups4">
+      <view class="group-col">
+        <view class="gl"><text class="tag">攻</text><text>进攻卡组</text><text class="cnt">{{counts.attack}}</text></view>
+        <view class="slots">
+          <block wx:for="{{deck.attack}}" wx:key="id">
+            <view class="card {{item.type}} {{item.selected?'selected':''}} {{item.isEmpty?'c-slot':''}}" data-g="attack" data-i="{{index}}" bindtap="onSlotTap">
+              <block wx:if="{{!item.isEmpty}}">
+                <view class="c-top"><text class="c-badge">{{item.badge}}</text><text wx:if="{{item.sub}}" class="c-type">{{item.sub}}</text></view>
+                <view class="c-beast"><view wx:if="{{item.img}}" class="c-imgbox"><image class="c-img" src="{{item.img}}" mode="aspectFill"></image></view><text wx:else class="b-char">{{item.beastChar}}</text></view>
+                <view class="c-name">{{item.name}}</view>
+                <view class="c-stat"><text wx:for="{{item.stat}}" wx:for-item="st" wx:key="k"><text>{{st.k}}</text><text><text class="num">{{st.v}}</text></text></text></view>
+              </block>
+            </view>
+          </block>
+        </view>
+      </view>
+      <view class="group-col">
+        <view class="gl"><text class="tag">防</text><text>防御卡组</text><text class="cnt">{{counts.defense}}</text></view>
+        <view class="slots">
+          <block wx:for="{{deck.defense}}" wx:key="id">
+            <view class="card {{item.type}} {{item.selected?'selected':''}} {{item.isEmpty?'c-slot':''}}" data-g="defense" data-i="{{index}}" bindtap="onSlotTap">
+              <block wx:if="{{!item.isEmpty}}">
+                <view class="c-top"><text class="c-badge">{{item.badge}}</text><text wx:if="{{item.sub}}" class="c-type">{{item.sub}}</text></view>
+                <view class="c-beast"><view wx:if="{{item.img}}" class="c-imgbox"><image class="c-img" src="{{item.img}}" mode="aspectFill"></image></view><text wx:else class="b-char">{{item.beastChar}}</text></view>
+                <view class="c-name">{{item.name}}</view>
+                <view class="c-stat"><text wx:for="{{item.stat}}" wx:for-item="st" wx:key="k"><text>{{st.k}}</text><text><text class="num">{{st.v}}</text></text></text></view>
+              </block>
+            </view>
+          </block>
+        </view>
+      </view>
+      <view class="group-col">
+        <view class="gl"><text class="tag">法</text><text>法术卡组</text><text class="cnt">{{counts.magic}}</text></view>
+        <view class="slots">
+          <block wx:for="{{deck.magic}}" wx:key="id">
+            <view class="card {{item.type}} {{item.selected?'selected':''}} {{item.isEmpty?'c-slot':''}}" data-g="magic" data-i="{{index}}" bindtap="onSlotTap">
+              <block wx:if="{{!item.isEmpty}}">
+                <view class="c-top"><text class="c-badge">{{item.badge}}</text><text wx:if="{{item.sub}}" class="c-type">{{item.sub}}</text></view>
+                <view class="c-beast"><view wx:if="{{item.img}}" class="c-imgbox"><image class="c-img" src="{{item.img}}" mode="aspectFill"></image></view><text wx:else class="b-char">{{item.beastChar}}</text></view>
+                <view class="c-name">{{item.name}}</view>
+                <view class="c-stat"><text wx:for="{{item.stat}}" wx:for-item="st" wx:key="k"><text>{{st.k}}</text><text><text class="num">{{st.v}}</text></text></text></view>
+              </block>
+            </view>
+          </block>
+        </view>
+      </view>
+      <view class="group-col">
+        <view class="gl"><text class="tag">备</text><text>备用卡组</text><text class="cnt">{{counts.reserve}}</text></view>
+        <view class="slots">
+          <block wx:for="{{deck.reserve}}" wx:key="id">
+            <view class="card {{item.type}} {{item.selected?'selected':''}} {{item.isEmpty?'c-slot':''}}" data-g="reserve" data-i="{{index}}" bindtap="onSlotTap">
+              <block wx:if="{{!item.isEmpty}}">
+                <view class="c-top"><text class="c-badge">{{item.badge}}</text><text wx:if="{{item.sub}}" class="c-type">{{item.sub}}</text></view>
+                <view class="c-beast"><view wx:if="{{item.img}}" class="c-imgbox"><image class="c-img" src="{{item.img}}" mode="aspectFill"></image></view><text wx:else class="b-char">{{item.beastChar}}</text></view>
+                <view class="c-name">{{item.name}}</view>
+                <view class="c-stat"><text wx:for="{{item.stat}}" wx:for-item="st" wx:key="k"><text>{{st.k}}</text><text><text class="num">{{st.v}}</text></text></text></view>
+              </block>
+            </view>
+          </block>
+        </view>
+      </view>
+    </view>
+
+    <view class="operate">
+      <view class="btn primary" bindtap="confirmPickA">确认配卡</view>
+      <view class="btn ghost" bindtap="defaultPickA">默认配置</view>
+    </view>
+    </view>
+  </view>
+
+  <!-- ===== 视图：组内交换（界面B） ===== -->
+  <view class="view view-box {{view=='pickb'?'active':''}}" style="padding-top:{{safeTop}}rpx;padding-bottom:{{safeBottom}}rpx">
+    <image class="view-bg" src="/assets/bg-pickb.jpg" mode="aspectFill"></image>
+    <view class="view-inner">
+    <view class="swap-bar">
+      <text class="st">{{swapTitle}}</text>
+      <view class="timer-tip"><view class="ring {{swapDanger?'danger':''}}">{{swapRing}}</view><text>选牌</text></view>
+    
+    </view>
+    <view class="sub" style="margin-bottom:4rpx">只能在自己四组卡牌之间交换 · 通卡最多 2 张 · 20 秒倒计时</view>
+    <view class="swap-stack">
+      <view class="group-col reserve-panel">
+        <view class="gl"><text class="tag">备</text><text>备用卡组</text></view>
+        <view class="slots">
+          <block wx:for="{{swapDeck.reserve}}" wx:key="id">
+            <view class="card {{item.type}} {{item.selected?'selected':''}} {{item.isEmpty?'c-slot':''}}" data-g="reserve" data-i="{{index}}" bindtap="onSwapTap">
+              <block wx:if="{{!item.isEmpty}}">
+                <view class="c-top"><text class="c-badge">{{item.badge}}</text><text wx:if="{{item.sub}}" class="c-type">{{item.sub}}</text></view>
+                <view class="c-beast"><view wx:if="{{item.img}}" class="c-imgbox"><image class="c-img" src="{{item.img}}" mode="aspectFill"></image></view><text wx:else class="b-char">{{item.beastChar}}</text></view>
+                <view class="c-name">{{item.name}}</view>
+                <view class="c-stat"><text wx:for="{{item.stat}}" wx:for-item="st" wx:key="k"><text>{{st.k}}</text><text><text class="num">{{st.v}}</text></text></text></view>
+              </block>
+            </view>
+          </block>
+        </view>
+      </view>
+      <view class="group-row">
+        <view class="side-label"><text class="tag">攻</text><text class="side-name">进攻</text></view>
+        <view class="slots">
+          <block wx:for="{{swapDeck.attack}}" wx:key="id">
+            <view class="card {{item.type}} {{item.selected?'selected':''}} {{item.isEmpty?'c-slot':''}}" data-g="attack" data-i="{{index}}" bindtap="onSwapTap">
+              <block wx:if="{{!item.isEmpty}}">
+                <view class="c-top"><text class="c-badge">{{item.badge}}</text><text wx:if="{{item.sub}}" class="c-type">{{item.sub}}</text></view>
+                <view class="c-beast"><view wx:if="{{item.img}}" class="c-imgbox"><image class="c-img" src="{{item.img}}" mode="aspectFill"></image></view><text wx:else class="b-char">{{item.beastChar}}</text></view>
+                <view class="c-name">{{item.name}}</view>
+                <view class="c-stat"><text wx:for="{{item.stat}}" wx:for-item="st" wx:key="k"><text>{{st.k}}</text><text><text class="num">{{st.v}}</text></text></text></view>
+              </block>
+            </view>
+          </block>
+        </view>
+      </view>
+      <view class="group-row">
+        <view class="side-label"><text class="tag">防</text><text class="side-name">防御</text></view>
+        <view class="slots">
+          <block wx:for="{{swapDeck.defense}}" wx:key="id">
+            <view class="card {{item.type}} {{item.selected?'selected':''}} {{item.isEmpty?'c-slot':''}}" data-g="defense" data-i="{{index}}" bindtap="onSwapTap">
+              <block wx:if="{{!item.isEmpty}}">
+                <view class="c-top"><text class="c-badge">{{item.badge}}</text><text wx:if="{{item.sub}}" class="c-type">{{item.sub}}</text></view>
+                <view class="c-beast"><view wx:if="{{item.img}}" class="c-imgbox"><image class="c-img" src="{{item.img}}" mode="aspectFill"></image></view><text wx:else class="b-char">{{item.beastChar}}</text></view>
+                <view class="c-name">{{item.name}}</view>
+                <view class="c-stat"><text wx:for="{{item.stat}}" wx:for-item="st" wx:key="k"><text>{{st.k}}</text><text><text class="num">{{st.v}}</text></text></text></view>
+              </block>
+            </view>
+          </block>
+        </view>
+      </view>
+      <view class="group-row">
+        <view class="side-label"><text class="tag">法</text><text class="side-name">法术</text></view>
+        <view class="slots">
+          <block wx:for="{{swapDeck.magic}}" wx:key="id">
+            <view class="card {{item.type}} {{item.selected?'selected':''}} {{item.isEmpty?'c-slot':''}}" data-g="magic" data-i="{{index}}" bindtap="onSwapTap">
+              <block wx:if="{{!item.isEmpty}}">
+                <view class="c-top"><text class="c-badge">{{item.badge}}</text><text wx:if="{{item.sub}}" class="c-type">{{item.sub}}</text></view>
+                <view class="c-beast"><view wx:if="{{item.img}}" class="c-imgbox"><image class="c-img" src="{{item.img}}" mode="aspectFill"></image></view><text wx:else class="b-char">{{item.beastChar}}</text></view>
+                <view class="c-name">{{item.name}}</view>
+                <view class="c-stat"><text wx:for="{{item.stat}}" wx:for-item="st" wx:key="k"><text>{{st.k}}</text><text><text class="num">{{st.v}}</text></text></text></view>
+              </block>
+            </view>
+          </block>
+        </view>
+      </view>
+    </view>
+    <view class="operate"><view class="btn primary" bindtap="beginMatchFromSwap">开始战斗</view></view>
+    </view>
+  </view>
+
+  <!-- ===== 视图：战斗 ===== -->
+  <view class="view view-box battle {{view=='battle'?'active':''}}" style="padding-top:{{safeTop}}rpx;padding-bottom:{{safeBottom}}rpx">
+    <image class="view-bg" src="/assets/bg-battle.jpg" mode="aspectFill"></image>
+    <view class="view-inner">
+    <view class="arena-stage">
+      <view class="h2">{{arenaTitle}}</view>
+      <view class="meta">{{arenaMeta}}</view>
+    
+    </view>
+
+    <!-- 掷骰 -->
+    <view wx:if="{{dicePhase}}" class="dice-zone">
+      <view class="dice-stage">
+        <view class="dice-cube {{diceSpinning?'spinning':''}}">
+          <view class="face f-f"><view class="p p-tl"></view><view class="p p-c"></view><view class="p p-br"></view></view>
+          <view class="face f-b"><view class="p p-tl"></view><view class="p p-br"></view></view>
+          <view class="face f-r"><view class="p p-tl"></view><view class="p p-tr"></view><view class="p p-c"></view><view class="p p-bl"></view><view class="p p-br"></view></view>
+          <view class="face f-l"><view class="p p-c"></view></view>
+          <view class="face f-u"><view class="p p-tl"></view><view class="p p-tr"></view><view class="p p-ml"></view><view class="p p-mr"></view><view class="p p-bl"></view><view class="p p-br"></view></view>
+          <view class="face f-d"><view class="p p-tl"></view><view class="p p-tr"></view><view class="p p-bl"></view><view class="p p-br"></view></view>
+        </view>
+      </view>
+      <view wx:if="{{diceResult}}" class="dice-result">
+        <view class="dice-title">· 本 轮 点 数 ·</view>
+        <view class="dice-grid">
+          <view class="dice-cell me"><view class="who">我 · 甲</view><view class="pts">{{diceResult.A}}</view></view>
+          <view class="dice-cell"><view class="who">乙</view><view class="pts">{{diceResult.B}}</view></view>
+          <view class="dice-cell"><view class="who">丙</view><view class="pts">{{diceResult.C}}</view></view>
+        </view>
+      </view>
+      <view class="sub" style="margin:4rpx 0 24rpx">三人掷骰，点数最高两人进入首轮对战，第三人观战</view>
+      <view wx:if="{{!rollDone}}" class="btn primary" style="margin-top:20rpx" bindtap="rollDice">掷骰决定对手</view>
+    </view>
+
+    <!-- 战斗桌面 -->
+    <view wx:if="{{fightShown}}" class="fight-zone">
+      <view class="oppbar">
+        <view class="ava">{{opp.key}}</view>
+        <view class="pinfo">
+          <view class="pnm">{{opp.name}}</view>
+          <view class="hp-txt">{{opp.hp}}/10</view>
+          <view class="hpbar"><view style="width:{{opp.hpPct}}%" class="{{opp.hp<=3?'low':''}}"></view></view>
+          <view class="pdeck">{{opp.deck}}</view>
+        </view>
+      </view>
+      <view wx:if="{{spectator}}" class="spec-float">
+        <view class="sp-ava">{{spectator.key}}</view>
+        <view class="sp-nm">{{spectator.name}}<text class="sp-hp">累计 {{spectator.hp}} 血</text></view>
+      </view>
+      <view class="roundbar">
+        <view class="round-tag">{{roundTag}}</view>
+        <view class="timer-tip"><view class="ring {{timerDanger?'danger':''}}">{{timerRing}}</view><text>出牌</text></view>
+      </view>
+      <view class="table-area table-inner">
+        <view class="hand-label">本场已打出 · 落桌</view>
+        <view class="table-row">
+          <view class="row-tag">{{opp.name}}</view>
+          <block wx:for="{{tableOpp}}" wx:key="index">
+            <view class="mini {{item.revealed?'revealed':''}}">
+              <block wx:if="{{item.card}}">
+                <view class="m-card card {{item.card.type}}">
+                  <view class="c-top"><text class="c-badge">{{item.card.badge}}</text></view>
+                  <view class="c-beast"><view wx:if="{{item.card.img}}" class="c-imgbox"><image class="c-img" src="{{item.card.img}}" mode="aspectFill"></image></view><text wx:else class="b-char">{{item.card.beastChar}}</text></view>
+                  <view class="c-name">{{item.card.name}}</view>
+                  <view class="c-stat"><text wx:for="{{item.card.stat}}" wx:for-item="st" wx:key="k"><text>{{st.k}}</text><text><text class="num">{{st.v}}</text></text></text></view>
+                </view>
+              </block>
+              <view wx:else class="pass">{{item.pass}}</view>
+            </view>
+          </block>
+        </view>
+        <view class="table-row">
+          <view class="row-tag">{{me.name}}</view>
+          <block wx:for="{{tableMe}}" wx:key="index">
+            <view class="mini {{item.revealed?'revealed':''}}">
+              <block wx:if="{{item.card}}">
+                <view class="m-card card {{item.card.type}}">
+                  <view class="c-top"><text class="c-badge">{{item.card.badge}}</text></view>
+                  <view class="c-beast"><view wx:if="{{item.card.img}}" class="c-imgbox"><image class="c-img" src="{{item.card.img}}" mode="aspectFill"></image></view><text wx:else class="b-char">{{item.card.beastChar}}</text></view>
+                  <view class="c-name">{{item.card.name}}</view>
+                  <view class="c-stat"><text wx:for="{{item.card.stat}}" wx:for-item="st" wx:key="k"><text>{{st.k}}</text><text><text class="num">{{st.v}}</text></text></text></view>
+                </view>
+              </block>
+              <view wx:else class="pass">{{item.pass}}</view>
+            </view>
+          </block>
+        </view>
+      </view>
+      <view class="player">
+        <view class="ava">{{me.key}}</view>
+        <view class="pinfo">
+          <view class="pnm">{{me.name}} · 我</view>
+          <view class="hp-txt">{{me.hp}}/10</view>
+          <view class="hpbar"><view style="width:{{me.hpPct}}%" class="{{me.hp<=3?'low':''}}"></view></view>
+          <view class="pdeck">{{me.deck}}</view>
+        </view>
+      </view>
+      <view class="battle-msg">{{battleMsg}}</view>
+
+      <!-- 手牌区 -->
+      <view wx:if="{{handShown}}" class="hand-zone">
+        <view class="hand-head"><text class="play-title">{{playTitle}}</text></view>
+        <view wx:if="{{handEmpty}}" class="sub">{{handEmptyMsg}}</view>
+        <view wx:else class="your-cards">
+          <block wx:for="{{handPool}}" wx:for-item="c" wx:for-index="i" wx:key="id">
+            <view class="card {{c.type}} {{c.selected?'selected':''}}" data-i="{{i}}" bindtap="onSelectHand">
+              <view class="c-top"><text class="c-badge">{{c.badge}}</text><text wx:if="{{c.sub}}" class="c-type">{{c.sub}}</text></view>
+              <view class="c-beast"><view wx:if="{{c.img}}" class="c-imgbox"><image class="c-img" src="{{c.img}}" mode="aspectFill"></image></view><text wx:else class="b-char">{{c.beastChar}}</text></view>
+              <view class="c-name">{{c.name}}</view>
+              <view class="c-stat"><text wx:for="{{c.stat}}" wx:for-item="st" wx:key="k"><text>{{st.k}}</text><text><text class="num">{{st.v}}</text></text></text></view>
+            </view>
+          </block>
+        </view>
+        <view class="confirm-row"><view class="confirm-btn" bindtap="onConfirm">确认出牌</view></view>
+      </view>
+
+      <!-- 状态提示（战斗时可收起） -->
+      <view wx:if="{{statusShown}}" class="battle-status">
+        <view class="battle-log">
+          <view class="msg" wx:for="{{battleLogs}}" wx:key="index">{{item}}</view>
+        </view>
+      </view>
+      <!-- 聊天（战斗时可收起） -->
+      <view wx:if="{{chatShown}}" class="chat-box">
+        <view class="chat-log">
+          <view class="msg {{item.sys?'sys':''}}" wx:for="{{chatLogs}}" wx:key="index"><text wx:if="{{!item.sys}}"><text class="who">{{item.who}}：</text></text><block wx:for="{{item.parts}}" wx:for-item="p" wx:key="index"><text wx:if="{{p.t=='text'}}">{{p.v}}</text><image wx:else class="chat-icon" src="{{p.src}}" mode="aspectFit"></image></block></view>
+        </view>
+        <view class="chat-input">
+          <view class="emoji-pick"><image wx:for="{{emojis}}" wx:key="key" class="emoji-ico" src="{{item.src}}" data-key="{{item.key}}" bindtap="addEmoji" mode="aspectFit"></image></view>
+          <input value="{{chatInput}}" bindinput="onChatInput" placeholder="说点什么…" />
+          <view class="send" bindtap="sendChat">发送</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 右下角收起按钮 -->
+    <view wx:if="{{cornerBtns}}" class="corner-btns">
+      <view class="corner-btn" bindtap="toggleChat">聊天</view>
+      <view class="corner-btn" bindtap="toggleStatus">状态</view>
+    </view>
+    </view>
+  </view>
+
+  <!-- ===== 视图：结算 ===== -->
+  <view class="view view-box {{view=='result'?'active':''}}" style="padding-top:{{safeTop}}rpx;padding-bottom:{{safeBottom}}rpx">
+    <image class="view-bg" src="/assets/bg-result.jpg" mode="aspectFill"></image>
+    <view class="view-inner">
+    <view class="panel result-wrap">
+      <image wx:if="{{trophy}}" class="trophy" src="{{trophy}}" mode="aspectFit"></image>
+      <view class="h2">{{resultTitle}}</view>
+      <view class="winner-sub">{{resultSub}}</view>
+      <view class="rank">
+        <view class="rank-row {{item.first?'first':''}}" wx:for="{{rankRows}}" wx:key="index">
+          <view class="no">{{item.no}}</view>
+          <view class="nm">{{item.nm}}</view>
+          <view class="hp">{{item.hp}}</view>
+        </view>
+      </view>
+      <view class="score-box">
+        <view class="line" wx:for="{{scoreLines}}" wx:key="k"><text>{{item.k}}</text><text class="num">{{item.v}}</text></view>
+      </view>
+      <view class="rank-change {{rankCls}}">{{rankChange}}</view>
+      <view class="operate"><view class="btn primary" bindtap="backHome">确定 · 返回首页</view></view>
+    
+    </view>
+</view>
+  </view>
+
+  <!-- 亮牌弹窗 -->
+  <view wx:if="{{reveal}}" class="reveal-mask">
+    <view class="reveal-pop">
+      <view class="rp-title">{{revealTitle}}</view>
+      <view class="rp-cards">
+        <view class="rp-side">
+          <block wx:if="{{revealX.card}}">
+            <view class="card {{revealX.card.type}}">
+              <view class="c-top"><text class="c-badge">{{revealX.card.badge}}</text></view>
+              <view class="c-beast"><view wx:if="{{revealX.card.img}}" class="c-imgbox"><image class="c-img" src="{{revealX.card.img}}" mode="aspectFill"></image></view><text wx:else class="b-char">{{revealX.card.beastChar}}</text></view>
+              <view class="c-name">{{revealX.card.name}}</view>
+              <view class="c-stat"><text wx:for="{{revealX.card.stat}}" wx:for-item="st" wx:key="k"><text>{{st.k}}</text><text><text class="num">{{st.v}}</text></text></text></view>
+            </view>
+          </block>
+          <view wx:else class="rp-nocard">不出牌</view>
+          <view class="rp-who">{{revealX.who}}</view>
+        </view>
+        <view class="rp-vs">VS</view>
+        <view class="rp-side">
+          <block wx:if="{{revealY.card}}">
+            <view class="card {{revealY.card.type}}">
+              <view class="c-top"><text class="c-badge">{{revealY.card.badge}}</text></view>
+              <view class="c-beast"><view wx:if="{{revealY.card.img}}" class="c-imgbox"><image class="c-img" src="{{revealY.card.img}}" mode="aspectFill"></image></view><text wx:else class="b-char">{{revealY.card.beastChar}}</text></view>
+              <view class="c-name">{{revealY.card.name}}</view>
+              <view class="c-stat"><text wx:for="{{revealY.card.stat}}" wx:for-item="st" wx:key="k"><text>{{st.k}}</text><text><text class="num">{{st.v}}</text></text></text></view>
+            </view>
+          </block>
+          <view wx:else class="rp-nocard">不出牌</view>
+          <view class="rp-who">{{revealY.who}}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 数据库卡牌加载遮罩 -->
+  <view wx:if="{{loading}}" class="load-mask">
+    <view class="load-box">
+      <view class="load-ring"></view>
+      <view class="load-txt">数据库卡牌加载中…</view>
+    </view>
+  </view>
+
+  <!-- toast -->
+  <view wx:if="{{toastMsg}}" class="toast">{{toastMsg}}</view>
+</view>

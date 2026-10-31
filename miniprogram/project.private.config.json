@@ -6,8 +6,8 @@
       "list": [
         {
           "id": -1,
-          "name": "山海战斗（pages/index）",
-          "pathName": "pages/index/index",
+          "name": "山海战斗（pages/fight）",
+          "pathName": "pages/fight/fight",
           "query": "",
           "scene": null
         }
