@@ -2,6 +2,7 @@ package com.cardgame.entity;
 
 import com.cardgame.dao.Column;
 import com.cardgame.dao.Table;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * 用户信息表 user 对应的实体。
@@ -25,6 +26,8 @@ public class User {
 
     /** 登录密码，正式环境建议存密文 */
     @Column("user_pwd")
+    /* 密码只在服务内部使用，不参与 JSON 序列化（避免排行榜等接口把明文密码返回给前端） */
+    @JsonIgnore
     private String userPwd;
 
     /** 游戏等级，关联 game_rank.rank_id */
