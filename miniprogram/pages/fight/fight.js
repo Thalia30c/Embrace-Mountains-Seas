@@ -276,7 +276,16 @@ Page({
   },
   _later(fn, ms) {
     if (!this._timers) this._timers = [];
-    this._timers.push(setTimeout(() => { fn(); }, ms));
+    this._timers.push(setTimeout(() => { this._safeRun(fn); }, ms));
+  },
+  /* 引擎回调统一兜底：任何一环抛错都直接在屏幕上显示原因（真机排障用） */
+  _safeRun(fn) {
+    try { fn(); } catch (e) {
+      console.error('[战斗异常]', e);
+      this.setData({ toastMsg: '战斗异常：' + (e && e.message ? e.message : String(e)) });
+      if (this._errT) clearTimeout(this._errT);
+      this._errT = setTimeout(() => this.setData({ toastMsg: '' }), 10000);
+    }
   },
   showView(name) {
     state.view = name;
@@ -353,9 +362,11 @@ Page({
     this.setData({ pickaRing: t, pickaDanger: false });
     if (this._pickaT) clearInterval(this._pickaT);
     this._pickaT = setInterval(() => {
-      t--;
-      this.setData({ pickaRing: Math.max(0, t), pickaDanger: t <= 10 });
-      if (t <= 0) { clearInterval(this._pickaT); this.confirmPickA(); }
+      this._safeRun(() => {
+        t--;
+        this.setData({ pickaRing: Math.max(0, t), pickaDanger: t <= 10 });
+        if (t <= 0) { clearInterval(this._pickaT); this.confirmPickA(); }
+      });
     }, 1000);
   },
 
@@ -555,20 +566,22 @@ Page({
     let t = 30;
     this.setData({ timerRing: t, timerDanger: false });
     this._fightT = setInterval(() => {
-      t--;
-      this.setData({ timerRing: Math.max(0, t), timerDanger: t <= 5 });
-      if (t <= 0) {
-        clearInterval(this._fightT);
-        ['x', 'y'].forEach(slot => {
-          if (!f[slot + 'Locked']) {
-            const deck = slot === 'x' ? f.xDeck : f.yDeck;
-            const pool = this.availablePool(deck, f.phase);
-            if (pool.length > 0) f[slot + 'Sel'] = pool[Math.floor(Math.random() * pool.length)];
-            f[slot + 'Locked'] = true;
-          }
-        });
-        this.maybeResolve();
-      }
+      this._safeRun(() => {
+        t--;
+        this.setData({ timerRing: Math.max(0, t), timerDanger: t <= 5 });
+        if (t <= 0) {
+          clearInterval(this._fightT);
+          ['x', 'y'].forEach(slot => {
+            if (!f[slot + 'Locked']) {
+              const deck = slot === 'x' ? f.xDeck : f.yDeck;
+              const pool = this.availablePool(deck, f.phase);
+              if (pool.length > 0) f[slot + 'Sel'] = pool[Math.floor(Math.random() * pool.length)];
+              f[slot + 'Locked'] = true;
+            }
+          });
+          this.maybeResolve();
+        }
+      });
     }, 1000);
     this.scheduleAI();
   },
@@ -621,17 +634,19 @@ Page({
   scheduleAI() {
     if (this._aiT) clearTimeout(this._aiT);
     this._aiT = setTimeout(() => {
-      const f = state.fight; if (f.over) return;
-      ['x', 'y'].forEach(slot => {
-        const key = f[slot];
-        if (ROLES[key].isPlayer || f[slot + 'Locked']) return;
-        if (f.phase === 'bottom' && f[slot + 'Tongue']) { f[slot + 'Locked'] = true; return; }
-        const deck = slot === 'x' ? f.xDeck : f.yDeck;
-        const pool = this.availablePool(deck, f.phase);
-        if (pool.length === 0) { f[slot + 'Locked'] = true; }
-        else { f[slot + 'Sel'] = pool[Math.floor(Math.random() * pool.length)]; f[slot + 'Locked'] = true; }
+      this._safeRun(() => {
+        const f = state.fight; if (f.over) return;
+        ['x', 'y'].forEach(slot => {
+          const key = f[slot];
+          if (ROLES[key].isPlayer || f[slot + 'Locked']) return;
+          if (f.phase === 'bottom' && f[slot + 'Tongue']) { f[slot + 'Locked'] = true; return; }
+          const deck = slot === 'x' ? f.xDeck : f.yDeck;
+          const pool = this.availablePool(deck, f.phase);
+          if (pool.length === 0) { f[slot + 'Locked'] = true; }
+          else { f[slot + 'Sel'] = pool[Math.floor(Math.random() * pool.length)]; f[slot + 'Locked'] = true; }
+        });
+        this.maybeResolve();
       });
-      this.maybeResolve();
     }, 900);
   },
   maybeResolve() {

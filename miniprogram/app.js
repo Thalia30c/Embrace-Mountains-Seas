@@ -43,6 +43,23 @@ App({
     }
   },
 
+  /** 全局脚本错误：屏幕上直接弹出（真机上没有控制台，先让错误可见） */
+  onError(msg) {
+    console.error('[全局脚本错误]', msg);
+    try {
+      wx.showToast({ title: '脚本错误：' + String(msg).slice(0, 60), icon: 'none', duration: 8000 });
+    } catch (e) { /* 忽略 */ }
+  },
+
+  /** 未捕获的 Promise 异常：同样弹出来 */
+  onUnhandledRejection(res) {
+    console.error('[未处理异常]', res && res.reason);
+    try {
+      const msg = res && res.reason && res.reason.message ? res.reason.message : String(res && res.reason);
+      wx.showToast({ title: '异常：' + String(msg).slice(0, 60), icon: 'none', duration: 8000 });
+    } catch (e) { /* 忽略 */ }
+  },
+
   /** 保存登录态 */
   setLogin(token, userInfo) {
     this.globalData.token = token;
