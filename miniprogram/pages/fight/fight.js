@@ -119,20 +119,44 @@ function mapDbCards(list, skills) {
   }).filter(c => !!c.name);
 }
 
-/* 卡强度：用于默认卡组取该类型里最强的前 3 张 */
-function strength(c) { return (c.out || 0) + (c.guard || 0) + (c.heal || 0) + (c.mana || 0); }
-function topOf(list, n) { return list.slice().sort((a, b) => strength(b) - strength(a)).slice(0, n); }
+/** 是否为治疗类法术卡（运玄阶段先回血，不吃减伤） */
+function isHealer(c) { return !(c.out > 0) && (c.heal || 0) > 0; }
 
-/** 默认卡组：与具体卡库无关，攻/防/法各取最强的 3 张，备用放通卡（≤2）+ 补位 */
+/** 岗位贡献值：这张卡在它真正出场的那半个回合里能赚多少 */
+function slotValue(c, group) {
+  switch (group) {
+    case 'attack':  return (c.out || 0);                                   // 争锋：只看出伤
+    case 'defense': return (c.guard || 0) * 0.8 + (c.out || 0) * 0.4;      // 争锋：减伤为主、副攻为辅
+    case 'magic':   return isHealer(c) ? (c.heal || 0) * 0.7 : (c.out || 0); // 运玄：法伤 or 稳血
+    case 'tongue':  return ((c.kind === 'def'
+                              ? (c.guard || 0) * 0.6 + (c.out || 0) * 0.3
+                              : (c.out || 0)) + (c.mana || 0) * 1.2);       // 白赚一整个法术回合，加权
+    default:        return (c.out || 0) + (c.guard || 0) * 0.5 + (c.heal || 0) * 0.6 + (c.mana || 0);
+  }
+}
+function topOf(list, n, group) {
+  return list.slice().sort((a, b) => slotValue(b, group) - slotValue(a, group)).slice(0, n);
+}
+
+/** 运玄：至少带 1 张治疗卡（保续航），其余按法伤排序 */
+function pickMagicDeck() {
+  const all = CARD_DB.filter(c => c.type === 'magic');
+  const chosen = topOf(all.filter(isHealer), 1, 'magic');
+  const used = {}; chosen.forEach(c => { used[c.id] = 1; });
+  topOf(all.filter(c => !used[c.id]), 3 - chosen.length, 'magic').forEach(c => chosen.push(c));
+  return chosen;
+}
+
+/** 默认卡组：按岗位贡献值取各组的卡，法术至少带 1 治疗（E），备用带满 2 张通卡（规则上限） */
 function defaultDeck() {
-  const atk = topOf(CARD_DB.filter(c => c.type === 'attack'), 3);
-  const def = topOf(CARD_DB.filter(c => c.type === 'defense'), 3);
-  const mag = topOf(CARD_DB.filter(c => c.type === 'magic'), 3);
-  const tongs = topOf(CARD_DB.filter(c => c.type === 'tongue'), 2);
+  const atk = topOf(CARD_DB.filter(c => c.type === 'attack'), 3, 'attack');
+  const def = topOf(CARD_DB.filter(c => c.type === 'defense'), 3, 'defense');
+  const mag = pickMagicDeck();
+  const tongs = topOf(CARD_DB.filter(c => c.type === 'tongue'), 2, 'tongue');
   const used = {};
   [].concat(atk, def, mag, tongs).forEach(c => { used[c.id] = 1; });
-  const res = tongs.slice(0, 3);
-  topOf(CARD_DB.filter(c => !used[c.id]), 3 - res.length).forEach(c => res.push(c));
+  const res = tongs.slice(0, 2);
+  topOf(CARD_DB.filter(c => !used[c.id]), 3 - res.length, 'reserve').forEach(c => res.push(c));
   return { attack: atk, defense: def, magic: mag, reserve: res };
 }
 /** AI 卡组：从当前卡库里随机抽 攻3/防3/法3 */
