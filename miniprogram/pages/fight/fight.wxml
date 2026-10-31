@@ -284,16 +284,18 @@
       <view wx:if="{{handShown}}" class="hand-zone">
         <view class="hand-head"><text class="play-title">{{playTitle}}</text></view>
         <view wx:if="{{handEmpty}}" class="sub">{{handEmptyMsg}}</view>
-        <view wx:else class="your-cards">
-          <block wx:for="{{handPool}}" wx:for-item="c" wx:for-index="i" wx:key="id">
-            <view class="card {{c.type}} {{c.selected?'selected':''}}" data-i="{{i}}" bindtap="onSelectHand">
-              <view class="c-top"><text class="c-badge">{{c.badge}}</text><text wx:if="{{c.sub}}" class="c-type">{{c.sub}}</text></view>
-              <view class="c-beast"><view wx:if="{{c.img}}" class="c-imgbox"><image class="c-img" src="{{c.img}}" mode="aspectFill"></image></view><text wx:else class="b-char">{{c.beastChar}}</text></view>
-              <view class="c-name">{{c.name}}</view>
-              <view class="c-stat"><text wx:for="{{c.stat}}" wx:for-item="st" wx:key="k"><text>{{st.k}}</text><text><text class="num">{{st.v}}</text></text></text></view>
-            </view>
-          </block>
-        </view>
+        <scroll-view wx:else scroll-x enable-flex class="hand-scroll" show-scrollbar="{{false}}">
+          <view class="hand-row">
+            <block wx:for="{{handPool}}" wx:for-item="c" wx:for-index="i" wx:key="id">
+              <view class="card {{c.type}} {{c.selected?'selected':''}}" data-i="{{i}}" bindtap="onSelectHand">
+                <view class="c-top"><text class="c-badge">{{c.badge}}</text><text wx:if="{{c.sub}}" class="c-type">{{c.sub}}</text></view>
+                <view class="c-beast"><view wx:if="{{c.img}}" class="c-imgbox"><image class="c-img" src="{{c.img}}" mode="aspectFill"></image></view><text wx:else class="b-char">{{c.beastChar}}</text></view>
+                <view class="c-name">{{c.name}}</view>
+                <view class="c-stat"><text wx:for="{{c.stat}}" wx:for-item="st" wx:key="k"><text>{{st.k}}</text><text><text class="num">{{st.v}}</text></text></text></view>
+              </view>
+            </block>
+          </view>
+        </scroll-view>
         <view class="confirm-row"><view class="confirm-btn" bindtap="onConfirm">确认出牌</view></view>
       </view>
 

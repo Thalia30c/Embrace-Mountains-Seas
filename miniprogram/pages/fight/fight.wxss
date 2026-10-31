@@ -181,7 +181,7 @@ page { background: #121216; }
 .roundbar { display: flex; justify-content: space-between; align-items: center; margin: 10rpx 0; }
 .round-tag { font-size: 26rpx; color: #f6e6b0; font-weight: 700; text-shadow: 0 0 8rpx rgba(0,0,0,.9); }
 /* 落桌 */
-.table-area { height: 440rpx; }   /* 固定高度：落牌增减都不会推挤手牌区（不挪动） */
+.table-area { height: 420rpx; }   /* 固定高度：落牌增减都不会推挤手牌区（不挪动） */
 .table-inner .row-label { text-align: center; color: #f6e6b0; font-size: 22rpx; letter-spacing: 4rpx; margin: 4rpx 0; }
 .table-inner .hand-label { text-align: center; color: #f0e2b0; font-size: 20rpx; letter-spacing: 4rpx; margin-bottom: 8rpx; }
 .table-row { display: flex; flex-wrap: wrap; row-gap: 8rpx; gap: 10rpx; justify-content: center; align-items: flex-end; }
@@ -206,16 +206,17 @@ page { background: #121216; }
 .hand-head { display: flex; align-items: baseline; gap: 16rpx; margin-bottom: 8rpx; }
 .hand-head .play-title { font-size: 26rpx; color: #f6e6b0; font-weight: 700; }
 .hand-head .play-hint { font-size: 20rpx; color: #b9ac8e; }
-/* 手牌自适应列数：4张时每张约165rpx，6张时约110rpx，都比旧版(固定6列)大 */
-/* 手牌自适应列数：auto-fit 会折叠空列。minmax 100rpx 保证 6 张也能单行放下
-   （4张→每张约165rpx，5张→约130rpx，6张→约106rpx，张数越多单张越小） */
-.your-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(100rpx, 1fr)); gap: 8rpx; justify-content: center; }
-.your-cards .card { padding-bottom: 4rpx; width: 100%; max-width: 170rpx; justify-self: center; }
-.your-cards .card .c-beast { min-height: 0; font-size: 30rpx; }
-.your-cards .card .c-beast .b-char { font-size: 30rpx; }
-.your-cards .card .c-name { font-size: 20rpx; }
-.confirm-row { display: flex; justify-content: flex-end; margin-top: 10rpx; }
-.confirm-btn { font-size: 26rpx; padding: 12rpx 32rpx; border: 2rpx solid #b89b58; border-radius: 16rpx; background: linear-gradient(180deg, #eedda2, #c9a86a); color: #241a08; font-weight: 700; }
+/* 手牌改为横向滑动：每张固定 160rpx 大卡，放不下就左右滑（不再被压缩成小条） */
+.hand-scroll { width: 100%; white-space: nowrap; }
+.hand-row { display: inline-flex; align-items: flex-end; justify-content: center; min-width: 100%; gap: 14rpx; padding: 26rpx 2rpx 10rpx; }
+.hand-row .card { width: 160rpx; flex: 0 0 auto; padding-bottom: 4rpx; transition: transform .25s ease; }
+.hand-row .card.selected { transform: translateY(-18rpx) scale(1.06); }
+.hand-row .card .c-beast { min-height: 0; font-size: 30rpx; }
+.hand-row .card .c-beast .b-char { font-size: 30rpx; }
+.hand-row .card .c-name { font-size: 20rpx; }
+.confirm-row { margin-top: 6rpx; }
+.confirm-btn { width: 100%; text-align: center; font-size: 28rpx; padding: 16rpx 0; border-radius: 18rpx; border: 2rpx solid #b89b58; background: linear-gradient(180deg, #eedda2, #c9a86a); color: #241a08; font-weight: 700; letter-spacing: 4rpx; box-shadow: 0 8rpx 20rpx rgba(0,0,0,.45); }
+.confirm-btn.ghost { background: rgba(42,38,51,.85); color: #d4b878; box-shadow: none; }
 
 /* ===== 亮牌弹窗 ===== */
 .reveal-mask { position: fixed; top: 0; right: 0; bottom: 0; left: 0; background: rgba(8,7,11,.72); z-index: 90; display: flex; align-items: center; justify-content: center; }
@@ -232,7 +233,7 @@ page { background: #121216; }
 .view-inner .hand-zone { margin-top: auto; margin-bottom: 118rpx; }
 
 /* ===== 右下角按钮 ===== */
-.corner-btns { position: fixed; right: 24rpx; bottom: 60rpx; z-index: 70; display: flex; gap: 16rpx; }
+.corner-btns { position: fixed; right: 24rpx; bottom: 150rpx; z-index: 70; display: flex; gap: 16rpx; }
 .corner-btn { font-size: 26rpx; color: #f6e6b0; background: rgba(18,18,22,.88); border: 2rpx solid #b89b58; border-radius: 40rpx; padding: 14rpx 32rpx; box-shadow: 0 8rpx 24rpx rgba(0,0,0,.5); }
 /* 状态提示面板 */
 .battle-status { background: rgba(18,18,22,.55); border: 2rpx solid rgba(212,184,120,.25); border-radius: 20rpx; padding: 14rpx 20rpx; margin-top: 16rpx; }
