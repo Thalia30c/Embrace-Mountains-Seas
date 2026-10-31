@@ -318,6 +318,15 @@ page { background: #121216; }
 .drawer-head .dx { font-size: 24rpx; color: #d4b878; padding: 6rpx 20rpx; border: 2rpx solid rgba(212,184,120,.45); border-radius: 24rpx; }
 .battle-log { flex: 1; min-height: 0; overflow-y: auto; font-size: 24rpx; color: #a89a7c; line-height: 1.8; border-top: 2rpx dashed rgba(212,184,120,.3); padding-top: 12rpx; }
 .battle-log .msg { margin: 4rpx 0; }
+/* 聊天抽屉（自己参战时）：与战斗记录抽屉同款——底部滑出、遮罩/收起关闭 */
+.chat-box.chat-drawer { position: fixed; left: 0; right: 0; bottom: 0; z-index: 61; max-height: 58vh;
+  display: flex; flex-direction: column; padding: 20rpx 24rpx calc(24rpx + env(safe-area-inset-bottom));
+  background: rgba(18,18,22,.95); border-top: 2rpx solid rgba(212,184,120,.4); border-radius: 28rpx 28rpx 0 0;
+  box-shadow: 0 -10rpx 40rpx rgba(0,0,0,.6);
+  transform: translateY(115%); transition: transform .28s ease; pointer-events: none; }
+.chat-box.chat-drawer.open { transform: translateY(0); pointer-events: auto; }
+.chat-box.chat-drawer .chat-log { flex: 1; min-height: 0; overflow-y: auto; }
+.chat-box.chat-drawer .chat-input { flex: none; }
 /* 聊天 */
 .chat-box { margin-top: 16rpx; background: rgba(18,18,22,.5); border: 2rpx solid rgba(212,184,120,.25); border-radius: 22rpx; padding: 12rpx 18rpx; }
 .chat-log { max-height: 140rpx; overflow-y: auto; font-size: 24rpx; color: #a89a7c; line-height: 1.7; margin-bottom: 10rpx; }
