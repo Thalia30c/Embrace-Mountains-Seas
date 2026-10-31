@@ -341,7 +341,7 @@ page { background: #121216; }
 /* 观战：底部固定区 = 战斗记录(上) + 聊天框(钉底)，两者常驻、不可关闭、互不覆盖 */
 .spectate-dock { position: fixed; left: 20rpx; right: 20rpx; bottom: calc(16rpx + env(safe-area-inset-bottom)); z-index: 65; display: flex; flex-direction: column; gap: 12rpx; }
 /* 覆盖抽屉样式：这里改为固定区内的普通卡片 */
-.spectate-dock .battle-status { position: static; transform: none; pointer-events: auto; max-height: 220rpx;
+.spectate-dock .battle-status { position: static; transform: none; visibility: visible; pointer-events: auto; max-height: 220rpx;
   padding: 14rpx 18rpx 16rpx; border-radius: 20rpx; border: 2rpx solid rgba(212,184,120,.28); background: rgba(18,18,22,.92);
   box-shadow: 0 10rpx 30rpx rgba(0,0,0,.55); }
 .spectate-dock .battle-status .drawer-head { margin-bottom: 6rpx; }
