@@ -344,34 +344,54 @@
     <image class="view-bg" src="/assets/bg-result.jpg" mode="aspectFill"></image>
     <view class="view-inner">
     <view class="panel result-wrap">
-      <!-- 顶部：奖杯 + 标题 -->
-      <view class="r-hero">
-        <image wx:if="{{trophy}}" class="trophy" src="{{trophy}}" mode="aspectFit"></image>
-        <view class="h2">{{resultTitle}}</view>
-        <view class="winner-sub">{{resultSub}}</view>
+      <view class="r-eyebrow">三人对局 · 战报</view>
+
+      <!-- 牌匾：冠军 / 惜败 -->
+      <view class="r-plaque {{meChamp?'':'lose'}}">
+        <view class="rp-big">{{plaqueBig}}</view>
+        <view class="rp-small">{{plaqueSmall}}</view>
       </view>
-      <!-- 排名：收窄成胶囊条 -->
-      <view class="rank">
-        <view class="rank-row {{item.first?'first':''}}" wx:for="{{rankRows}}" wx:key="index">
-          <view class="no">{{item.no}}</view>
-          <view class="nm">{{item.nm}}</view>
-          <view class="hp">{{item.hp}}</view>
+
+      <view class="h2">{{resultTitle}}</view>
+      <view class="winner-sub">{{resultSub}}</view>
+
+      <!-- 三人头像列：中间冠军 -->
+      <view class="podium">
+        <view class="pod {{item.center?'center':''}}" wx:for="{{podium}}" wx:key="key">
+          <view class="pod-ava">{{item.key}}</view>
+          <view class="pod-nm">{{item.nm}}</view>
+          <view class="pod-hp {{item.hpNum<=0?'zero':''}}">{{item.hpNum}} 血</view>
+          <view class="pod-tag">{{item.tag}}</view>
         </view>
       </view>
-      <!-- 积分 + 段位合并成一张卡，进度条为主视觉 -->
-      <view class="res-card">
-        <view class="score-box">
-          <view class="line" wx:for="{{scoreLines}}" wx:key="k"><text class="k">{{item.k}}</text><text class="num">{{item.v}}</text></view>
+
+      <!-- 双卡：本局结果 / 我的积分 -->
+      <view class="res-duo">
+        <view class="res-mini">
+          <view class="k">本局结果</view>
+          <view class="v {{meChamp?'gain':'loss'}}">{{resultGain}}</view>
         </view>
-        <view wx:if="{{rankInfo}}" class="rank-progress">
-          <view class="rp-head">
-            <view class="rp-left">
-              <text class="rp-rank">{{rankInfo.rank}}</text>
-              <text wx:if="{{rankChange}}" class="rp-badge {{rankCls}}">{{rankChange}}</text>
-            </view>
-            <text wx:if="{{rankInfo.nextRank}}" class="rp-next">距 {{rankInfo.nextRank}} 还差 {{rankInfo.toNext}} 分</text>
-            <text wx:else class="rp-next">已至山海之巅</text>
-          </view>
+        <view class="res-mini">
+          <view class="k">我的积分</view>
+          <view class="v">{{scoreLine}}</view>
+        </view>
+      </view>
+
+      <!-- 段位卡：虚线宽卡，段位名 + 进度条（保留增量段发光与飘字） -->
+      <view wx:if="{{rankInfo}}" class="rank-strip">
+        <view class="rs-head">
+          <text class="k">段位</text>
+          <block wx:if="{{rankInfo.rank !== rankInfo.prevRank}}">
+            <text class="rs-rank">{{rankInfo.prevRank}}</text>
+            <text class="rs-arrow">→</text>
+            <text class="rs-rank new">{{rankInfo.rank}}</text>
+          </block>
+          <block wx:else>
+            <text class="rs-rank">{{rankInfo.rank}}</text>
+            <text class="rs-same">（不变）</text>
+          </block>
+        </view>
+        <view class="rank-progress">
           <view class="rp-bar-wrap">
             <!-- 本次积分增减飘字：+30 金色 / -20 灰色，向上飘后淡出 -->
             <view wx:if="{{rankInfo.gainText}}" class="rp-float {{rankInfo.gainCls}}" style="left:{{rankInfo.floatLeft}}%">{{rankInfo.gainText}}</view>
@@ -381,9 +401,10 @@
               <view wx:if="{{rankInfo.gainWidth>0}}" class="rp-gain {{rankInfo.gainCls}}" style="left:{{rankInfo.prevProgress}}%;width:{{rankInfo.gainWidth}}%"></view>
             </view>
           </view>
-          <view wx:if="{{rankSync}}" class="rp-sync">{{rankSync}}</view>
         </view>
+        <view class="rs-sub">{{rankNote}}{{rankSync?' · '+rankSync:''}}</view>
       </view>
+
       <view class="operate"><view class="btn primary" bindtap="backHome">确定 · 返回首页</view></view>
     </view>
 </view>

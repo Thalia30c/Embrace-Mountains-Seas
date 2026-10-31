@@ -180,6 +180,7 @@ Page({
     loading: false, cardSource: '',
     reveal: false, revealTitle: '', revealX: { card: null, who: '' }, revealY: { card: null, who: '' },
     trophy: '', resultTitle: '', resultSub: '', rankRows: [], scoreLines: [], rankChange: '', rankCls: '',
+    meChamp: false, plaqueBig: '', plaqueSmall: '', podium: [], resultGain: '', scoreLine: '', rankNote: '',
     rankInfo: null, rankFx: null, rankSync: '',
     toastMsg: ''
   },
@@ -734,38 +735,48 @@ Page({
     this.showView('result');
     const entries = ['A', 'B', 'C'].map(k => ({ key: k, total: state.totals[k] || 0 })).sort((a, b) => b.total - a.total);
     const champ = entries[0].key;
-    const rankRows = entries.map((e, i) => ({
-      no: i + 1, first: i === 0,
-      nm: ROLES[e.key].name + (ROLES[e.key].isPlayer ? '（我）' : ''),
-      hp: e.total + ' 血'
-    }));
-    const trophySvg = champ === 'A'
-      ? '<svg viewBox="0 0 48 48"><path d="M12 6h24v9a12 12 0 0 1-24 0z" fill="#f6e6b0"/><rect x="20" y="27" width="8" height="7" fill="#b89b58"/><rect x="15" y="33" width="18" height="3" fill="#b89b58"/><rect x="22" y="36" width="4" height="6" fill="#b89b58"/></svg>'
-      : '<svg viewBox="0 0 48 48"><path d="M12 6h24v9a12 12 0 0 1-24 0z" fill="#8a6a2f"/><rect x="20" y="27" width="8" height="7" fill="#b89b58"/><rect x="15" y="33" width="18" height="3" fill="#b89b58"/><rect x="22" y="36" width="4" height="6" fill="#b89b58"/></svg>';
     const isWin = champ === 'A';
+    const TAGS = ['冠军', '第二', '第三'];
+    /* 头像列：第三名在左、冠军居中放大、第二名在右 */
+    const podium = [entries[2], entries[0], entries[1]].map(e => {
+      const place = entries.findIndex(x => x.key === e.key);
+      return {
+        key: e.key,
+        nm: ROLES[e.key].name + (ROLES[e.key].isPlayer ? '（我）' : ''),
+        hpNum: e.total,
+        tag: TAGS[place] || '',
+        center: e.key === champ
+      };
+    });
     const prev = state.score, nextScore = isWin ? prev + WIN_GAIN : Math.max(0, prev - LOSE_LOSS);
     state.score = nextScore;
     const pr = rankOf(prev), nr = rankOf(nextScore);
     const delta = nr.id > pr.id ? 'up' : (nr.id < pr.id ? 'down' : 'same');
-    const rankChange = isWin
-      ? (delta === 'up' ? '积分达标，段位晋升！' : '积分增加')
-      : (delta === 'down' ? '积分不足门槛，段位下降' : '积分扣除');
+    const rankInfo = this.buildRankInfo(nextScore, prev);
     this.setData({
-      trophy: 'data:image/svg+xml,' + encodeURIComponent(trophySvg),
-      resultTitle: champ === 'A' ? '胜利！冠军是你' : '本局冠军：' + ROLES[champ].name,
-      resultSub: '三人两场累计剩余血量，最高者获胜',
-      rankRows,
-      scoreLines: [
-        { k: '本局结果', v: (isWin ? '胜利 +' + WIN_GAIN : '失败 -' + LOSE_LOSS) },
-        { k: '我的积分', v: prev + ' → ' + nextScore },
-        { k: '段位', v: pr.n + ' → ' + nr.n }
-      ],
-      rankChange: rankChange,
+      meChamp: isWin,
+      plaqueBig: isWin ? '冠军' : '惜败',
+      plaqueSmall: isWin ? '冠军是你' : '下一局再来',
+      resultTitle: isWin ? '胜利！冠军是你' : '惜败 · 未入前三',
+      resultSub: isWin ? '三人对局累计剩余血量，最高者获胜' : '对局结束 · 胜者登顶',
+      podium: podium,
+      resultGain: isWin ? ('胜利 +' + WIN_GAIN) : ('失败 -' + LOSE_LOSS),
+      scoreLine: prev + ' → ' + nextScore,
       rankCls: delta === 'down' ? 'down' : 'up',
-      rankInfo: this.buildRankInfo(nextScore, prev)
+      rankInfo: rankInfo,
+      rankNote: this.buildRankNote(isWin, rankInfo)
     });
     /* 上报数据库：后端累加积分并回算段位，成功后用库里的真实数据刷新进度条 */
     this.reportScore(isWin ? WIN_GAIN : -LOSE_LOSS, nextScore, delta);
+  },
+
+  /** 段位卡底注：还差多少分 / 晋级提示（胜负语气不同） */
+  buildRankNote(isWin, info) {
+    if (!info) return '';
+    if (!info.nextRank) return '已至山海之巅 · 保持连胜';
+    return isWin
+      ? ('距 ' + info.nextRank + ' 还差 ' + info.toNext + ' 分 · 连胜可加速晋级')
+      : ('还差 ' + info.toNext + ' 分晋级 · 稳住心态，下一局夺回冠军');
   },
 
   /**
@@ -834,11 +845,8 @@ Page({
       this.setData({
         rankInfo: info,
         rankSync: '已同步数据库',
-        scoreLines: [
-          { k: '本局结果', v: (delta > 0 ? '胜利 +' + delta : '失败 ' + delta) },
-          { k: '我的积分', v: (d.prevScore != null ? d.prevScore : '') + ' → ' + state.score },
-          { k: '段位', v: (d.prevRank || '') + ' → ' + (d.rank || '') }
-        ]
+        scoreLine: (typeof d.prevScore === 'number' ? d.prevScore : '') + ' → ' + state.score,
+        rankNote: this.buildRankNote(delta > 0, info)
       });
       if (d.changed === 'up') this.playRankFx('段位晋升', d.prevRank, d.rank, true);
       else if (d.changed === 'down') this.playRankFx('段位下降', d.prevRank, d.rank, false);

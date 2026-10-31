@@ -333,36 +333,51 @@ page { background: #121216; }
 .chat-box.chat-pin { position: fixed; left: 20rpx; right: 20rpx; bottom: calc(16rpx + env(safe-area-inset-bottom)); margin-top: 0; z-index: 65; box-shadow: 0 10rpx 30rpx rgba(0,0,0,.55); }
 .chat-box.chat-pin .chat-log { max-height: 260rpx; }
 
-/* ===== 结算界面 ===== */
-/* ===== 结算页：紧凑卡片式 ===== */
+/* ===== 结算界面：战报式（对齐设计稿） ===== */
 .result-wrap { text-align: center; }
-.result-wrap .r-hero { margin-bottom: 6rpx; }
-.result-wrap .trophy { width: 116rpx; height: 116rpx; margin: 0 auto 8rpx; }
+.r-eyebrow { font-size: 20rpx; color: #8f8570; letter-spacing: 10rpx; text-indent: 10rpx; }
+/* 牌匾：冠军 / 惜败 */
+.r-plaque { width: 300rpx; margin: 16rpx auto 20rpx; padding: 28rpx 0 22rpx; border: 3rpx solid #c9a86a; border-radius: 6rpx;
+  background: linear-gradient(180deg, rgba(56,47,22,.5), rgba(22,19,12,.85));
+  box-shadow: 0 0 44rpx rgba(212,184,120,.22), inset 0 0 34rpx rgba(212,184,120,.12); }
+.r-plaque .rp-big { font-size: 84rpx; line-height: 1.15; font-weight: 900; letter-spacing: 20rpx; text-indent: 20rpx; color: #f6e6b0;
+  text-shadow: 0 0 34rpx rgba(246,230,176,.5); }
+.r-plaque.lose .rp-big { color: #ddcda6; text-shadow: 0 0 20rpx rgba(221,205,166,.25); }
+.r-plaque .rp-small { margin-top: 10rpx; font-size: 22rpx; letter-spacing: 10rpx; text-indent: 10rpx; color: #d4b878; }
+.r-plaque.lose .rp-small { color: #a89878; }
 .result-wrap .h2 { margin: 0; font-size: 40rpx; color: #f6e6b0; letter-spacing: 6rpx; font-weight: 800; }
 .result-wrap .winner-sub { font-size: 22rpx; color: #a89a7c; margin-top: 6rpx; }
-/* 排名：三行合并成一张卡，行间只用极细分隔线（去掉每行各自的边框） */
-.rank { display: flex; flex-direction: column; margin: 18rpx 0 14rpx; border: 2rpx solid rgba(212,184,120,.28); border-radius: 22rpx; background: rgba(18,16,24,.5); overflow: hidden; }
-.rank-row { display: flex; align-items: center; gap: 16rpx; padding: 13rpx 24rpx; background: none; border: none; border-bottom: 2rpx solid rgba(212,184,120,.13); }
-.rank-row:last-child { border-bottom: none; }
-.rank-row.first { background: rgba(246,230,176,.1); border: none; border-bottom: 2rpx solid rgba(212,184,120,.13); }
-.rank-row .no { width: 40rpx; height: 40rpx; border-radius: 50%; background: #2a2633; border: 2rpx solid #b89b58; display: flex; align-items: center; justify-content: center; font-size: 24rpx; color: #d4b878; flex: none; }
-.rank-row.first .no { background: #f6e6b0; color: #241a08; border-color: #f6e6b0; }
-.rank-row .nm { flex: 1; text-align: left; font-size: 26rpx; color: #f5e7c1; letter-spacing: 2rpx; }
-.rank-row .hp { font-size: 24rpx; color: #f6e6b0; font-weight: 700; }
-/* 积分 + 段位合成一张卡，内部用细虚线分区 */
-.res-card { border: 2rpx solid rgba(212,184,120,.28); border-radius: 22rpx; background: rgba(18,16,24,.5); padding: 16rpx 22rpx; }
-.res-card .score-box { margin: 0; padding: 0 0 12rpx; border: none; border-radius: 0; background: none; border-bottom: 2rpx dashed rgba(212,184,120,.25); }
-.res-card .score-box .line { display: flex; justify-content: space-between; align-items: baseline; font-size: 24rpx; color: #f5e7c1; margin: 6rpx 0; }
-.res-card .score-box .line .k { color: #a89a7c; }
-.res-card .score-box .line .num { color: #f6e6b0; font-weight: 700; }
-.res-card .rank-progress { margin: 14rpx 0 0; text-align: left; }
-.res-card .rp-head { display: flex; justify-content: space-between; align-items: center; gap: 10rpx; margin-bottom: 10rpx; }
-.res-card .rp-left { display: flex; align-items: center; gap: 10rpx; flex: none; }
-.res-card .rp-rank { font-size: 24rpx; color: #f6e6b0; font-weight: 700; letter-spacing: 2rpx; }
-/* 「积分增加 / 段位晋升」并到进度条右侧当角标，不再单独飘一行 */
-.res-card .rp-badge { font-size: 18rpx; padding: 2rpx 12rpx; border-radius: 999rpx; border: 2rpx solid; }
-.res-card .rp-badge.up { color: #ffd97a; border-color: rgba(255,217,122,.5); background: rgba(255,217,122,.12); }
-.res-card .rp-badge.down { color: #d08b4a; border-color: rgba(208,139,74,.5); background: rgba(208,139,74,.12); }
+/* 三人头像列：冠军居中放大 */
+.podium { display: flex; align-items: flex-start; justify-content: center; gap: 34rpx; margin: 26rpx 0 8rpx; }
+.pod { display: flex; flex-direction: column; align-items: center; gap: 6rpx; width: 160rpx; }
+.pod-ava { width: 88rpx; height: 88rpx; border-radius: 50%; background: #241f2e; border: 3rpx solid #57496a;
+  display: flex; align-items: center; justify-content: center; font-size: 36rpx; color: #cfc4a6; font-weight: 800; }
+.pod.center { margin-top: -14rpx; }
+.pod.center .pod-ava { width: 108rpx; height: 108rpx; border-color: #f6e6b0; color: #f6e6b0;
+  box-shadow: 0 0 34rpx rgba(246,230,176,.4); font-size: 42rpx; }
+.pod-nm { font-size: 24rpx; color: #f5e7c1; letter-spacing: 1rpx; }
+.pod.center .pod-nm { color: #f6e6b0; font-weight: 700; }
+.pod-hp { font-size: 24rpx; color: #e67e5a; font-weight: 700; }
+.pod-hp.zero { color: #8a8378; font-weight: 400; }
+.pod-tag { font-size: 20rpx; color: #a89a7c; letter-spacing: 2rpx; }
+.pod.center .pod-tag { color: #ffd97a; }
+/* 双卡：本局结果 / 我的积分 */
+.res-duo { display: flex; gap: 16rpx; margin: 16rpx 0 14rpx; }
+.res-mini { flex: 1; border: 2rpx solid rgba(212,184,120,.28); border-radius: 18rpx; background: rgba(18,16,24,.5); padding: 16rpx 0 18rpx; }
+.res-mini .k { font-size: 20rpx; color: #a89a7c; letter-spacing: 2rpx; }
+.res-mini .v { margin-top: 8rpx; font-size: 30rpx; font-weight: 800; color: #f6e6b0; letter-spacing: 1rpx; }
+.res-mini .v.gain { color: #8fd6a4; }
+.res-mini .v.loss { color: #e67e5a; }
+/* 段位虚线宽卡：段位名 + 进度条（保留增量段发光与飘字） */
+.rank-strip { border: 2rpx dashed rgba(212,184,120,.55); border-radius: 18rpx; background: rgba(18,16,24,.35); padding: 16rpx 22rpx 14rpx; }
+.rank-strip .rs-head { display: flex; align-items: baseline; justify-content: center; gap: 12rpx; }
+.rank-strip .rs-head .k { color: #a89a7c; font-size: 22rpx; letter-spacing: 6rpx; }
+.rank-strip .rs-rank { color: #f6e6b0; font-weight: 800; font-size: 30rpx; letter-spacing: 2rpx; }
+.rank-strip .rs-rank.new { color: #8fd6a4; }
+.rank-strip .rs-arrow { color: #d4b878; font-size: 26rpx; }
+.rank-strip .rs-same { color: #a89a7c; font-size: 22rpx; }
+.rank-strip .rank-progress { margin: 18rpx 2rpx 0; }
+.rank-strip .rs-sub { margin-top: 12rpx; font-size: 20rpx; color: #a89a7c; letter-spacing: 1rpx; }
 
 /* 卡源提示 */
 .pick-a-title .tip.src { color: #7dce9a; font-size: 20rpx; margin-top: 4rpx; }
