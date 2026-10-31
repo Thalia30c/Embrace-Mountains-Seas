@@ -15,7 +15,7 @@
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
-  padding: 16rpx 16rpx 0;
+  padding: 16rpx 16rpx 16rpx;
 }
 .wh-header {
   flex: 0 0 auto;
@@ -66,9 +66,129 @@
   border-color: #ffe9a8;
 }
 
-/* 可滑动区域 */
-.wh-scroll {
+/* 上方卡牌库：限定高度，内部可滑动 */
+.wh-library {
+  flex: 0 0 38vh;
+  overflow: hidden;
+  margin-bottom: 12rpx;
+}
+.wh-card.selected .wh-inner {
+  border-color: #ffffff;
+  box-shadow: 0 0 16rpx rgba(255, 255, 255, 0.85);
+}
+
+/* 下方展示区 */
+.wh-stage {
   flex: 1 1 auto;
+  background: rgba(20, 14, 6, 0.78);
+  border: 2rpx solid #e6c16b;
+  border-radius: 14rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 12rpx;
+  box-sizing: border-box;
+}
+.stage-hint {
+  color: #f0e2c0;
+  font-size: 26rpx;
+}
+/* 播放中的视频：铺满整个屏幕（视觉全屏），盖住上库与下展示区；播完卸载即回到仓库页 */
+.wh-video {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 999;
+  background: #000;
+}
+.stage-detail {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
+}
+.detail-side {
+  flex: 0 0 30%;
+  display: flex;
+  flex-direction: column;
+  padding: 10rpx;
+  box-sizing: border-box;
+}
+.detail-right {
+  align-items: center;
+}
+.side-title {
+  color: #ffd98a;
+  font-size: 26rpx;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 14rpx;
+  border-bottom: 1rpx solid rgba(230, 193, 107, 0.5);
+  padding-bottom: 8rpx;
+}
+.attr-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 22rpx;
+  color: #f0e2c0;
+  margin: 8rpx 0;
+}
+.attr-k { opacity: 0.8; }
+.attr-v { color: #ffd98a; font-weight: bold; }
+.detail-center {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 0;
+}
+.detail-img {
+  width: 260rpx;
+  height: 340rpx;
+  border: 3rpx solid #e6c16b;
+  border-radius: 12rpx;
+  box-shadow: 0 0 30rpx rgba(212, 184, 120, 0.7);
+}
+.detail-name {
+  color: #ffd98a;
+  font-size: 26rpx;
+  margin-top: 10rpx;
+  text-align: center;
+}
+.skill-name {
+  color: #ffd98a;
+  font-size: 24rpx;
+  font-weight: bold;
+  text-align: center;
+}
+.skill-desc {
+  color: #9c8a5e;
+  font-size: 20rpx;
+  text-align: center;
+  margin-top: 10rpx;
+}
+.replay-btn {
+  margin-top: 18rpx;
+  padding: 10rpx 30rpx;
+  font-size: 22rpx;
+  color: #2a1c06;
+  font-weight: bold;
+  background: linear-gradient(180deg, #e6c16b, #b8862f);
+  border-radius: 30rpx;
+  border: 2rpx solid #ffe9a8;
+}
+.replay-btn:active {
+  opacity: 0.85;
+}
+.err-note {
+  margin-top: 16rpx;
+  font-size: 20rpx;
+  color: #9c8a5e;
+  text-align: center;
 }
 .wh-grid {
   display: flex;
