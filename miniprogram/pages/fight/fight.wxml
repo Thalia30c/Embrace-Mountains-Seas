@@ -225,12 +225,12 @@
           <view class="pdeck">{{opp.deck}}</view>
         </view>
       </view>
-      <view wx:if="{{spectator}}" class="spec-float">
-        <view class="sp-ava">{{spectator.key}}</view>
-        <view class="sp-nm">{{spectator.name}}<text class="sp-hp">累计 {{spectator.hp}} 血</text></view>
-      </view>
       <view class="roundbar">
         <view class="round-tag">{{roundTag}}</view>
+        <view wx:if="{{spectator}}" class="spec-float">
+          <view class="sp-ava">{{spectator.key}}</view>
+          <view class="sp-nm">{{spectator.name}}<text class="sp-hp">累计 {{spectator.hp}} 血</text></view>
+        </view>
       </view>
       <view class="table-area table-inner">
         <view class="hand-label">本场已打出 · 落桌</view>
