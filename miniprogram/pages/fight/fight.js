@@ -758,8 +758,14 @@ Page({
     this.clearTimers();
     this.initPickA();
     this.showView('picka');
-    /* 回到功能展示页（整局结束），用 reLaunch 让战斗页状态彻底重置 */
-    setTimeout(() => wx.reLaunch({ url: '/pages/index/index' }), 600);
+    /* 返回功能展示页：优先回退到上一页（不销毁重建 → 不会闪白屏）；
+       只有直接从战斗页启动（没有上一页）时才 reLaunch */
+    const pages = getCurrentPages();
+    if (pages.length > 1) {
+      wx.navigateBack({ delta: 1 });
+    } else {
+      wx.reLaunch({ url: '/pages/index/index' });
+    }
   },
 
   /* ---------- 右下角按钮 / 聊天 ---------- */
