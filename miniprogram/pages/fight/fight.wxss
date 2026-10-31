@@ -204,7 +204,9 @@ page { background: #121216; }
 .hand-head .play-title { font-size: 26rpx; color: #f6e6b0; font-weight: 700; }
 .hand-head .play-hint { font-size: 20rpx; color: #b9ac8e; }
 /* 手牌自适应列数：4张时每张约165rpx，6张时约110rpx，都比旧版(固定6列)大 */
-.your-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(110rpx, 1fr)); gap: 10rpx; justify-content: center; }
+/* 手牌自适应列数：auto-fit 会折叠空列。minmax 100rpx 保证 6 张也能单行放下
+   （4张→每张约165rpx，5张→约130rpx，6张→约106rpx，张数越多单张越小） */
+.your-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(100rpx, 1fr)); gap: 8rpx; justify-content: center; }
 .your-cards .card { padding-bottom: 4rpx; width: 100%; max-width: 170rpx; justify-self: center; }
 .your-cards .card .c-beast { min-height: 0; font-size: 30rpx; }
 .your-cards .card .c-beast .b-char { font-size: 30rpx; }
