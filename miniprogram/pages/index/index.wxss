@@ -115,7 +115,7 @@ page { background: #121216; }
 .timer-tip { font-size: 24rpx; color: #f6e6b0; display: flex; align-items: center; gap: 12rpx; }
 
 /* ===== 战斗界面 ===== */
-.arena-stage { text-align: center; padding: 14rpx 18rpx; margin-bottom: 10rpx; border-radius: 24rpx; border: 2rpx solid #b89b58;
+.arena-stage { text-align: center; padding: 14rpx 18rpx; margin-bottom: 10rpx; border-radius: 24rpx;
   background: linear-gradient(rgba(12,11,16,.6), rgba(12,11,16,.72)); }
 .arena-stage .h2 { margin: 0; font-size: 30rpx; color: #f6e6b0; letter-spacing: 4rpx; font-weight: 800; text-shadow: 0 0 12rpx rgba(0,0,0,.95); }
 .arena-stage .meta { font-size: 22rpx; color: #a89a7c; margin-top: 6rpx; }
@@ -173,7 +173,7 @@ page { background: #121216; }
 .hpbar view.low { background: linear-gradient(90deg, #a02020, #c0392b); }
 .pdeck { font-size: 18rpx; color: #e9dbb0; margin-top: 4rpx; }
 /* 观战 */
-.spec-float { display: flex; align-items: center; gap: 12rpx; justify-content: center; background: rgba(18,18,22,.72); border: 2rpx solid rgba(212,184,120,.35); border-radius: 16rpx; padding: 8rpx 14rpx; margin: 8rpx auto; }
+.spec-float { display: flex; align-items: center; gap: 12rpx; justify-content: center; background: rgba(18,18,22,.72); border-radius: 16rpx; padding: 8rpx 14rpx; margin: 8rpx auto; }
 .sp-ava { width: 44rpx; height: 44rpx; border-radius: 50%; border: 2rpx solid #b89b58; display: flex; align-items: center; justify-content: center; font-size: 22rpx; color: #f6e6b0; background: #1a1720; }
 .sp-nm { font-size: 22rpx; color: #f6e6b0; }
 .sp-hp { font-size: 18rpx; color: #a89a7c; }
@@ -202,7 +202,7 @@ page { background: #121216; }
 .battle-msg .hit { color: #f5a07a; font-weight: 700; }
 .battle-msg .skill { color: #7dce9a; font-weight: 700; }
 /* 手牌区 */
-.hand-zone { margin-top: 8rpx; background: rgba(15,13,18,.8); border: 2rpx solid #b89b58; border-radius: 20rpx; padding: 14rpx 18rpx; }
+.hand-zone { margin-top: 8rpx; background: rgba(15,13,18,.8); border-radius: 20rpx; padding: 14rpx 18rpx; }
 .hand-head { display: flex; align-items: baseline; gap: 16rpx; margin-bottom: 8rpx; }
 .hand-head .play-title { font-size: 26rpx; color: #f6e6b0; font-weight: 700; }
 .hand-head .play-hint { font-size: 20rpx; color: #b9ac8e; }
