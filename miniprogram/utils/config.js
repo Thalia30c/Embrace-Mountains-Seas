@@ -6,7 +6,8 @@
  * 改成电脑局域网 IP，例如：'http://192.168.1.100:8080/api'
  * 查询方式：在电脑上执行 ipconfig，看 IPv4 地址
  */
-const BASE_URL = 'http://localhost:8080/api';
+const BASE_URL = 'http://localhost:8080/api';   // 开发者工具模拟器默认用 localhost
+//const BASE_URL =  'http://10.56.55.169:8080/api';   // 同伴局域网 IP（真机预览时用）
 //const BASE_URL =  'http://192.168.110.176:8080/api';
 //const BASE_URL =  'http://192.168.43.242:8080/api';
 //const BASE_URL =  'http://10.56.47.239:8080/api';
