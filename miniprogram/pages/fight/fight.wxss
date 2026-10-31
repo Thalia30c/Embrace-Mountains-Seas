@@ -340,12 +340,13 @@ page { background: #121216; }
 .result-wrap .trophy { width: 116rpx; height: 116rpx; margin: 0 auto 8rpx; }
 .result-wrap .h2 { margin: 0; font-size: 40rpx; color: #f6e6b0; letter-spacing: 6rpx; font-weight: 800; }
 .result-wrap .winner-sub { font-size: 22rpx; color: #a89a7c; margin-top: 6rpx; }
-/* 排名：胶囊条（窄、密、紧凑） */
-.rank { display: flex; flex-direction: column; gap: 10rpx; margin: 18rpx 0; }
-.rank-row { display: flex; align-items: center; gap: 16rpx; background: rgba(212,184,120,.06); border: 2rpx solid rgba(212,184,120,.22); border-radius: 999rpx; padding: 10rpx 22rpx; }
-.rank-row.first { border-color: rgba(246,230,176,.85); background: rgba(246,230,176,.12); }
+/* 排名：三行合并成一张卡，行间只用极细分隔线（去掉每行各自的边框） */
+.rank { display: flex; flex-direction: column; margin: 18rpx 0 14rpx; border: 2rpx solid rgba(212,184,120,.28); border-radius: 22rpx; background: rgba(18,16,24,.5); overflow: hidden; }
+.rank-row { display: flex; align-items: center; gap: 16rpx; padding: 13rpx 24rpx; background: none; border: none; border-bottom: 2rpx solid rgba(212,184,120,.13); }
+.rank-row:last-child { border-bottom: none; }
+.rank-row.first { background: rgba(246,230,176,.1); border: none; border-bottom: 2rpx solid rgba(212,184,120,.13); }
 .rank-row .no { width: 40rpx; height: 40rpx; border-radius: 50%; background: #2a2633; border: 2rpx solid #b89b58; display: flex; align-items: center; justify-content: center; font-size: 24rpx; color: #d4b878; flex: none; }
-.rank-row.first .no { background: #f6e6b0; color: #241a08; }
+.rank-row.first .no { background: #f6e6b0; color: #241a08; border-color: #f6e6b0; }
 .rank-row .nm { flex: 1; text-align: left; font-size: 26rpx; color: #f5e7c1; letter-spacing: 2rpx; }
 .rank-row .hp { font-size: 24rpx; color: #f6e6b0; font-weight: 700; }
 /* 积分 + 段位合成一张卡，内部用细虚线分区 */
