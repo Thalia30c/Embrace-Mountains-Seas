@@ -73,7 +73,7 @@ page { background: #121216; }
 .card .c-name { position: absolute; left: 6rpx; right: 6rpx; bottom: 36rpx; z-index: 3; text-align: center; font-size: 18rpx; color: #f6e6b0; letter-spacing: 2rpx; text-shadow: 0 2rpx 4rpx #000; }
 .card .c-stat { position: absolute; left: 6rpx; right: 6rpx; bottom: 10rpx; z-index: 3; display: flex; justify-content: space-around; font-size: 14rpx; color: #d9c9a0; }
 .card .c-stat .num { color: #d4b878; font-weight: 700; }
-.card.c-slot { border-style: dashed; background: rgba(40,35,50,.3); }
+.card.c-slot { border-style: dashed; border-color: rgba(212,184,120,.28); background: rgba(30,27,40,.22); }
 
 /* ===== 仓库 ===== */
 /* 仓库区独占剩余高度并在内部滚动，页面本身不滚动 */
@@ -84,25 +84,25 @@ page { background: #121216; }
 .groups4 { display: grid; grid-template-columns: 1fr 1fr; gap: 20rpx; margin-top: 20rpx; flex: none; }
 
 /* ===== 组内交换（界面B）：备用置顶大面板 + 攻/防/法三行横排 ===== */
-.swap-stack { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; gap: 12rpx; margin-top: 10rpx; overflow: hidden; }
-.swap-stack .reserve-panel { flex: none; padding: 12rpx 16rpx; }
-.swap-stack .reserve-panel .gl { margin-bottom: 10rpx; }
-.swap-stack .reserve-panel .slots { display: flex; justify-content: center; gap: 18rpx; }
-.swap-stack .reserve-panel .slots .card { width: 124rpx; flex: 0 0 auto; }
-.group-row { flex: none; display: flex; align-items: center; gap: 12rpx;
-  background: rgba(20,17,26,.6); border: 2rpx solid rgba(212,184,120,.3); border-radius: 18rpx; padding: 10rpx 14rpx; }
-.group-row .side-label { width: 72rpx; display: flex; flex-direction: column; align-items: center; gap: 6rpx;
+.swap-stack { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; gap: 18rpx; margin-top: 12rpx; overflow: hidden; }
+/* 去面板化：不再用深色底+金边框包每组，直接融进水墨背景 */
+.swap-stack .reserve-panel { flex: none; padding: 4rpx 8rpx; }
+.swap-stack .reserve-panel .gl { margin-bottom: 12rpx; }
+.swap-stack .reserve-panel .slots { display: flex; justify-content: center; gap: 22rpx; }
+.swap-stack .reserve-panel .slots .card { width: 160rpx; flex: 0 0 auto; }
+.group-row { flex: none; display: flex; align-items: center; gap: 16rpx; padding: 4rpx 8rpx; }
+.group-row .side-label { width: 64rpx; display: flex; flex-direction: column; align-items: center; gap: 6rpx;
   font-size: 20rpx; color: #d4b878; letter-spacing: 2rpx; }
-.group-row .slots { flex: 1; display: flex; justify-content: center; gap: 12rpx; }
-.group-row .slots .card { width: 106rpx; flex: 0 0 auto; }
+.group-row .slots { flex: 1; display: flex; justify-content: center; gap: 16rpx; }
+.group-row .slots .card { width: 118rpx; flex: 0 0 auto; }
 .group-row .slots .card .c-top { display: none; }  /* 小卡隐藏徽章行，靠顶部色条区分类型 */
 .group-row .slots .card .c-beast { margin: 0; }
 .group-row .slots .card .c-name { font-size: 16rpx; }
 .group-row .slots .card .c-stat { font-size: 12rpx; margin-top: 2rpx; }
 /* 空槽与有卡槽统一由 .card 的比例 padding 决定高度 */
-.group-col { background: rgba(20,17,26,.6); border: 2rpx solid rgba(212,184,120,.3); border-radius: 20rpx; padding: 18rpx; }
+.group-col { padding: 4rpx 8rpx; }
 .group-col .gl { display: flex; align-items: center; gap: 10rpx; font-size: 24rpx; color: #d4b878; margin-bottom: 14rpx; }
-.group-col .gl .tag { font-size: 18rpx; color: #f5e7c1; background: rgba(212,184,120,.15); border: 2rpx solid #b89b58; border-radius: 10rpx; padding: 2rpx 10rpx; }
+.group-col .gl .tag { font-size: 18rpx; color: #f6e6b0; background: rgba(212,184,120,.14); border-radius: 10rpx; padding: 2rpx 10rpx; }
 .group-col .gl .cnt { margin-left: auto; color: #a89a7c; font-size: 20rpx; }
 .group-col .slots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12rpx; }
 .constraint { font-size: 22rpx; color: #a89a7c; margin: 14rpx 0 2rpx; line-height: 1.5; }
