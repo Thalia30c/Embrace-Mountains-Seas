@@ -4,7 +4,7 @@
 // 若该卡牌无对应视频，则直接展示卡牌。
 
 const api = require('../../utils/api');
-const { BASE_URL } = require('../../utils/config');
+const config = require('../../utils/config');
 
 const getAppInstance = () => getApp();
 
@@ -28,7 +28,8 @@ Page({
     videoSrc: '',         // 视频路径
     hasVideo: false,      // 该卡牌是否有对应视频
     videoEnded: false,    // 动画是否已播完（播完切到放大卡牌展示）
-    videoError: false     // 视频是否加载失败（无对应视频）
+    videoError: false,    // 视频是否加载失败（无对应视频）
+    isSpellOrCompound: false // 选中卡牌是否为法术卡或复合卡（决定能力面板取被动技能）
   },
 
   onShow() {
@@ -88,12 +89,15 @@ Page({
     if (!card) return;
     const id = Number(card.card);
     const hasVideo = VIDEO_IDS.has(id);
+    // 法术卡或复合卡：能力面板展示被动技能（passive_skill），其余展示主动技能（card.skill_name）
+    const isSpellOrCompound = card.compound === true || card.kind === 'magic';
     this.setData({
       selectedCard: card,
-      videoSrc: BASE_URL + '/video/' + id + '.mp4',
+      videoSrc: config.getBaseUrl() + '/video/' + id + '.mp4',
       hasVideo,
       videoEnded: false,
-      videoError: false
+      videoError: false,
+      isSpellOrCompound
     });
     // 有视频时确保从头播放
     if (hasVideo) {

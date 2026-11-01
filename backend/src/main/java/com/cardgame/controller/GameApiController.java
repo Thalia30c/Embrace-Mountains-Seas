@@ -337,6 +337,18 @@ public class GameApiController {
             item.put("hp", c.getHp());
             item.put("damageOrShield", c.getDamageOrShield());
             item.put("skillName", c.getSkillName());
+            // 关联被动技能：法术卡 / 复合卡 经 passive_code 外键读取技能名与效果描述
+            String passiveCode = c.getPassiveCode();
+            boolean hasPassive = passiveCode != null && !passiveCode.isEmpty()
+                    && !"null".equalsIgnoreCase(passiveCode);
+            if (hasPassive) {
+                PassiveSkill ps = passiveSkillDao.findByCode(passiveCode);
+                item.put("passiveSkillName", ps != null ? ps.getSkillName() : null);
+                item.put("passiveEffectDesc", ps != null ? ps.getEffectDesc() : null);
+            } else {
+                item.put("passiveSkillName", null);
+                item.put("passiveEffectDesc", null);
+            }
             cards.add(item);
         }
         return Result.ok(cards);
