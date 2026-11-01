@@ -1,13 +1,14 @@
 /* ============ 山海异兽·战略博弈战斗 · 逻辑（v2，强制刷新编译缓存） ============ */
 const api = require('../../utils/api');
 const sync = require('../../utils/sync');
+const engine = require('../../utils/battleEngine');
 
 const ROLES = {
   A: { key: 'A', name: '甲', isPlayer: true },
   B: { key: 'B', name: '乙', isPlayer: false },
   C: { key: 'C', name: '丙', isPlayer: false }
 };
-const TYPE_LABEL = { attack: '攻', defense: '防', magic: '法', tongue: '通' };
+const TYPE_LABEL = { attack: '攻', defense: '防', magic: '法', tongue: '融' };
 
 /* 兜底卡组：接口不可用（后端未启动/未登录）时使用，保证功能仍可跑通 */
 const FALLBACK_CARDS = [
@@ -35,6 +36,17 @@ const FALLBACK_CARDS = [
 /* 实际使用的卡库：启动时用数据库卡牌覆盖，失败则保持兜底卡 */
 let CARD_DB = FALLBACK_CARDS.slice();
 let cardFromDb = false;
+
+/* 被动技能字典：{ P01:{code,effectType,target,effectValue,durationRound,effectDesc}, ... }
+   由 /skill/list 填充，效果引擎靠它取数值；拉不到接口时为空，技能不生效但战斗照常跑 */
+let SKILL_DB = {};
+
+/** 技能数组 → 按 code 索引的字典 */
+function toSkillMap(list) {
+  const m = {};
+  (list || []).forEach(s => { if (s && s.code) m[s.code] = s; });
+  return m;
+}
 
 /* 段位表：与数据库 game_rank 表一致（rank_id → need_total_score） */
 const RANKS = [
@@ -268,6 +280,7 @@ Page({
             if (mine.length >= 9) { list = mine; }      // 仓库卡够组一套才启用
           }
           const mapped = mapDbCards(list, skills);
+          SKILL_DB = toSkillMap(skills);          // 技能数值供效果引擎使用
           if (mapped.length) {
             CARD_DB = mapped;
             cardFromDb = true;
@@ -349,10 +362,19 @@ Page({
   },
 
   /* ---------- 界面A：仓库配卡 ---------- */
+  /* 左上角返回按钮：有上级页面就回退，直开本页时兜底回首页 */
+  goBack() {
+    const pages = getCurrentPages();
+    if (pages.length > 1) { wx.navigateBack({ delta: 1 }); }
+    else { wx.reLaunch({ url: '/pages/index/index' }); }
+  },
+  /* 进入战前选牌：先用本地算法渲染一份（界面立刻可用、断网也不受影响），
+     随后异步读取 deck 页锁卡编队并静默覆盖 */
   initPickA() {
     state.deck = defaultDeck();
     state.pickSel = null;
     this.renderPickA();
+    this.loadLockedDeck(true);
   },
   renderPickA() {
     const pool = CARD_DB.filter(c => !isInDeck(c.id)).map(c => this.renderCard(c, state.pickSel === c.id));
@@ -379,10 +401,63 @@ Page({
     if (!state.pickSel) { this.toast('请先点选一张仓库卡'); return; }
     const card = CARD_DB.find(c => c.id === state.pickSel);
     if (!canPlace(card, g)) { this.toast('该卡不能放入此组'); return; }
-    if (card.type === 'tongue' && tongCount() >= 2) { this.toast('通卡最多携带 2 张'); return; }
+    if (card.type === 'tongue' && tongCount() >= 2) { this.toast('融卡最多携带 2 张'); return; }
     state.deck[g].push(card); state.pickSel = null; this.renderPickA();
   },
-  defaultPickA() { this.initPickA(); this.toast('已重置为默认配置'); },
+  /* 读取 warehouse 锁卡编队并套用
+     silent=true  进入界面自动套用，静默不提示
+     silent=false 手动点「默认配置」，有 loading 与提示；拿不到就回退本地算法 */
+  loadLockedDeck(silent) {
+    const ui = (getApp() && getApp().globalData.userInfo) || {};
+    const uid = state.uid || ui.userId || ui.uid;
+    if (!uid) { if (!silent) this.toast('已重置为默认配置'); return Promise.resolve(false); }
+    if (!silent) wx.showLoading({ title: '读取编队' });
+    return api.deckLoad(uid)
+      .then(data => {
+        if (!silent) wx.hideLoading();
+        const deck = this.deckFromWarehouse(data);
+        if (deck) {
+          state.deck = deck; state.pickSel = null; this.renderPickA();
+          if (!silent) this.toast('已套用锁卡编队');
+          return true;
+        }
+        if (!silent) this.toast('已重置为默认配置');
+        return false;
+      })
+      .catch(() => {
+        if (!silent) { wx.hideLoading(); this.toast('已重置为默认配置'); }
+        return false;
+      });
+  },
+
+  /* 「默认配置」按钮：撤销手动改动，恢复成 deck 页锁卡的那套编队 */
+  defaultPickA() {
+    this.loadLockedDeck(false).then(ok => {
+      if (!ok) { state.deck = defaultDeck(); state.pickSel = null; this.renderPickA(); }
+    });
+  },
+
+  /* warehouse 锁卡编队（四组卡牌编号，空位为 0）→ 战前选牌四组卡
+     锁卡允许空槽：这里保持留空，不自动补齐，由玩家自己挑剩下的位置 */
+  deckFromWarehouse(data) {
+    if (!data) return null;
+    const saved = {
+      attack: data.attack || [], defense: data.defense || [],
+      magic: data.magic || [], reserve: data.backup || []
+    };
+    const res = { attack: [], defense: [], magic: [], reserve: [] };
+    let hit = 0;
+    Object.keys(res).forEach(g => {
+      (saved[g] || []).forEach(id => {
+        if (res[g].length >= 3) return;
+        const num = Number(id);
+        if (!num) return;                        // 0 = 空槽，留空
+        const c = CARD_DB.filter(x => Number(x.dbId) === num)[0];
+        if (c) { res[g].push(c); hit++; }
+      });
+    });
+    return hit > 0 ? res : null;
+  },
   startPickACountdown() {
     let t = 120;
     this.setData({ pickaRing: t, pickaDanger: false });
@@ -490,7 +565,7 @@ Page({
       - (ca && ca.type === 'tongue' ? 1 : 0) - (cb && cb.type === 'tongue' ? 1 : 0)
       + (ca && canPlace(ca, b.group) ? (ca.type === 'tongue' ? 1 : 0) : 0)
       + (cb && canPlace(cb, a.group) ? (cb.type === 'tongue' ? 1 : 0) : 0);
-    if (afterTong > 2) { this.toast('通卡最多携带 2 张'); state.swapSel = null; this.renderSwapB(); return; }
+    if (afterTong > 2) { this.toast('融卡最多携带 2 张'); state.swapSel = null; this.renderSwapB(); return; }
     state.deck[a.group][a.index] = cb;
     state.deck[b.group][b.index] = ca;
     state.swapSel = null;
@@ -509,7 +584,15 @@ Page({
     const d = aiDeck();
     return clone({ attack: d.attack, defense: d.defense, magic: d.magic });
   },
-  availablePool(deck, phase) { return phase === 'top' ? deck.attack.concat(deck.defense) : deck.magic; },
+  availablePool(deck, phase, slotKey) {
+    const base = phase === 'top' ? deck.attack.concat(deck.defense) : deck.magic;
+    /* P04 封锁：被封的一方本半场无牌可出（自动跳过） */
+    if (phase === 'bottom' && slotKey && state.fight) {
+      const st = slotKey === 'x' ? state.fight.xs : state.fight.ys;
+      if (st && st.flags && st.flags.magicLocked) return [];
+    }
+    return base;
+  },
   removeFromDeck(deck, cardId) {
     ['attack', 'defense', 'magic'].forEach(g => {
       const i = deck[g].findIndex(c => c.id === cardId);
@@ -519,6 +602,8 @@ Page({
   beginMatch(pair) {
     state.fight = {
       x: pair[0], y: pair[1], xhp: 10, yhp: 10,
+      /* 效果引擎用的运行时状态（血量/持续效果/一次性标记），xhp/yhp 保持同步仅供渲染 */
+      xs: engine.createSlot(10), ys: engine.createSlot(10),
       xDeck: this.fightDeck(pair[0]), yDeck: this.fightDeck(pair[1]),
       round: 1, phase: 'top', xSel: null, ySel: null, xLocked: false, yLocked: false,
       xTongue: null, yTongue: null, history: [], over: false
@@ -585,7 +670,7 @@ Page({
     const playerSlot = ROLES[f.x].isPlayer ? 'x' : (ROLES[f.y].isPlayer ? 'y' : null);
     if (playerSlot) {
       const deck = playerSlot === 'x' ? f.xDeck : f.yDeck;
-      if (this.availablePool(deck, f.phase).length === 0 || (f.phase === 'bottom' && f[playerSlot + 'Tongue'])) f[playerSlot + 'Locked'] = true;
+      if (this.availablePool(deck, f.phase, playerSlot).length === 0 || (f.phase === 'bottom' && f[playerSlot + 'Tongue'])) f[playerSlot + 'Locked'] = true;
     }
     this.renderPlayZone();
     if (this._fightT) clearInterval(this._fightT);
@@ -600,7 +685,7 @@ Page({
           ['x', 'y'].forEach(slot => {
             if (!f[slot + 'Locked']) {
               const deck = slot === 'x' ? f.xDeck : f.yDeck;
-              const pool = this.availablePool(deck, f.phase);
+              const pool = this.availablePool(deck, f.phase, slot);
               if (pool.length > 0) f[slot + 'Sel'] = pool[Math.floor(Math.random() * pool.length)];
               f[slot + 'Locked'] = true;
             }
@@ -617,11 +702,11 @@ Page({
     if (!playerSlot) { this.setData({ handShown: false }); return; }
     this.setData({ handShown: true });
     const deck = playerSlot === 'x' ? f.xDeck : f.yDeck;
-    const pool = this.availablePool(deck, f.phase);
-    this.setData({ playTitle: '待选手牌 · 【' + phaseName(f.phase) + '】' + (f.phase === 'top' ? '攻防通卡' : '法术') + '牌组' });
+    const pool = this.availablePool(deck, f.phase, playerSlot);
+    this.setData({ playTitle: '待选手牌 · 【' + phaseName(f.phase) + '】' + (f.phase === 'top' ? '攻防融卡' : '法术') + '牌组' });
     const tongue = f[playerSlot + 'Tongue'];
     if (f.phase === 'bottom' && tongue) {
-      this.setData({ handEmpty: true, handEmptyMsg: '通卡【' + tongue.name + '】的法术能力生效，本半场免出牌，法术直接触发', handPool: [] });
+      this.setData({ handEmpty: true, handEmptyMsg: '融卡【' + tongue.name + '】的法术能力生效，本半场免出牌，法术直接触发', handPool: [] });
       f[playerSlot + 'Locked'] = true;
       return;
     }
@@ -639,7 +724,7 @@ Page({
     if (!ps || f[ps + 'Locked']) return;
     const i = e.currentTarget.dataset.i;
     const deck = ps === 'x' ? f.xDeck : f.yDeck;
-    const pool = this.availablePool(deck, f.phase);
+    const pool = this.availablePool(deck, f.phase, ps);
     const c = pool[i];
     if (f[ps + 'Sel'] && f[ps + 'Sel'].id === c.id) {
       f[ps + 'Sel'] = null;
@@ -667,7 +752,7 @@ Page({
           if (ROLES[key].isPlayer || f[slot + 'Locked']) return;
           if (f.phase === 'bottom' && f[slot + 'Tongue']) { f[slot + 'Locked'] = true; return; }
           const deck = slot === 'x' ? f.xDeck : f.yDeck;
-          const pool = this.availablePool(deck, f.phase);
+          const pool = this.availablePool(deck, f.phase, slot);
           if (pool.length === 0) { f[slot + 'Locked'] = true; }
           else { f[slot + 'Sel'] = pool[Math.floor(Math.random() * pool.length)]; f[slot + 'Locked'] = true; }
         });
@@ -721,7 +806,7 @@ Page({
     const buildRow = (key) => f.history.slice(-6).map(h => {
       const cur = h.current;
       const c = cardFor(key, h), t = tongueFor(key, h);
-      if (t && !c) return { card: null, pass: '通·法', revealed: cur };
+      if (t && !c) return { card: null, pass: '融·法', revealed: cur };
       return c ? { card: this.renderCard(c), pass: '', revealed: cur } : { card: null, pass: '不出', revealed: cur };
     });
     const rows = [buildRow(oppKey), buildRow(playerKey)];
@@ -734,25 +819,43 @@ Page({
   resolveRound() {
     const f = state.fight;
     const xc = f.xSel, yc = f.ySel;
-    f.xhp += (xc ? xc.heal : 0); f.yhp += (yc ? yc.heal : 0);
-    let xOut = 0, yOut = 0;
-    if (f.phase === 'top') { xOut = xc ? xc.out : 0; yOut = yc ? yc.out : 0; }
-    else { xOut = xc ? xc.out : (f.xTongue ? f.xTongue.mana : 0); yOut = yc ? yc.out : (f.yTongue ? f.yTongue.mana : 0); }
-    const xGuard = (xc && (xc.type === 'defense' || (xc.type === 'tongue' && xc.kind === 'def'))) ? xc.guard : 0;
-    const yGuard = (yc && (yc.type === 'defense' || (yc.type === 'tongue' && yc.kind === 'def'))) ? yc.guard : 0;
-    const dmgToY = Math.max(0, xOut - yGuard);
-    const dmgToX = Math.max(0, yOut - xGuard);
-    f.yhp = Math.max(0, f.yhp - dmgToY);
-    f.xhp = Math.max(0, f.xhp - dmgToX);
+
+    /* 结算交给纯函数引擎：技能效果 / 持续状态 / 反弹 / 治疗上限都在里面算 */
+    const res = engine.computeRound({
+      x: f.xs, y: f.ys,
+      xCard: xc, yCard: yc,
+      xTongue: f.xTongue, yTongue: f.yTongue,
+      skills: SKILL_DB,
+      phase: f.phase
+    });
+    f.xs = res.x; f.ys = res.y;
+    f.xhp = res.x.hp; f.yhp = res.y.hp;        // 同步给渲染用的字段
+    const dmgToY = res.xDmg, dmgToX = res.yDmg;
+
+    /* 通卡：上半场记录持有者，下半场用完后清空 */
     if (f.phase === 'top') { f.xTongue = (xc && xc.type === 'tongue') ? xc : null; f.yTongue = (yc && yc.type === 'tongue') ? yc : null; }
     else { f.xTongue = null; f.yTongue = null; }
     if (xc) this.removeFromDeck(f.xDeck, xc.id);
     if (yc) this.removeFromDeck(f.yDeck, yc.id);
-    const note = '回合' + f.round + '·' + phaseName(f.phase) + '：' + ROLES[f.x].name + ' 造成' + dmgToY + ' · ' + ROLES[f.y].name + ' 造成' + dmgToX;
-    /* 观战记录框固定高度：追加后把 scroll-top 推到新值，自动滚到最新一行 */
-    const nextLen = (this.data.battleLogs || []).length + 1;
-    this.setData({ battleLogs: (this.data.battleLogs || []).concat([note]), battleScroll: nextLen * 200, battleMsg: ROLES[f.x].name + '【' + (xc ? xc.name : '不出牌') + '】 vs ' + ROLES[f.y].name + '【' + (yc ? yc.name : '不出牌') + '】' });
+
+    const note = '回合' + f.round + '·' + phaseName(f.phase) + '：'
+      + ROLES[f.x].name + ' 造成' + dmgToY + ' · ' + ROLES[f.y].name + ' 造成' + dmgToX;
+    /* 技能日志缩进追加，方便看清这回合触发了什么 */
+    const logs = [note].concat((res.logs || []).map(l => '    └ ' + l));
+    const allLogs = (this.data.battleLogs || []).concat(logs);
+    this.setData({
+      battleLogs: allLogs,
+      battleScroll: allLogs.length * 200,
+      battleMsg: ROLES[f.x].name + '【' + (xc ? xc.name : '不出牌') + '】 vs ' + ROLES[f.y].name + '【' + (yc ? yc.name : '不出牌') + '】'
+    });
     f.xSel = null; f.ySel = null;
+
+    /* 一个完整回合（top + bottom）走完，才让持续效果衰减一轮 */
+    if (f.phase === 'bottom') {
+      f.xs = engine.endTurn(f.xs);
+      f.ys = engine.endTurn(f.ys);
+    }
+
     if (f.xhp <= 0 || f.yhp <= 0) {
       this._later(() => this.endMatch(), 900);
     } else if (f.phase === 'top') {
