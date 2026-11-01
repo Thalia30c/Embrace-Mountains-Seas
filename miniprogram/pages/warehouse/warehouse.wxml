@@ -59,7 +59,6 @@
         <view class="side-title">属性</view>
         <view class="attr-row"><text class="attr-k">等级</text><text class="attr-v">{{selectedCard.cLevel}}</text></view>
         <view class="attr-row"><text class="attr-k">类型</text><text class="attr-v">{{kindName[selectedCard.kind]}}</text></view>
-        <view class="attr-row"><text class="attr-k">生命</text><text class="attr-v">{{selectedCard.hp}}</text></view>
         <view class="attr-row"><text class="attr-k">攻防</text><text class="attr-v">{{selectedCard.damageOrShield}}</text></view>
         <view class="attr-row" wx:if="{{selectedCard.compound}}"><text class="attr-k">复合</text><text class="attr-v">是</text></view>
       </view>
@@ -73,8 +72,15 @@
 
       <view class="detail-side detail-right">
         <view class="side-title">能力</view>
-        <view class="skill-name">{{selectedCard.skillName}}</view>
-        <view class="skill-desc">技能效果以实战为准</view>
+        <!-- 法术卡 / 复合卡：技能名取自 passive_skill（经 passive_code 外键），并展示 effect_desc -->
+        <block wx:if="{{isSpellOrCompound && selectedCard.passiveSkillName}}">
+          <view class="skill-name">{{selectedCard.passiveSkillName}}</view>
+          <view class="skill-desc">{{selectedCard.passiveEffectDesc}}</view>
+        </block>
+        <block wx:else>
+          <view class="skill-name">{{selectedCard.skillName}}</view>
+          <view class="skill-desc">技能效果以实战为准</view>
+        </block>
       </view>
     </view>
   </view>
