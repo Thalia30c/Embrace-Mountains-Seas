@@ -345,8 +345,7 @@ public class GameApiController {
     /**
      * 锁卡：把四组卡组的准备结果写入 warehouse 表的 Attack / Defense / magic / backup 列。
      *
-     * <p>空卡槽的校验（四组卡槽必须全部放置）由前端在点击“锁卡”时完成，
-     * 后端只负责把已提交的数据落库。</p>
+     * <p>前端允许存在空卡槽（未强制装满），空位以 0 提交；后端只负责把已提交的数据落库。</p>
      */
     @PostMapping("/warehouse/deck")
     public Result<String> lockDeck(@RequestBody DeckSaveDTO dto) {

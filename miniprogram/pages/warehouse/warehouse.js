@@ -1,6 +1,6 @@
 // pages/warehouse/warehouse.js
 // 仓库页：上半区为卡牌库（分类查找），下半区为展示区
-// 选中卡牌后播放同编号视频（miniprogram/video/{id}.mp4），播完放大卡牌居中，两侧展示属性与能力；
+// 选中卡牌后播放同编号视频（后端 static/video/{id}.mp4），播完放大卡牌居中，两侧展示属性与能力；
 // 若该卡牌无对应视频，则直接展示卡牌。
 
 const api = require('../../utils/api');
@@ -12,7 +12,8 @@ const getAppInstance = () => getApp();
 const KIND_NAME = { attack: '攻击', defense: '防御', magic: '法术' };
 
 // 本地已提供动画的视频编号（与后端 backend/src/main/resources/static/video 目录保持一致；新增动画视频时在此补充）
-const VIDEO_IDS = new Set([1, 2, 3, 4, 5, 7, 10]);
+// 注意：以实际存在的 mp4 为准，缺文件会导致 404 回退展示卡牌
+const VIDEO_IDS = new Set([1, 2, 3, 4, 5, 7, 8]);
 
 Page({
   data: {

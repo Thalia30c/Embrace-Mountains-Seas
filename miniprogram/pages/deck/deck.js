@@ -25,24 +25,22 @@ function padSlots(list) {
 }
 
 // 根据卡牌类型与卡槽分组判断是否允许放置：
-// 进攻组收攻击牌、防御组收防御牌、法术组收法术牌；复合牌(compound)可额外放入法术组；备选组不受限制
+// 进攻组收攻击牌、防御组收防御牌、法术组收法术牌；备选组不受限制（复合牌不再允许放入法术组）
 function canPlace(kind, compound, groupKey) {
   if (groupKey === 'backup') return true;
-  if (groupKey === 'magic') return kind === 'magic' || compound === true;
+  if (groupKey === 'magic') return kind === 'magic';
   if (groupKey === 'attack') return kind === 'attack';
   if (groupKey === 'defense') return kind === 'defense';
   return false;
 }
 
-// 放置被拒绝时，提示卡牌属性（复合牌额外标注「复合」）
+// 放置被拒绝时，提示卡牌属性与可放置范围（复合牌不再允许放入法术组）
 function placeFailMsg(kind, compound) {
   const names = { attack: '攻击', defense: '防御', magic: '法术' };
   const typeName = names[kind] + (compound ? '（复合）' : '');
-  let msg = '该卡为【' + typeName + '】牌，';
+  let msg = '该卡为【' + typeName + '】牌，仅可放入' + names[kind] + '卡组';
   if (compound) {
-    msg += '可放入' + names[kind] + '卡组或法术卡组';
-  } else {
-    msg += '仅可放入' + names[kind] + '卡组';
+    msg += '（复合牌不可放入法术卡组）';
   }
   return msg;
 }
@@ -169,7 +167,7 @@ Page({
     }
   },
 
-  /** 锁卡：四组卡槽全部放置才允许提交 */
+  /** 锁卡：允许存在空卡槽（不再要求装满所有卡槽） */
   /** 弹出古风确认窗 */
   showModal(opts) {
     this.setData({
@@ -207,15 +205,7 @@ Page({
   noop() {},
 
   onLock() {
-    const groups = this.data.groups;
-    for (let i = 0; i < groups.length; i++) {
-      for (let j = 0; j < groups[i].slots.length; j++) {
-        if (groups[i].slots[j] === 0) {
-          wx.showToast({ title: '请补上空的召唤位', icon: 'none' });
-          return;
-        }
-      }
-    }
+    // 不再要求装满所有卡槽：允许存在空位（空槽以 0 提交，后端照常落库）
     const userInfo = getAppInstance().globalData.userInfo;
     if (!userInfo || !userInfo.userId) {
       wx.showToast({ title: '请先登录', icon: 'none' });
