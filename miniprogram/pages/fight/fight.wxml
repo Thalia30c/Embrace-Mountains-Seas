@@ -4,6 +4,7 @@
   <view class="view view-box {{view=='picka'?'active':''}}" style="padding-top:{{safeTop}}rpx;padding-bottom:{{safeBottom}}rpx">
     <image class="view-bg" src="/assets/bg-picka.jpg" mode="aspectFill"></image>
     <view class="view-inner">
+    <view class="back-btn" style="top:{{safeTop + 20}}rpx" bindtap="goBack">‹</view>
     <view class="pick-a-title">
       <view class="h2">战前选牌 · 仓库配卡</view>
       <view class="tip">从仓库挑选卡牌填入四组；攻/防/法各 3 张，备用 3 张</view>
@@ -32,7 +33,7 @@
       </scroll-view>
     </view>
 
-    <view class="constraint">规则：攻组只放攻击/攻法通卡 · 防组只放防御/防法通卡 · 法组只放法术卡 · 通卡最多 2 张</view>
+    <view class="constraint">规则：攻组只放攻击/攻法融卡 · 防组只放防御/防法融卡 · 法组只放法术卡 · 融卡最多 2 张</view>
 
     <view class="groups4">
       <view class="group-col">
@@ -113,7 +114,7 @@
       <view class="timer-tip"><view class="ring {{swapDanger?'danger':''}}">{{swapRing}}</view><text>选牌</text></view>
     
     </view>
-    <view class="sub" style="margin-bottom:4rpx">只能在自己四组卡牌之间交换 · 通卡最多 2 张 · 20 秒倒计时</view>
+    <view class="sub" style="margin-bottom:4rpx">只能在自己四组卡牌之间交换 · 融卡最多 2 张 · 20 秒倒计时</view>
     <view class="swap-stack">
       <view class="group-col reserve-panel">
         <view class="gl"><text class="tag">备</text><text>备用卡组</text></view>
