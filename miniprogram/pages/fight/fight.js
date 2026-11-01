@@ -368,10 +368,13 @@ Page({
     if (pages.length > 1) { wx.navigateBack({ delta: 1 }); }
     else { wx.reLaunch({ url: '/pages/index/index' }); }
   },
+  /* 进入战前选牌：先用本地算法渲染一份（界面立刻可用、断网也不受影响），
+     随后异步读取 deck 页锁卡编队并静默覆盖 */
   initPickA() {
     state.deck = defaultDeck();
     state.pickSel = null;
     this.renderPickA();
+    this.loadLockedDeck(true);
   },
   renderPickA() {
     const pool = CARD_DB.filter(c => !isInDeck(c.id)).map(c => this.renderCard(c, state.pickSel === c.id));
@@ -401,7 +404,60 @@ Page({
     if (card.type === 'tongue' && tongCount() >= 2) { this.toast('融卡最多携带 2 张'); return; }
     state.deck[g].push(card); state.pickSel = null; this.renderPickA();
   },
-  defaultPickA() { this.initPickA(); this.toast('已重置为默认配置'); },
+  /* 读取 warehouse 锁卡编队并套用
+     silent=true  进入界面自动套用，静默不提示
+     silent=false 手动点「默认配置」，有 loading 与提示；拿不到就回退本地算法 */
+  loadLockedDeck(silent) {
+    const ui = (getApp() && getApp().globalData.userInfo) || {};
+    const uid = state.uid || ui.userId || ui.uid;
+    if (!uid) { if (!silent) this.toast('已重置为默认配置'); return Promise.resolve(false); }
+    if (!silent) wx.showLoading({ title: '读取编队' });
+    return api.deckLoad(uid)
+      .then(data => {
+        if (!silent) wx.hideLoading();
+        const deck = this.deckFromWarehouse(data);
+        if (deck) {
+          state.deck = deck; state.pickSel = null; this.renderPickA();
+          if (!silent) this.toast('已套用锁卡编队');
+          return true;
+        }
+        if (!silent) this.toast('已重置为默认配置');
+        return false;
+      })
+      .catch(() => {
+        if (!silent) { wx.hideLoading(); this.toast('已重置为默认配置'); }
+        return false;
+      });
+  },
+
+  /* 「默认配置」按钮：撤销手动改动，恢复成 deck 页锁卡的那套编队 */
+  defaultPickA() {
+    this.loadLockedDeck(false).then(ok => {
+      if (!ok) { state.deck = defaultDeck(); state.pickSel = null; this.renderPickA(); }
+    });
+  },
+
+  /* warehouse 锁卡编队（四组卡牌编号，空位为 0）→ 战前选牌四组卡
+     锁卡允许空槽：这里保持留空，不自动补齐，由玩家自己挑剩下的位置 */
+  deckFromWarehouse(data) {
+    if (!data) return null;
+    const saved = {
+      attack: data.attack || [], defense: data.defense || [],
+      magic: data.magic || [], reserve: data.backup || []
+    };
+    const res = { attack: [], defense: [], magic: [], reserve: [] };
+    let hit = 0;
+    Object.keys(res).forEach(g => {
+      (saved[g] || []).forEach(id => {
+        if (res[g].length >= 3) return;
+        const num = Number(id);
+        if (!num) return;                        // 0 = 空槽，留空
+        const c = CARD_DB.filter(x => Number(x.dbId) === num)[0];
+        if (c) { res[g].push(c); hit++; }
+      });
+    });
+    return hit > 0 ? res : null;
+  },
   startPickACountdown() {
     let t = 120;
     this.setData({ pickaRing: t, pickaDanger: false });
